@@ -148,7 +148,7 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
                 const currentDay = today.getDate();
                 const currentMonthStr = today.toISOString().slice(0, 7);
                 const ldb = await openDb();
-                
+
                 const clientsToNotify = await ldb.all(`
                     SELECT * FROM clients 
                     WHERE CAST(recurring_day AS INTEGER) = ?
@@ -490,7 +490,7 @@ app.get('/api/projects', authenticate, async (req, res) => {
     if (view === 'mine' && isPrivileged) {
         filters.push('(c.account_manager_id = ? OR c.marketing_manager_id = ? OR c.dev_manager_id = ? OR s.tl_id = ?)');
         params.push(id, id, id, id);
-    } else if (role === 'finance' || role === 'am_head') {
+    } else if (role === 'finance' || role === 'am_head' || role === 'sales') {
         // AM Head and Finance see all by default (Team View)
     } else if (role !== 'super_admin' && role !== 'admin') {
         // Regular staff only see APPROVED clients
@@ -524,7 +524,7 @@ app.get('/api/clients', authenticate, async (req, res) => {
     const db = await openDb();
     const { role, id, permissions } = req.user;
     const canViewRevenue = ['super_admin', 'admin', 'finance', 'am_head'].includes(role) || permissions?.includes('view_revenue');
-    const hasFullAccess = ['super_admin', 'admin', 'finance', 'am_head'].includes(role) || permissions?.includes('view_all_clients');
+    const hasFullAccess = ['super_admin', 'sales', 'admin', 'finance', 'am_head'].includes(role) || permissions?.includes('view_all_clients');
 
     let query = `
         SELECT c.*, u.name as am_name,
@@ -714,14 +714,14 @@ app.patch('/api/clients/:id/finance', authenticate, async (req, res) => {
                 am_head_id = COALESCE(?, am_head_id),
                 recurring_day = COALESCE(?, recurring_day)
             WHERE id = ?
-        `, 
-        agreement_status !== undefined ? agreement_status : null, 
-        invoice_status !== undefined ? invoice_status : null, 
-        marketing_manager_id !== undefined ? marketing_manager_id : null, 
-        dev_manager_id !== undefined ? dev_manager_id : null, 
-        am_head_id !== undefined ? am_head_id : null, 
-        recurring_day !== undefined ? parseInt(recurring_day) : null, 
-        id);
+        `,
+            agreement_status !== undefined ? agreement_status : null,
+            invoice_status !== undefined ? invoice_status : null,
+            marketing_manager_id !== undefined ? marketing_manager_id : null,
+            dev_manager_id !== undefined ? dev_manager_id : null,
+            am_head_id !== undefined ? am_head_id : null,
+            recurring_day !== undefined ? parseInt(recurring_day) : null,
+            id);
 
         // If both are Signed and Paid, notify managers
         const client = await db.get('SELECT name, marketing_manager_id, dev_manager_id, am_head_id FROM clients WHERE id = ?', id);
@@ -863,9 +863,9 @@ app.patch('/api/clients/:id/onboarding', authenticate, async (req, res) => {
     const db = await openDb();
 
     try {
-        await db.run('UPDATE clients SET onboarding_date = ?, onboarding_pdf_url = ? WHERE id = ?', 
+        await db.run('UPDATE clients SET onboarding_date = ?, onboarding_pdf_url = ? WHERE id = ?',
             onboarding_date, onboarding_pdf_url, id);
-        
+
         const client = await db.get('SELECT name FROM clients WHERE id = ?', id);
         const managers = await db.all('SELECT id FROM users WHERE role IN ("super_admin", "admin", "am_head", "finance")');
         await createNotification(managers.map(m => m.id), `Onboarding completed for ${client.name} on ${onboarding_date}`, 'onboarding');
@@ -962,6 +962,68 @@ app.delete('/api/clients/:id', authenticate, async (req, res) => {
         res.status(500).json({ message: 'Failed to delete client', error: err.message });
     }
 });
+
+// --- DYNAMIC SERVICE TYPES BLOCK ---
+
+// 1. Initialize the Service Types Table & Insert Default Values
+(async () => {
+    try {
+        const db = await openDb();
+        // Create table if it doesn't exist
+        await db.run(`CREATE TABLE IF NOT EXISTS service_types (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT UNIQUE NOT NULL
+        )`);
+
+        // Check if the table is empty
+        const countRes = await db.get("SELECT COUNT(*) as count FROM service_types");
+
+        // If empty, insert the default hardcoded services
+        if (countRes.count === 0) {
+            const defaultServices = ['SEO', 'G-ADS', 'META', 'EMAIL', 'SMM', 'Development'];
+            console.log("Seeding default service types...");
+
+            for (const service of defaultServices) {
+                await db.run("INSERT OR IGNORE INTO service_types (name) VALUES (?)", service);
+            }
+            console.log("Default services seeded successfully.");
+        }
+    } catch (err) {
+        console.error("Failed to ensure service_types table:", err);
+    }
+})();
+
+// 2. GET endpoint to fetch all dynamic service types
+app.get('/api/service-types', authenticate, async (req, res) => {
+    try {
+        const db = await openDb();
+        const rows = await db.all("SELECT * FROM service_types ORDER BY id ASC");
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 3. POST endpoint to add a new service type
+app.post('/api/service-types', authenticate, async (req, res) => {
+    try {
+        const { name } = req.body;
+        if (!name || name.trim() === '') {
+            return res.status(400).json({ error: "Service name is required" });
+        }
+
+        const db = await openDb();
+        const result = await db.run("INSERT INTO service_types (name) VALUES (?)", name.trim());
+        res.status(201).json({ id: result.lastID, name: name.trim() });
+    } catch (err) {
+        if (err.message.includes("UNIQUE")) {
+            return res.status(400).json({ error: "Service already exists" });
+        }
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- END DYNAMIC SERVICE TYPES BLOCK ---
 
 const PORT = 5000;
 app.listen(PORT, () => {
