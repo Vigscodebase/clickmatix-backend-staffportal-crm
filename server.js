@@ -7,7 +7,9 @@ const { logToFile } = require('./logger');
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+// app.use(express.json());
+app.use(express.json({ limit: '5mb' }));
+app.use(express.urlencoded({ limit: '5mb', extended: true }));
 
 // Request logger middleware
 app.use((req, res, next) => {
@@ -93,32 +95,6 @@ const createNotification = async (userIds, message, type = 'info') => {
     }
 };
 
-// Profile Routes
-app.get('/api/profile', authenticate, async (req, res) => {
-    const db = await openDb();
-    const user = await db.get('SELECT id, name, email, phone, role, department, location, avatar_url FROM users WHERE id = ?', req.user.id);
-    res.json({ user });
-});
-
-app.put('/api/profile', authenticate, async (req, res) => {
-    const db = await openDb();
-    const { name, location, avatar_url, password } = req.body;
-
-    try {
-        if (password) {
-            const hashedPassword = bcrypt.hashSync(password, 10);
-            await db.run('UPDATE users SET name = ?, location = ?, avatar_url = ?, password = ? WHERE id = ?',
-                name, location, avatar_url, hashedPassword, req.user.id);
-        } else {
-            await db.run('UPDATE users SET name = ?, location = ?, avatar_url = ? WHERE id = ?',
-                name, location, avatar_url, req.user.id);
-        }
-        res.json({ success: true });
-    } catch (err) {
-        res.status(500).json({ message: 'Failed to update profile' });
-    }
-});
-
 // Notification Routes
 app.get('/api/notifications', authenticate, async (req, res) => {
     const db = await openDb();
@@ -139,7 +115,7 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
         const { id, role, permissions } = req.user;
         const month = (req.query.month && req.query.month !== 'undefined' && req.query.month !== 'null') ? req.query.month : new Date().toISOString().slice(0, 7);
         const view = req.query.view || 'team'; // 'team' or 'mine'
-        const hasFullAccess = ['super_admin', 'admin', 'finance', 'am_head'].includes(role) || permissions?.includes('view_all_clients');
+        const hasFullAccess = ['super_admin', 'admin', 'sales', 'finance', 'am_head'].includes(role) || permissions?.includes('view_all_clients');
 
         // Trigger recurring alerts in background
         const triggerNotifications = async () => {
@@ -361,9 +337,30 @@ app.get('/api/staff', authenticate, async (req, res) => {
     res.json({ users });
 });
 
+// app.post('/api/users', authenticate, isAdmin, async (req, res) => {
+//     const db = await openDb();
+//     const { name, email, password, role, department, can_add, can_edit, can_delete, permissions } = req.body;
+//     if (req.user.role === 'am_head' && role !== 'account_manager') {
+//         return res.status(403).json({ message: 'AM Head can only create Account Manager roles' });
+//     }
+
+//     const hashedPassword = bcrypt.hashSync(password || 'password123', 10);
+
+//     try {
+//         const result = await db.run(
+//             'INSERT INTO users (name, email, password, role, department, can_add, can_edit, can_delete, permissions) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+//             name, email, hashedPassword, role, department, can_add || 0, can_edit || 0, can_delete || 0, permissions || '[]'
+//         );
+//         res.status(201).json({ id: result.lastID, name, email, role, department });
+//     } catch (err) {
+//         res.status(400).json({ message: 'User already exists' });
+//     }
+// });
+
 app.post('/api/users', authenticate, isAdmin, async (req, res) => {
     const db = await openDb();
     const { name, email, password, role, department, can_add, can_edit, can_delete, permissions } = req.body;
+
     if (req.user.role === 'am_head' && role !== 'account_manager') {
         return res.status(403).json({ message: 'AM Head can only create Account Manager roles' });
     }
@@ -371,8 +368,9 @@ app.post('/api/users', authenticate, isAdmin, async (req, res) => {
     const hashedPassword = bcrypt.hashSync(password || 'password123', 10);
 
     try {
+        // Updated to explicitly insert the current date/time into created_at
         const result = await db.run(
-            'INSERT INTO users (name, email, password, role, department, can_add, can_edit, can_delete, permissions) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            'INSERT INTO users (name, email, password, role, department, can_add, can_edit, can_delete, permissions, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime("now"))',
             name, email, hashedPassword, role, department, can_add || 0, can_edit || 0, can_delete || 0, permissions || '[]'
         );
         res.status(201).json({ id: result.lastID, name, email, role, department });
@@ -421,7 +419,7 @@ app.delete('/api/users/:id', authenticate, isAdmin, async (req, res) => {
 // Client Management - Add Client
 app.post('/api/clients', authenticate, async (req, res) => {
     const { role } = req.user;
-    const isPrivileged = ['super_admin', 'admin', 'am_head', 'marketing_manager', 'dev_manager'].includes(role);
+    const isPrivileged = ['super_admin', 'admin', 'sales', 'am_head', 'marketing_manager', 'dev_manager'].includes(role);
 
     if (!req.user.can_add && !isPrivileged) {
         return res.status(403).json({ message: 'Forbidden: No permission to add clients' });
@@ -1024,6 +1022,77 @@ app.post('/api/service-types', authenticate, async (req, res) => {
 });
 
 // --- END DYNAMIC SERVICE TYPES BLOCK ---
+
+// Start Profile Routes
+// Profile Routes
+app.get('/api/profile', authenticate, async (req, res) => {
+    const db = await openDb();
+    try {
+        // Using SELECT * prevents "no such column" errors if fields like 'phone' or 'location' don't exist
+        const user = await db.get('SELECT * FROM users WHERE id = ?', req.user.id);
+
+        if (user) {
+            // Delete the password hash from the object before sending it to the frontend for security
+            delete user.password;
+        }
+
+        res.json({ user });
+    } catch (err) {
+        console.error("[API] Profile fetch error:", err.message);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+app.get('/api/profile', authenticate, async (req, res) => {
+    const db = await openDb();
+    const user = await db.get('SELECT id, name, email, phone, role, department, location, avatar_url FROM users WHERE id = ?', req.user.id);
+    res.json({ user });
+});
+
+app.put('/api/profile', authenticate, async (req, res) => {
+    const db = await openDb();
+    const { name, location, avatar_url, password } = req.body;
+
+    try {
+        if (password) {
+            const hashedPassword = bcrypt.hashSync(password, 10);
+            await db.run('UPDATE users SET name = ?, location = ?, avatar_url = ?, password = ? WHERE id = ?',
+                name, location, avatar_url, hashedPassword, req.user.id);
+        } else {
+            await db.run('UPDATE users SET name = ?, location = ?, avatar_url = ? WHERE id = ?',
+                name, location, avatar_url, req.user.id);
+        }
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to update profile' });
+    }
+});
+// End Profile Routes
+
+// --- AUTO MIGRATE USERS TABLE ---
+(async () => {
+    try {
+        const db = await openDb();
+        // Check if created_at exists in users table
+        const tableInfo = await db.all("PRAGMA table_info(users)");
+        const hasCreatedAt = tableInfo.some(col => col.name === 'created_at');
+
+        if (!hasCreatedAt) {
+            console.log("[DB] Adding created_at column to users table...");
+
+            // Fix: SQLite requires plain columns when altering tables
+            await db.run("ALTER TABLE users ADD COLUMN created_at TEXT");
+
+            // Manually set the current date for all existing users
+            await db.run("UPDATE users SET created_at = datetime('now') WHERE created_at IS NULL");
+
+            console.log("[DB] Updated existing users with the current date.");
+        }
+    } catch (error) {
+        console.error("Error updating users table schema:", error);
+    }
+})();
+// --- END AUTO MIGRATE ---
 
 const PORT = 5000;
 app.listen(PORT, () => {
