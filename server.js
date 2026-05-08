@@ -417,9 +417,10 @@ app.delete('/api/users/:id', authenticate, isAdmin, async (req, res) => {
 });
 
 // Client Management - Add Client
+// Client Management - Add Client
 app.post('/api/clients', authenticate, async (req, res) => {
     const { role } = req.user;
-    const isPrivileged = ['super_admin', 'admin', 'sales', 'am_head', 'marketing_manager', 'dev_manager'].includes(role);
+    const isPrivileged = ['super_admin', 'admin', 'sales', 'finance', 'am_head', 'account_manager'].includes(role);
 
     if (!req.user.can_add && !isPrivileged) {
         return res.status(403).json({ message: 'Forbidden: No permission to add clients' });
@@ -428,18 +429,19 @@ app.post('/api/clients', authenticate, async (req, res) => {
     const db = await openDb();
     const { name, email, phone, domain, am_id, mm_id, dm_id, account_manager_id, marketing_manager_id, dev_manager_id, services } = req.body;
 
-    // Resolve IDs (support both shorthand from Add modal and longhand from Edit modal/state)
-    const final_am = am_id || account_manager_id;
-    const final_mm = mm_id || marketing_manager_id;
-    const final_dm = dm_id || dev_manager_id;
+    // FIX: Force empty strings to become proper NULLs
+    const final_am = (am_id || account_manager_id) || null;
+    const final_mm = (mm_id || marketing_manager_id) || null;
+    const final_dm = (dm_id || dev_manager_id) || null;
 
     const onboarding_by = req.user.id;
 
     try {
+        // FIX: Added the 12th '?' placeholder so 'status' is properly saved as 'Pending'
         const clientRes = await db.run(`
-            INSERT INTO clients (name, email, phone, domain, account_manager_id, marketing_manager_id, dev_manager_id, onboarding_date, agreement_status, invoice_status, onboarding_by)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `, name, email, phone, domain, final_am, final_mm, final_dm, new Date().toISOString().split('T')[0], 'Pending', 'Pending', onboarding_by);
+            INSERT INTO clients (name, email, phone, domain, account_manager_id, marketing_manager_id, dev_manager_id, onboarding_date, agreement_status, invoice_status, onboarding_by, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, name, email, phone, domain, final_am, final_mm, final_dm, new Date().toISOString().split('T')[0], 'Pending', 'Pending', onboarding_by, 'Pending');
 
         const clientId = clientRes.lastID;
 
@@ -449,7 +451,7 @@ app.post('/api/clients', authenticate, async (req, res) => {
                 await db.run(`
                     INSERT INTO services (client_id, type, monthly_fee, ad_spend, tl_id, status)
                     VALUES (?, ?, ?, ?, ?, ?)
-                `, clientId, svc.type, svc.fee || 0, svc.spend || 0, svc.tl_id || null, 'Active');
+                `, clientId, svc.type, svc.fee || 0, svc.spend || 0, svc.tl_id || null, 'Pending'); // Set initial service status to Pending
             }
         }
 
@@ -577,18 +579,14 @@ app.get('/api/clients', authenticate, async (req, res) => {
 });
 
 // Get Single Client with Services
+// Get Single Client with Services
 app.get('/api/clients/:id', authenticate, async (req, res) => {
     const { id } = req.params;
-    logToFile(`[API] Fetching details for client ID: ${id}`);
-
     try {
         const db = await openDb();
-
-        // Simplified query for testing
         const client = await db.get('SELECT * FROM clients WHERE id = ?', id);
 
         if (!client) {
-            logToFile(`[API] Client NOT FOUND: ${id}`);
             return res.status(404).json({ message: 'Client not found' });
         }
 
@@ -598,12 +596,16 @@ app.get('/api/clients/:id', authenticate, async (req, res) => {
         const dm = client.dev_manager_id ? await db.get('SELECT name FROM users WHERE id = ?', client.dev_manager_id) : null;
         const ah = client.am_head_id ? await db.get('SELECT name FROM users WHERE id = ?', client.am_head_id) : null;
 
+        // --- NEW: Fetch the Team Leader Name ---
+        const tl = client.team_leader_id ? await db.get('SELECT name FROM users WHERE id = ?', client.team_leader_id) : null;
+
         client.am_name = am?.name;
         client.mm_name = mm?.name;
         client.dm_name = dm?.name;
         client.am_head_name = ah?.name;
 
-        logToFile(`[API] Found client: ${client.name}`);
+        // --- NEW: Attach the Team Leader name to the response ---
+        client.team_leader_name = tl?.name;
 
         const services = await db.all(`
             SELECT s.*, u.name as tl_name 
@@ -612,14 +614,13 @@ app.get('/api/clients/:id', authenticate, async (req, res) => {
             WHERE s.client_id = ?
         `, id);
 
-        logToFile(`[API] Found ${services.length} services`);
         res.json({ client, services });
     } catch (err) {
-        logToFile(`[API] ERROR fetching client ${id}: ${err.message}`);
         res.status(500).json({ message: 'Internal server error', error: err.message });
     }
 });
 
+// Update Client Basic Info
 // Update Client Basic Info
 app.put('/api/clients/:id', authenticate, async (req, res) => {
     const { role } = req.user;
@@ -631,12 +632,12 @@ app.put('/api/clients/:id', authenticate, async (req, res) => {
 
     const db = await openDb();
     const { id } = req.params;
-    const { name, email, phone, domain, am_id, mm_id, dm_id, account_manager_id, marketing_manager_id, dev_manager_id, am_head_id, status } = req.body;
+    const { name, email, phone, domain, am_id, mm_id, dm_id, account_manager_id, marketing_manager_id, dev_manager_id, am_head_id, team_leader_id, status } = req.body;
 
-    // Resolve IDs
-    const incoming_am = am_id || account_manager_id;
-    const incoming_mm = mm_id || marketing_manager_id;
-    const incoming_dm = dm_id || dev_manager_id;
+    // FIX: Force empty strings to become proper NULLs
+    const incoming_am = (am_id || account_manager_id) || null;
+    const incoming_mm = (mm_id || marketing_manager_id) || null;
+    const incoming_dm = (dm_id || dev_manager_id) || null;
 
     try {
         const existing = await db.get('SELECT * FROM clients WHERE id = ?', id);
@@ -646,22 +647,19 @@ app.put('/api/clients/:id', authenticate, async (req, res) => {
         let final_am = incoming_am;
         let final_mm = incoming_mm;
         let final_dm = incoming_dm;
-        let final_am_head = am_head_id; // Add this from req.body
+        let final_am_head = am_head_id || null; // Force null
+        let final_tl = team_leader_id || null; // Force null
 
         if (role === 'am_head') {
-            // AM Head can only change Account Manager
             final_mm = existing.marketing_manager_id;
             final_dm = existing.dev_manager_id;
         } else if (role === 'marketing_manager') {
-            // Marketing Manager can only change MM (and TLs in services)
             final_am = existing.account_manager_id;
             final_dm = existing.dev_manager_id;
         } else if (role === 'dev_manager') {
-            // Dev Manager can only change DM (and TLs in services)
             final_am = existing.account_manager_id;
             final_mm = existing.marketing_manager_id;
         } else if (role === 'sales') {
-            // Sales cannot edit managers!
             final_am = existing.account_manager_id;
             final_mm = existing.marketing_manager_id;
             final_dm = existing.dev_manager_id;
@@ -670,9 +668,9 @@ app.put('/api/clients/:id', authenticate, async (req, res) => {
 
         await db.run(`
             UPDATE clients 
-            SET name = ?, email = ?, phone = ?, domain = ?, account_manager_id = ?, marketing_manager_id = ?, dev_manager_id = ?, am_head_id = ?, status = ?
+            SET name = ?, email = ?, phone = ?, domain = ?, account_manager_id = ?, marketing_manager_id = ?, dev_manager_id = ?, am_head_id = ?, team_leader_id = ?, status = ?
             WHERE id = ?
-        `, name, email, phone, domain, final_am, final_mm, final_dm, final_am_head, status, id);
+        `, name, email, phone, domain, final_am, final_mm, final_dm, final_am_head, final_tl, status, id);
 
         // Notifications for assignments
         if (final_am && final_am !== existing.account_manager_id) {
@@ -699,10 +697,12 @@ app.patch('/api/clients/:id/finance', authenticate, async (req, res) => {
     }
 
     const { id } = req.params;
-    const { agreement_status, invoice_status, marketing_manager_id, dev_manager_id, am_head_id, recurring_day } = req.body;
+    // FIX: Added 'status' to the destructured body
+    const { agreement_status, invoice_status, marketing_manager_id, dev_manager_id, am_head_id, recurring_day, status } = req.body;
     const db = await openDb();
 
     try {
+        // FIX: Added 'status = COALESCE(?, status)' to the SQL query
         await db.run(`
             UPDATE clients 
             SET agreement_status = COALESCE(?, agreement_status), 
@@ -710,15 +710,17 @@ app.patch('/api/clients/:id/finance', authenticate, async (req, res) => {
                 marketing_manager_id = COALESCE(?, marketing_manager_id),
                 dev_manager_id = COALESCE(?, dev_manager_id),
                 am_head_id = COALESCE(?, am_head_id),
-                recurring_day = COALESCE(?, recurring_day)
+                recurring_day = COALESCE(?, recurring_day),
+                status = COALESCE(?, status)
             WHERE id = ?
         `,
             agreement_status !== undefined ? agreement_status : null,
             invoice_status !== undefined ? invoice_status : null,
-            marketing_manager_id !== undefined ? marketing_manager_id : null,
-            dev_manager_id !== undefined ? dev_manager_id : null,
-            am_head_id !== undefined ? am_head_id : null,
+            marketing_manager_id !== undefined && marketing_manager_id !== "" ? marketing_manager_id : null,
+            dev_manager_id !== undefined && dev_manager_id !== "" ? dev_manager_id : null,
+            am_head_id !== undefined && am_head_id !== "" ? am_head_id : null,
             recurring_day !== undefined ? parseInt(recurring_day) : null,
+            status !== undefined ? status : null, // Added the status parameter
             id);
 
         // If both are Signed and Paid, notify managers
@@ -964,32 +966,32 @@ app.delete('/api/clients/:id', authenticate, async (req, res) => {
 // --- DYNAMIC SERVICE TYPES BLOCK ---
 
 // 1. Initialize the Service Types Table & Insert Default Values
-(async () => {
-    try {
-        const db = await openDb();
-        // Create table if it doesn't exist
-        await db.run(`CREATE TABLE IF NOT EXISTS service_types (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT UNIQUE NOT NULL
-        )`);
+// (async () => {
+//     try {
+//         const db = await openDb();
+//         // Create table if it doesn't exist
+//         await db.run(`CREATE TABLE IF NOT EXISTS service_types (
+//             id INTEGER PRIMARY KEY AUTOINCREMENT,
+//             name TEXT UNIQUE NOT NULL
+//         )`);
 
-        // Check if the table is empty
-        const countRes = await db.get("SELECT COUNT(*) as count FROM service_types");
+//         // Check if the table is empty
+//         const countRes = await db.get("SELECT COUNT(*) as count FROM service_types");
 
-        // If empty, insert the default hardcoded services
-        if (countRes.count === 0) {
-            const defaultServices = ['SEO', 'G-ADS', 'META', 'EMAIL', 'SMM', 'Development'];
-            console.log("Seeding default service types...");
+//         // If empty, insert the default hardcoded services
+//         if (countRes.count === 0) {
+//             const defaultServices = ['SEO', 'G-ADS', 'META', 'EMAIL', 'SMM', 'Development'];
+//             console.log("Seeding default service types...");
 
-            for (const service of defaultServices) {
-                await db.run("INSERT OR IGNORE INTO service_types (name) VALUES (?)", service);
-            }
-            console.log("Default services seeded successfully.");
-        }
-    } catch (err) {
-        console.error("Failed to ensure service_types table:", err);
-    }
-})();
+//             for (const service of defaultServices) {
+//                 await db.run("INSERT OR IGNORE INTO service_types (name) VALUES (?)", service);
+//             }
+//             console.log("Default services seeded successfully.");
+//         }
+//     } catch (err) {
+//         console.error("Failed to ensure service_types table:", err);
+//     }
+// })();
 
 // 2. GET endpoint to fetch all dynamic service types
 app.get('/api/service-types', authenticate, async (req, res) => {
@@ -1070,28 +1072,28 @@ app.put('/api/profile', authenticate, async (req, res) => {
 // End Profile Routes
 
 // --- AUTO MIGRATE USERS TABLE ---
-(async () => {
-    try {
-        const db = await openDb();
-        // Check if created_at exists in users table
-        const tableInfo = await db.all("PRAGMA table_info(users)");
-        const hasCreatedAt = tableInfo.some(col => col.name === 'created_at');
+// (async () => {
+//     try {
+//         const db = await openDb();
+//         // Check if created_at exists in users table
+//         const tableInfo = await db.all("PRAGMA table_info(users)");
+//         const hasCreatedAt = tableInfo.some(col => col.name === 'created_at');
 
-        if (!hasCreatedAt) {
-            console.log("[DB] Adding created_at column to users table...");
+//         if (!hasCreatedAt) {
+//             console.log("[DB] Adding created_at column to users table...");
 
-            // Fix: SQLite requires plain columns when altering tables
-            await db.run("ALTER TABLE users ADD COLUMN created_at TEXT");
+//             // Fix: SQLite requires plain columns when altering tables
+//             await db.run("ALTER TABLE users ADD COLUMN created_at TEXT");
 
-            // Manually set the current date for all existing users
-            await db.run("UPDATE users SET created_at = datetime('now') WHERE created_at IS NULL");
+//             // Manually set the current date for all existing users
+//             await db.run("UPDATE users SET created_at = datetime('now') WHERE created_at IS NULL");
 
-            console.log("[DB] Updated existing users with the current date.");
-        }
-    } catch (error) {
-        console.error("Error updating users table schema:", error);
-    }
-})();
+//             console.log("[DB] Updated existing users with the current date.");
+//         }
+//     } catch (error) {
+//         console.error("Error updating users table schema:", error);
+//     }
+// })();
 // --- END AUTO MIGRATE ---
 
 const PORT = 5000;

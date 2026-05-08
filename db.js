@@ -16,17 +16,20 @@ async function openDb() {
             await db.exec('PRAGMA journal_mode = WAL');
             await db.configure('busyTimeout', 10000);
 
-            // Auto-migration for am_head_id
+            // --- THIS IS THE NEW MIGRATION SYSTEM ---
             try {
-                const cols = await db.all("PRAGMA table_info(clients)");
-                if (!cols.find(c => c.name === 'am_head_id')) {
-                    logToFile('[DB] MIGRATE: Adding am_head_id column...');
-                    await db.exec('ALTER TABLE clients ADD COLUMN am_head_id INTEGER REFERENCES users(id)');
-                    logToFile('[DB] MIGRATE: Success.');
-                }
-            } catch (e) {
-                logToFile(`[DB] MIGRATE ERROR: ${e.message}`);
+                //logToFile('[DB] MIGRATE: Checking for pending migrations...');
+                // This command automatically looks inside your "migrations" folder
+                // and runs 001, 002, 003, etc., in order.
+                // await db.migrate({
+                //     migrationsPath: path.join(__dirname, 'migrations')
+                // });
+                //logToFile('[DB] MIGRATE: Database schema is up to date.');
+            } catch (migrationError) {
+                //logToFile(`[DB] MIGRATE ERROR: ${migrationError.message}`);
+                //console.error("Migration Error:", migrationError);
             }
+            // ----------------------------------------
 
             logToFile('[DB] CONFIGURE: Database initialized and ready.');
             return db;
