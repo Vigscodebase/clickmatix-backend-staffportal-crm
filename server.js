@@ -117,6 +117,12 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
         const view = req.query.view || 'team'; // 'team' or 'mine'
         const hasFullAccess = ['super_admin', 'admin', 'sales', 'finance', 'am_head'].includes(role) || permissions?.includes('view_all_clients');
 
+        // Auto-correct empty dates so nothing breaks
+        await db.run(`UPDATE clients SET onboarding_date = date('now') WHERE onboarding_date = '' OR onboarding_date IS NULL`);
+
+        // The exact SQL parameter to search for anything inside that specific month (e.g., "2026-05%")
+        const monthParam = month + '%';
+
         // Trigger recurring alerts in background
         const triggerNotifications = async () => {
             try {
@@ -175,7 +181,7 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
 
         // If AM Head/Admin/Manager wants to see only their OWN accounts
         if (view === 'mine' && (role === 'am_head' || role === 'marketing_manager' || role === 'dev_manager' || role === 'super_admin' || role === 'admin')) {
-            clientFilter = `WHERE c.account_manager_id = ? OR c.marketing_manager_id = ? OR c.dev_manager_id = ?`;
+            clientFilter = `WHERE (c.account_manager_id = ? OR c.marketing_manager_id = ? OR c.dev_manager_id = ?)`;
             params = [id, id, id];
         } else if (hasFullAccess) {
             clientFilter = '';
@@ -197,37 +203,40 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
             params = [id];
         }
 
-        console.log(`[Dashboard] Role: ${role}, ID: ${id}, Filter: ${clientFilter}, Params:`, params);
-
         // Secondary filter: Except for privileged roles, only show SIGNED and PAID
         const privilegedRoles = ['super_admin', 'admin', 'finance', 'sales', 'am_head', 'marketing_manager', 'dev_manager', 'am_manager'];
         if (!privilegedRoles.includes(role) && !permissions?.includes('view_all_clients')) {
             clientFilter += (clientFilter ? ' AND ' : ' WHERE ') + "c.agreement_status = 'Signed' AND c.invoice_status = 'Paid'";
         }
 
-        // Metrics Queries
-        const mrrRes = await db.get(`SELECT COALESCE(SUM(s.monthly_fee), 0) as total FROM services s JOIN clients c ON s.client_id = c.id ${clientFilter} ${clientFilter ? 'AND' : 'WHERE'} s.revenue_type = 'Recurring' AND s.status = 'Active'`, params);
+        // Determine if we connect the next SQL clause with AND or WHERE
+        const joiner = clientFilter ? ' AND ' : ' WHERE ';
+
+        // -------------------------------------------------------------
+        // CURRENT STATE METRICS (These ignore the month filter)
+        // -------------------------------------------------------------
+        const mrrRes = await db.get(`SELECT COALESCE(SUM(s.monthly_fee), 0) as total FROM services s JOIN clients c ON s.client_id = c.id ${clientFilter} ${joiner} s.revenue_type = 'Recurring' AND s.status = 'Active'`, params);
         stats.totalMRR = mrrRes?.total || 0;
 
-        const lostRes = await db.get(`SELECT COUNT(DISTINCT c.id) as total FROM clients c ${clientFilter} ${clientFilter ? 'AND' : 'WHERE'} (EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND (s2.status_color = 'Red' OR s2.status IN ('Hold', 'Pause'))))`, params);
+        const lostRes = await db.get(`SELECT COUNT(DISTINCT c.id) as total FROM clients c ${clientFilter} ${joiner} (EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND (s2.status_color = 'Red' OR s2.status IN ('Hold', 'Pause'))))`, params);
         stats.lostAccounts = lostRes?.total || 0;
 
-        const oneOffRes = await db.get(`SELECT COALESCE(SUM(s.monthly_fee), 0) as total FROM services s JOIN clients c ON s.client_id = c.id ${clientFilter} ${clientFilter ? 'AND' : 'WHERE'} s.revenue_type = 'One-off' AND s.revenue_month = ?`, [...params, month]);
-        stats.oneOffRevenue = oneOffRes?.total || 0;
-
-        const accCount = await db.get(`SELECT COUNT(DISTINCT s.client_id) as count FROM services s JOIN clients c ON s.client_id = c.id ${clientFilter} ${clientFilter ? 'AND' : 'WHERE'} s.status = 'Active'`, params);
+        const accCount = await db.get(`SELECT COUNT(DISTINCT c.id) as count FROM clients c ${clientFilter} ${joiner} c.status = 'Active'`, params);
         stats.activeAccounts = accCount?.count || 0;
 
-        const svcCount = await db.get(`SELECT COUNT(*) as count FROM services s JOIN clients c ON s.client_id = c.id ${clientFilter} ${clientFilter ? 'AND' : 'WHERE'} s.status = 'Active'`, params);
+        const svcCount = await db.get(`SELECT COUNT(*) as count FROM services s JOIN clients c ON s.client_id = c.id ${clientFilter} ${joiner} s.status = 'Active'`, params);
         stats.activeServices = svcCount?.count || 0;
 
-        const invoiceRes = await db.all(`SELECT i.status, COALESCE(SUM(i.amount), 0) as total, COUNT(*) as count FROM invoices i JOIN clients c ON i.client_id = c.id ${clientFilter} ${clientFilter ? 'AND' : 'WHERE'} i.month = ? GROUP BY i.status`, [...params, month]);
+        // -------------------------------------------------------------
+        // TIME-BOUND METRICS (These STRICTLY use the month dropdown)
+        // -------------------------------------------------------------
+        const oneOffRes = await db.get(`SELECT COALESCE(SUM(s.monthly_fee), 0) as total FROM services s JOIN clients c ON s.client_id = c.id ${clientFilter} ${joiner} s.revenue_type = 'One-off' AND s.revenue_month LIKE ?`, [...params, monthParam]);
+        stats.oneOffRevenue = oneOffRes?.total || 0;
+
+        const invoiceRes = await db.all(`SELECT i.status, COALESCE(SUM(i.amount), 0) as total, COUNT(*) as count FROM invoices i JOIN clients c ON i.client_id = c.id ${clientFilter} ${joiner} i.month LIKE ? GROUP BY i.status`, [...params, monthParam]);
 
         // Reset invoice stats to zero before population
-        stats.paidInvoices = 0;
-        stats.pendingInvoices = 0;
-        stats.numPaidInvoices = 0;
-        stats.numPendingInvoices = 0;
+        stats.paidInvoices = 0; stats.pendingInvoices = 0; stats.numPaidInvoices = 0; stats.numPendingInvoices = 0;
 
         invoiceRes.forEach(r => {
             if (r.status === 'Paid') {
@@ -239,33 +248,27 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
             }
         });
 
-        // 2. Service Distribution (Type, Revenue, Active Accounts)
+        // 2. Service Distribution (Current State - Unfiltered by Month)
         const serviceDistribution = await db.all(`
-        SELECT 
-            s.type, 
-            SUM(s.monthly_fee) as revenue, 
-            COUNT(DISTINCT s.client_id) as active_accounts
-        FROM services s
-        JOIN clients c ON s.client_id = c.id
-        ${clientFilter}
-        ${clientFilter ? 'AND' : 'WHERE'} s.status = 'Active'
-        GROUP BY s.type
-    `, params);
+            SELECT s.type, SUM(s.monthly_fee) as revenue, COUNT(DISTINCT s.client_id) as active_accounts
+            FROM services s
+            JOIN clients c ON s.client_id = c.id
+            ${clientFilter}
+            ${joiner} s.status = 'Active'
+            GROUP BY s.type
+        `, params);
 
-        // 3. Account Managers Table (Name, Accounts, Revenue)
+        // 3. Account Managers Table (Current State - Unfiltered by Month)
         const amTable = await db.all(`
-        SELECT 
-            u.name, 
-            COUNT(DISTINCT c.id) as num_accounts, 
-            COALESCE(SUM(s.monthly_fee), 0) as revenue
-        FROM users u
-        JOIN clients c ON c.account_manager_id = u.id
-        LEFT JOIN services s ON s.client_id = c.id AND s.status = 'Active'
-        ${clientFilter ? clientFilter : ''}
-        GROUP BY u.id
-    `, params);
+            SELECT u.name, COUNT(DISTINCT c.id) as num_accounts, COALESCE(SUM(s.monthly_fee), 0) as revenue
+            FROM users u
+            JOIN clients c ON c.account_manager_id = u.id
+            LEFT JOIN services s ON s.client_id = c.id AND s.status = 'Active'
+            ${clientFilter ? clientFilter : ''}
+            GROUP BY u.id
+        `, params);
 
-        // 4. Pending Queues
+        // 4. Pending Queues (Action items should always show up regardless of month)
         let pendingReviewClients = [];
         let pendingAssignmentClients = [];
         let pendingOnboardingClients = [];
@@ -275,7 +278,7 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
         let pendingParams = [];
         if (role === 'sales') {
             pendingQuery += ` AND c.onboarding_by = ?`;
-            pendingParams = [id];
+            pendingParams.push(id);
         }
         pendingQuery += ` ORDER BY onboarding_date DESC LIMIT 10`;
         pendingReviewClients = await db.all(pendingQuery, pendingParams);
@@ -295,7 +298,8 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
         pendingOnboardingClients = await db.all(`
             SELECT id, name, onboarding_date, onboarding_pdf_url 
             FROM clients 
-            WHERE account_manager_id = ? AND onboarding_date IS NULL
+            WHERE account_manager_id = ? 
+            AND (onboarding_pdf_url IS NULL OR onboarding_pdf_url = '')
             LIMIT 10
         `, [id]);
 
@@ -312,6 +316,7 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
         res.status(500).json({ message: 'Failed to fetch dashboard data', error: err.message });
     }
 });
+//End Dashboard Data Route (Expanded)
 
 // Middleware to check if user is admin or has management permission
 const isAdmin = (req, res, next) => {
@@ -416,7 +421,6 @@ app.delete('/api/users/:id', authenticate, isAdmin, async (req, res) => {
     res.json({ success: true });
 });
 
-// Client Management - Add Client
 // Client Management - Add Client
 app.post('/api/clients', authenticate, async (req, res) => {
     const { role } = req.user;
@@ -579,7 +583,6 @@ app.get('/api/clients', authenticate, async (req, res) => {
 });
 
 // Get Single Client with Services
-// Get Single Client with Services
 app.get('/api/clients/:id', authenticate, async (req, res) => {
     const { id } = req.params;
     try {
@@ -597,7 +600,7 @@ app.get('/api/clients/:id', authenticate, async (req, res) => {
         const ah = client.am_head_id ? await db.get('SELECT name FROM users WHERE id = ?', client.am_head_id) : null;
 
         // --- NEW: Fetch the Team Leader Name ---
-        const tl = client.team_leader_id ? await db.get('SELECT name FROM users WHERE id = ?', client.team_leader_id) : null;
+        //const tl = client.team_leader_id ? await db.get('SELECT name FROM users WHERE id = ?', client.team_leader_id) : null;
 
         client.am_name = am?.name;
         client.mm_name = mm?.name;
@@ -605,7 +608,7 @@ app.get('/api/clients/:id', authenticate, async (req, res) => {
         client.am_head_name = ah?.name;
 
         // --- NEW: Attach the Team Leader name to the response ---
-        client.team_leader_name = tl?.name;
+        //client.team_leader_name = tl?.name;
 
         const services = await db.all(`
             SELECT s.*, u.name as tl_name 
@@ -621,10 +624,9 @@ app.get('/api/clients/:id', authenticate, async (req, res) => {
 });
 
 // Update Client Basic Info
-// Update Client Basic Info
 app.put('/api/clients/:id', authenticate, async (req, res) => {
     const { role } = req.user;
-    const isPrivileged = ['super_admin', 'admin', 'am_head', 'marketing_manager', 'dev_manager'].includes(role);
+    const isPrivileged = ['super_admin', 'admin', 'sales', 'finance', 'am_head', 'marketing_manager', 'dev_manager'].includes(role);
 
     if (!req.user.can_edit && !isPrivileged) {
         return res.status(403).json({ message: 'Forbidden: No permission to edit clients' });
@@ -632,7 +634,7 @@ app.put('/api/clients/:id', authenticate, async (req, res) => {
 
     const db = await openDb();
     const { id } = req.params;
-    const { name, email, phone, domain, am_id, mm_id, dm_id, account_manager_id, marketing_manager_id, dev_manager_id, am_head_id, team_leader_id, status } = req.body;
+    const { name, email, phone, domain, am_id, mm_id, dm_id, account_manager_id, marketing_manager_id, dev_manager_id, am_head_id, status } = req.body;
 
     // FIX: Force empty strings to become proper NULLs
     const incoming_am = (am_id || account_manager_id) || null;
@@ -648,7 +650,7 @@ app.put('/api/clients/:id', authenticate, async (req, res) => {
         let final_mm = incoming_mm;
         let final_dm = incoming_dm;
         let final_am_head = am_head_id || null; // Force null
-        let final_tl = team_leader_id || null; // Force null
+        //let final_tl = team_leader_id || null; // Force null
 
         if (role === 'am_head') {
             final_mm = existing.marketing_manager_id;
@@ -668,9 +670,9 @@ app.put('/api/clients/:id', authenticate, async (req, res) => {
 
         await db.run(`
             UPDATE clients 
-            SET name = ?, email = ?, phone = ?, domain = ?, account_manager_id = ?, marketing_manager_id = ?, dev_manager_id = ?, am_head_id = ?, team_leader_id = ?, status = ?
+            SET name = ?, email = ?, phone = ?, domain = ?, account_manager_id = ?, marketing_manager_id = ?, dev_manager_id = ?, am_head_id = ?, status = ?
             WHERE id = ?
-        `, name, email, phone, domain, final_am, final_mm, final_dm, final_am_head, final_tl, status, id);
+        `, name, email, phone, domain, final_am, final_mm, final_dm, final_am_head, status, id);
 
         // Notifications for assignments
         if (final_am && final_am !== existing.account_manager_id) {
@@ -745,7 +747,7 @@ app.patch('/api/clients/:id/finance', authenticate, async (req, res) => {
 // Add Service to existing client
 app.post('/api/services', authenticate, async (req, res) => {
     const { role } = req.user;
-    const isPrivileged = ['super_admin', 'admin', 'marketing_manager', 'dev_manager'].includes(role);
+    const isPrivileged = ['super_admin', 'admin', 'sales', 'finance', 'marketing_manager', 'dev_manager'].includes(role);
 
     if (!req.user.can_edit && !isPrivileged) {
         return res.status(403).json({ message: 'Forbidden: No permission to add services' });
@@ -784,7 +786,7 @@ app.post('/api/services', authenticate, async (req, res) => {
 // Update Service
 app.put('/api/services/:id', authenticate, async (req, res) => {
     const { role } = req.user;
-    const isPrivileged = ['super_admin', 'admin', 'marketing_manager', 'dev_manager'].includes(role);
+    const isPrivileged = ['super_admin', 'admin', 'sales', 'finance', 'marketing_manager', 'dev_manager'].includes(role);
 
     if (!req.user.can_edit && !isPrivileged) {
         return res.status(403).json({ message: 'Forbidden: No permission to edit services' });
@@ -1094,6 +1096,48 @@ app.put('/api/profile', authenticate, async (req, res) => {
 //         console.error("Error updating users table schema:", error);
 //     }
 // })();
+
+// --- AUTO MIGRATE USERS & CLEAN UP CLIENT DATES ---
+(async () => {
+    try {
+        const db = await openDb();
+
+        // 1. Safely check if the 'users' table exists before altering it
+        const usersTable = await db.get("SELECT name FROM sqlite_master WHERE type='table' AND name='users'");
+        if (usersTable) {
+            const tableInfo = await db.all("PRAGMA table_info(users)");
+            const hasCreatedAt = tableInfo.some(col => col.name === 'created_at');
+
+            if (!hasCreatedAt) {
+                console.log("[DB] Adding created_at column to users table...");
+                await db.run("ALTER TABLE users ADD COLUMN created_at TEXT");
+                await db.run("UPDATE users SET created_at = datetime('now') WHERE created_at IS NULL");
+                console.log("[DB] Updated existing users with the current date.");
+            }
+        }
+
+        // 2. Safely check if 'clients' table exists before fixing dates
+        const clientsTable = await db.get("SELECT name FROM sqlite_master WHERE type='table' AND name='clients'");
+        if (clientsTable) {
+            const dateFixResult = await db.run("UPDATE clients SET onboarding_date = date('now') WHERE onboarding_date = '' OR onboarding_date IS NULL");
+            if (dateFixResult.changes > 0) {
+                console.log(`[DB] Successfully fixed ${dateFixResult.changes} clients with empty onboarding dates.`);
+            }
+
+            // 3. NEW FIX: Correct the hardcoded '2026-01' dummy data from seed.js to the current month
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            const invoiceFix = await db.run("UPDATE invoices SET month = ? WHERE month = '2026-01'", currentMonth);
+            const serviceFix = await db.run("UPDATE services SET revenue_month = ? WHERE revenue_month = '2026-01'", currentMonth);
+
+            if (invoiceFix.changes > 0 || serviceFix.changes > 0) {
+                console.log(`[DB] Successfully moved hardcoded January dummy data to current month.`);
+            }
+        }
+
+    } catch (error) {
+        console.error("Error updating database schema/data:", error);
+    }
+})();
 // --- END AUTO MIGRATE ---
 
 const PORT = 5000;

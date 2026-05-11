@@ -193,7 +193,8 @@ async function seed() {
 
               // More realistic One-off vs Recurring distribution
               const revenueType = Math.random() > 0.85 ? 'One-off' : 'Recurring';
-              const revenueMonth = '2026-01'; // Default month for demo data
+              //const revenueMonth = '2026-01'; 
+              const revenueMonth = new Date().toISOString().split('T')[0];// Default month for demo data
 
               await db.run(`
                 INSERT INTO services (client_id, type, monthly_fee, ad_spend, tl_id, status, revenue_type, revenue_month)
@@ -203,13 +204,14 @@ async function seed() {
           }
 
           // Add some dummy invoices
+          // Add some dummy invoices
           if (clientCount % 2 === 0) {
             await db.run('INSERT INTO invoices (client_id, amount, status, month) VALUES (?, ?, ?, ?)',
-              clientId, 2000, 'Paid', '2026-01');
+              clientId, 2000, 'Paid', revenueMonth);
           }
           if (clientCount % 3 === 0) {
             await db.run('INSERT INTO invoices (client_id, amount, status, month) VALUES (?, ?, ?, ?)',
-              clientId, 3500, 'Pending', '2026-01');
+              clientId, 3500, 'Pending', revenueMonth);
           }
 
         } catch (err) {
