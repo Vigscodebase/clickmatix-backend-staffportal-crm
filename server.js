@@ -762,12 +762,19 @@ app.post('/api/services', authenticate, async (req, res) => {
         return res.status(403).json({ message: 'DM can only add Development services' });
     }
 
+    // --- FIX: Auto-calculate the status color based on the selected status ---
+    let finalStatus = status || 'Active';
+    let status_color = 'Green';
+    if (finalStatus === 'Pause') status_color = 'Yellow';
+    if (finalStatus === 'Hold') status_color = 'Red';
+
     const db = await openDb();
     try {
+        // FIX: Insert the calculated status_color into the database
         const result = await db.run(`
-            INSERT INTO services (client_id, type, monthly_fee, ad_spend, tl_id, status, revenue_type, revenue_month)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        `, client_id, type, monthly_fee || 0, ad_spend || 0, tl_id || null, status || 'Active', revenue_type || 'Recurring', revenue_month || null);
+            INSERT INTO services (client_id, type, monthly_fee, ad_spend, tl_id, status, status_color, revenue_type, revenue_month)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, client_id, type, monthly_fee || 0, ad_spend || 0, tl_id || null, finalStatus, status_color, revenue_type || 'Recurring', revenue_month || null);
 
         const serviceId = result.lastID;
 
@@ -783,6 +790,7 @@ app.post('/api/services', authenticate, async (req, res) => {
     }
 });
 
+// Update Service
 // Update Service
 app.put('/api/services/:id', authenticate, async (req, res) => {
     const { role } = req.user;
@@ -804,15 +812,21 @@ app.put('/api/services/:id', authenticate, async (req, res) => {
         return res.status(403).json({ message: 'DM can only manage Development services' });
     }
 
+    // --- FIX: Auto-calculate the status color based on the selected status ---
+    let status_color = 'Green';
+    if (status === 'Pause') status_color = 'Yellow';
+    if (status === 'Hold') status_color = 'Red';
+
     try {
         const existing = await db.get('SELECT * FROM services WHERE id = ?', id);
         if (!existing) return res.status(404).json({ message: 'Service not found' });
 
+        // FIX: Update the status_color in the database
         await db.run(`
             UPDATE services 
-            SET type = ?, monthly_fee = ?, ad_spend = ?, tl_id = ?, status = ?, revenue_type = ?, revenue_month = ?
+            SET type = ?, monthly_fee = ?, ad_spend = ?, tl_id = ?, status = ?, status_color = ?, revenue_type = ?, revenue_month = ?
             WHERE id = ?
-        `, type, monthly_fee || 0, ad_spend || 0, tl_id, status, revenue_type, revenue_month, id);
+        `, type, monthly_fee || 0, ad_spend || 0, tl_id, status, status_color, revenue_type, revenue_month, id);
 
         // Notification for TL assignment change
         if (tl_id && tl_id !== existing.tl_id) {
@@ -882,10 +896,22 @@ app.patch('/api/clients/:id/onboarding', authenticate, async (req, res) => {
 app.patch('/api/services/:id/status', authenticate, async (req, res) => {
     const db = await openDb();
     const { id } = req.params;
-    const { status, status_color } = req.body;
+    let { status, status_color } = req.body;
 
     try {
         const existing = await db.get('SELECT s.*, c.name as client_name FROM services s JOIN clients c ON s.client_id = c.id WHERE s.id = ?', id);
+        if (!existing) return res.status(404).json({ message: 'Service not found' });
+
+        // --- FIX: Bidirectionally sync status and status_color on the backend ---
+        if (status && !status_color) {
+            if (status === 'Active') status_color = 'Green';
+            if (status === 'Pause') status_color = 'Orange';
+            if (status === 'Hold') status_color = 'Red';
+        } else if (status_color && !status) {
+            if (status_color === 'Green') status = 'Active';
+            if (status_color === 'Orange') status = 'Pause';
+            if (status_color === 'Red') status = 'Hold';
+        }
 
         if (status) await db.run('UPDATE services SET status = ? WHERE id = ?', status, id);
         if (status_color) await db.run('UPDATE services SET status_color = ? WHERE id = ?', status_color, id);
