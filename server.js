@@ -433,15 +433,21 @@ app.post('/api/clients', authenticate, async (req, res) => {
     const db = await openDb();
     const { name, email, phone, domain, am_id, mm_id, dm_id, account_manager_id, marketing_manager_id, dev_manager_id, services } = req.body;
 
-    // FIX: Force empty strings to become proper NULLs
+    // FIX: Block Duplicate Services on Backend
+    if (services && Array.isArray(services)) {
+        const types = services.map(s => s.type);
+        const uniqueTypes = new Set(types);
+        if (types.length !== uniqueTypes.size) {
+            return res.status(400).json({ message: 'Duplicate services are not allowed.' });
+        }
+    }
+
     const final_am = (am_id || account_manager_id) || null;
     const final_mm = (mm_id || marketing_manager_id) || null;
     const final_dm = (dm_id || dev_manager_id) || null;
-
     const onboarding_by = req.user.id;
 
     try {
-        // FIX: Added the 12th '?' placeholder so 'status' is properly saved as 'Pending'
         const clientRes = await db.run(`
             INSERT INTO clients (name, email, phone, domain, account_manager_id, marketing_manager_id, dev_manager_id, onboarding_date, agreement_status, invoice_status, onboarding_by, status)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -455,7 +461,7 @@ app.post('/api/clients', authenticate, async (req, res) => {
                 await db.run(`
                     INSERT INTO services (client_id, type, monthly_fee, ad_spend, tl_id, status)
                     VALUES (?, ?, ?, ?, ?, ?)
-                `, clientId, svc.type, svc.fee || 0, svc.spend || 0, svc.tl_id || null, 'Pending'); // Set initial service status to Pending
+                `, clientId, svc.type, svc.fee || 0, svc.spend || 0, svc.tl_id || null, 'Pending');
             }
         }
 
@@ -467,6 +473,58 @@ app.post('/api/clients', authenticate, async (req, res) => {
 
     } catch (err) {
         res.status(500).json({ message: 'Failed to create client', error: err.message });
+    }
+});
+
+
+// Add Service to existing client
+app.post('/api/services', authenticate, async (req, res) => {
+    const { role } = req.user;
+    const isPrivileged = ['super_admin', 'admin', 'sales', 'finance', 'marketing_manager', 'dev_manager'].includes(role);
+
+    if (!req.user.can_edit && !isPrivileged) {
+        return res.status(403).json({ message: 'Forbidden: No permission to add services' });
+    }
+
+    const { client_id, type, monthly_fee, ad_spend, tl_id, status, revenue_type, revenue_month } = req.body;
+
+    if (role === 'marketing_manager' && type === 'Development') {
+        return res.status(403).json({ message: 'MM cannot add Development services' });
+    }
+    if (role === 'dev_manager' && type !== 'Development') {
+        return res.status(403).json({ message: 'DM can only add Development services' });
+    }
+
+    const db = await openDb();
+
+    // FIX: Check if service already exists for THIS client before adding
+    const existingService = await db.get('SELECT id FROM services WHERE client_id = ? AND type = ?', client_id, type);
+    if (existingService) {
+        return res.status(400).json({ message: `This client already has the ${type} service active.` });
+    }
+
+    let finalStatus = status || 'Active';
+    let status_color = 'Green';
+    if (finalStatus === 'Pause') status_color = 'Yellow';
+    if (finalStatus === 'Hold') status_color = 'Red';
+
+    try {
+        const result = await db.run(`
+            INSERT INTO services (client_id, type, monthly_fee, ad_spend, tl_id, status, status_color, revenue_type, revenue_month)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, client_id, type, monthly_fee || 0, ad_spend || 0, tl_id || null, finalStatus, status_color, revenue_type || 'Recurring', revenue_month || null);
+
+        const serviceId = result.lastID;
+
+        // Notification for TL assignment
+        if (tl_id) {
+            const client = await db.get('SELECT name FROM clients WHERE id = ?', client_id);
+            await createNotification(tl_id, `You have been assigned as the Team Lead for ${type} service for ${client?.name || 'a client'}`, 'info');
+        }
+
+        res.status(201).json({ id: serviceId });
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to add service', error: err.message });
     }
 });
 
@@ -699,35 +757,51 @@ app.patch('/api/clients/:id/finance', authenticate, async (req, res) => {
     }
 
     const { id } = req.params;
-    // FIX: Added 'status' to the destructured body
-    const { agreement_status, invoice_status, marketing_manager_id, dev_manager_id, am_head_id, recurring_day, status } = req.body;
+    const updates = req.body;
     const db = await openDb();
 
     try {
-        // FIX: Added 'status = COALESCE(?, status)' to the SQL query
-        await db.run(`
-            UPDATE clients 
-            SET agreement_status = COALESCE(?, agreement_status), 
-                invoice_status = COALESCE(?, invoice_status),
-                marketing_manager_id = COALESCE(?, marketing_manager_id),
-                dev_manager_id = COALESCE(?, dev_manager_id),
-                am_head_id = COALESCE(?, am_head_id),
-                recurring_day = COALESCE(?, recurring_day),
-                status = COALESCE(?, status)
-            WHERE id = ?
-        `,
-            agreement_status !== undefined ? agreement_status : null,
-            invoice_status !== undefined ? invoice_status : null,
-            marketing_manager_id !== undefined && marketing_manager_id !== "" ? marketing_manager_id : null,
-            dev_manager_id !== undefined && dev_manager_id !== "" ? dev_manager_id : null,
-            am_head_id !== undefined && am_head_id !== "" ? am_head_id : null,
-            recurring_day !== undefined ? parseInt(recurring_day) : null,
-            status !== undefined ? status : null, // Added the status parameter
-            id);
+        const client = await db.get('SELECT * FROM clients WHERE id = ?', id);
+        if (!client) return res.status(404).json({ message: 'Client not found' });
+
+        let newStatus = updates.status !== undefined ? updates.status : client.status;
+
+        // --- FIX: 1. Auto-clear managers if status drops to Pending ---
+        if (newStatus === 'Pending') {
+            updates.marketing_manager_id = null;
+            updates.dev_manager_id = null;
+            updates.am_head_id = null;
+            updates.account_manager_id = null; // Clear AM too just in case
+        } else {
+            // --- FIX: 2. Allow user to explicitly select "Assign..." to clear the box ---
+            if (updates.marketing_manager_id === "") updates.marketing_manager_id = null;
+            if (updates.dev_manager_id === "") updates.dev_manager_id = null;
+            if (updates.am_head_id === "") updates.am_head_id = null;
+        }
+
+        // --- FIX: 3. Dynamically build SET clause to allow actual NULLs to be saved ---
+        const allowedFields = [
+            'agreement_status', 'invoice_status', 'marketing_manager_id',
+            'dev_manager_id', 'am_head_id', 'account_manager_id', 'recurring_day', 'status'
+        ];
+
+        const setClauses = [];
+        const params = [];
+
+        allowedFields.forEach(field => {
+            if (updates.hasOwnProperty(field)) {
+                setClauses.push(`${field} = ?`);
+                params.push(updates[field]);
+            }
+        });
+
+        if (setClauses.length > 0) {
+            params.push(id);
+            await db.run(`UPDATE clients SET ${setClauses.join(', ')} WHERE id = ?`, params);
+        }
 
         // If both are Signed and Paid, notify managers
-        const client = await db.get('SELECT name, marketing_manager_id, dev_manager_id, am_head_id FROM clients WHERE id = ?', id);
-        if (agreement_status === 'Signed' || invoice_status === 'Paid') {
+        if (updates.agreement_status === 'Signed' || updates.invoice_status === 'Paid') {
             const managers = await db.all('SELECT id FROM users WHERE role IN ("super_admin", "admin", "am_head")');
             const managerIds = managers.map(m => m.id);
             if (client.marketing_manager_id) managerIds.push(client.marketing_manager_id);
@@ -791,7 +865,6 @@ app.post('/api/services', authenticate, async (req, res) => {
 });
 
 // Update Service
-// Update Service
 app.put('/api/services/:id', authenticate, async (req, res) => {
     const { role } = req.user;
     const isPrivileged = ['super_admin', 'admin', 'sales', 'finance', 'marketing_manager', 'dev_manager'].includes(role);
@@ -850,20 +923,26 @@ app.patch('/api/clients/:id/assign', authenticate, async (req, res) => {
     const client = await db.get('SELECT * FROM clients WHERE id = ?', id);
     if (!client) return res.status(404).json({ message: 'Client not found' });
 
-    // Check if the user is the head of the respective department
     const isAMHead = role === 'am_head' || role === 'super_admin' || role === 'admin';
     const isMM = (role === 'marketing_manager' && client.marketing_manager_id === userId) || role === 'super_admin' || role === 'admin';
     const isDM = (role === 'dev_manager' && client.dev_manager_id === userId) || role === 'super_admin' || role === 'admin';
 
     try {
-        if (account_manager_id && isAMHead) {
-            await db.run('UPDATE clients SET account_manager_id = ? WHERE id = ?', account_manager_id, id);
-            await createNotification(account_manager_id, `New account assigned: ${client.name}. Please start onboarding.`, 'assignment');
+        // --- FIX: Check against undefined, because "" is falsy and was being ignored! ---
+        if (account_manager_id !== undefined && isAMHead) {
+            const finalAm = account_manager_id === "" ? null : account_manager_id;
+            await db.run('UPDATE clients SET account_manager_id = ? WHERE id = ?', finalAm, id);
+            if (finalAm) {
+                await createNotification(finalAm, `New account assigned: ${client.name}. Please start onboarding.`, 'assignment');
+            }
         }
 
-        if (tl_id && service_type && (isMM || isDM)) {
-            await db.run('UPDATE services SET tl_id = ? WHERE client_id = ? AND type = ?', tl_id, id, service_type);
-            await createNotification(tl_id, `You have been assigned as TL for ${service_type} on client ${client.name}`, 'assignment');
+        if (tl_id !== undefined && service_type && (isMM || isDM)) {
+            const finalTl = tl_id === "" ? null : tl_id;
+            await db.run('UPDATE services SET tl_id = ? WHERE client_id = ? AND type = ?', finalTl, id, service_type);
+            if (finalTl) {
+                await createNotification(finalTl, `You have been assigned as TL for ${service_type} on client ${client.name}`, 'assignment');
+            }
         }
 
         res.json({ success: true });
@@ -902,14 +981,14 @@ app.patch('/api/services/:id/status', authenticate, async (req, res) => {
         const existing = await db.get('SELECT s.*, c.name as client_name FROM services s JOIN clients c ON s.client_id = c.id WHERE s.id = ?', id);
         if (!existing) return res.status(404).json({ message: 'Service not found' });
 
-        // --- FIX: Bidirectionally sync status and status_color on the backend ---
+        // --- FIX: Strictly sync colors and statuses ---
         if (status && !status_color) {
             if (status === 'Active') status_color = 'Green';
-            if (status === 'Pause') status_color = 'Orange';
+            if (status === 'Pause') status_color = 'Yellow';
             if (status === 'Hold') status_color = 'Red';
         } else if (status_color && !status) {
             if (status_color === 'Green') status = 'Active';
-            if (status_color === 'Orange') status = 'Pause';
+            if (status_color === 'Yellow') status = 'Pause';
             if (status_color === 'Red') status = 'Hold';
         }
 
@@ -929,7 +1008,7 @@ app.patch('/api/services/:id/status', authenticate, async (req, res) => {
             );
         }
 
-        res.json({ success: true });
+        res.json({ success: true, status, status_color });
     } catch (err) {
         res.status(500).json({ message: 'Failed to update status' });
     }
@@ -1053,31 +1132,75 @@ app.post('/api/service-types', authenticate, async (req, res) => {
 
 // --- END DYNAMIC SERVICE TYPES BLOCK ---
 
-// Start Profile Routes
+// ==========================================
 // Profile Routes
+// ==========================================
+
+// 1. GET: Fetch latest profile data AND mint a fresh token (Replaces your two old GET routes)
 app.get('/api/profile', authenticate, async (req, res) => {
     const db = await openDb();
     try {
-        // Using SELECT * prevents "no such column" errors if fields like 'phone' or 'location' don't exist
         const user = await db.get('SELECT * FROM users WHERE id = ?', req.user.id);
 
-        if (user) {
-            // Delete the password hash from the object before sending it to the frontend for security
-            delete user.password;
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
         }
 
-        res.json({ user });
+        delete user.password; // Secure the payload
+
+        // Parse permissions securely
+        let permissions = [];
+        try {
+            permissions = user.permissions ? JSON.parse(user.permissions) : [];
+        } catch (e) {
+            permissions = [];
+        }
+        user.permissions = permissions;
+
+        // MINT A FRESH TOKEN WITH THE LATEST DB PERMISSIONS
+        const freshToken = jwt.sign({
+            id: user.id,
+            role: user.role,
+            name: user.name,
+            can_add: user.can_add,
+            can_edit: user.can_edit,
+            can_delete: user.can_delete,
+            permissions: permissions
+        }, process.env.JWT_SECRET || 'supersecretkey', { expiresIn: '8h' });
+
+        res.json({ user, token: freshToken });
     } catch (err) {
         console.error("[API] Profile fetch error:", err.message);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
 
-app.get('/api/profile', authenticate, async (req, res) => {
+// 2. PUT: Update user profile details (KEEP THIS EXACTLY AS YOU HAD IT)
+app.put('/api/profile', authenticate, async (req, res) => {
     const db = await openDb();
-    const user = await db.get('SELECT id, name, email, phone, role, department, location, avatar_url FROM users WHERE id = ?', req.user.id);
-    res.json({ user });
+    const { name, location, avatar_url, password } = req.body;
+
+    try {
+        if (password) {
+            const hashedPassword = bcrypt.hashSync(password, 10);
+            await db.run('UPDATE users SET name = ?, location = ?, avatar_url = ?, password = ? WHERE id = ?',
+                name, location, avatar_url, hashedPassword, req.user.id);
+        } else {
+            await db.run('UPDATE users SET name = ?, location = ?, avatar_url = ? WHERE id = ?',
+                name, location, avatar_url, req.user.id);
+        }
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to update profile' });
+    }
 });
+
+// app.get('/api/profile', authenticate, async (req, res) => {
+//     console.log("2")
+//     const db = await openDb();
+//     const user = await db.get('SELECT id, name, email, phone, role, department, location, avatar_url FROM users WHERE id = ?', req.user.id);
+//     res.json({ user });
+// });
 
 app.put('/api/profile', authenticate, async (req, res) => {
     const db = await openDb();
