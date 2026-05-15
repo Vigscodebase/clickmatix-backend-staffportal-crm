@@ -58,6 +58,7 @@ app.post('/api/login', async (req, res) => {
         return res.status(401).json({ message: 'Invalid credentials' });
     }
 
+    // Parse permissions from DB string to array
     let permissions = [];
     try {
         permissions = user.permissions ? JSON.parse(user.permissions) : [];
@@ -92,6 +93,7 @@ app.post('/api/login', async (req, res) => {
     });
 });
 
+// Helper for Notifications
 const createNotification = async (userIds, message, type = 'info') => {
     const db = await openDb();
     const ids = Array.isArray(userIds) ? userIds : [userIds];
@@ -100,6 +102,7 @@ const createNotification = async (userIds, message, type = 'info') => {
     }
 };
 
+// Notification Routes
 app.get('/api/notifications', authenticate, async (req, res) => {
     const db = await openDb();
     const notifications = await db.all('SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 20', req.user.id);
@@ -121,10 +124,12 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
         const view = req.query.view || 'team';
         const hasFullAccess = ['super_admin', 'admin', 'sales', 'finance', 'am_head'].includes(role) || permissions?.includes('view_all_clients');
 
+        // Auto-correct empty dates so nothing breaks
         await db.run(`UPDATE clients SET onboarding_date = date('now') WHERE onboarding_date = '' OR onboarding_date IS NULL`);
 
         const monthParam = month + '%';
 
+        // Trigger recurring alerts in background
         const triggerNotifications = async () => {
             try {
                 const today = new Date();
@@ -165,11 +170,13 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
         };
         triggerNotifications(); // Fire and forget
 
+        // 1. Fetch Stats
         const stats = {
             totalMRR: 0, oneOffRevenue: 0, activeAccounts: 0, activeServices: 0,
             pendingInvoices: 0, paidInvoices: 0, lostAccounts: 0
         };
 
+        // Base filters for RBAC
         let clientFilter = '';
         let params = [];
 
@@ -191,6 +198,7 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
             clientFilter = `WHERE c.account_manager_id = ?`;
             params = [id];
         } else {
+            // Staff/TLs
             clientFilter = `WHERE EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND s2.tl_id = ?)`;
             params = [id];
         }
@@ -230,7 +238,6 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
             }
         });
 
-        // 2. Service Distribution
         const serviceDistribution = await db.all(`
             SELECT s.type, SUM(s.monthly_fee) as revenue, COUNT(DISTINCT s.client_id) as active_accounts
             FROM services s
@@ -241,7 +248,6 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
             ORDER BY revenue DESC
         `, params);
 
-        // 3. Management Overview (FIXED: Left Join to allow Unassigned accounts to aggregate properly)
         const amTable = await db.all(`
             SELECT COALESCE(u.name, 'Unassigned') as name, 
                    COUNT(DISTINCT c.id) as num_accounts, 
@@ -303,7 +309,10 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
 const isAdmin = (req, res, next) => {
     const { role, permissions } = req.user;
     const isPrivileged = role === 'super_admin' || role === 'admin' || role === 'am_head' || permissions?.includes('manage_staff');
-    if (!isPrivileged) return res.status(403).json({ message: 'Forbidden: Management access required' });
+
+    if (!isPrivileged) {
+        return res.status(403).json({ message: 'Forbidden: Management access required' });
+    }
     next();
 };
 
@@ -368,7 +377,10 @@ app.delete('/api/users/:id', authenticate, isAdmin, async (req, res) => {
     const db = await openDb();
     const { id } = req.params;
 
-    if (parseInt(id) === req.user.id) return res.status(400).json({ message: 'Cannot delete yourself' });
+    if (parseInt(id) === req.user.id) {
+        return res.status(400).json({ message: 'Cannot delete yourself' });
+    }
+
     await db.run('DELETE FROM users WHERE id = ?', id);
     res.json({ success: true });
 });
@@ -385,7 +397,7 @@ app.post('/api/clients', authenticate, async (req, res) => {
     const db = await openDb();
 
     const {
-        name, email, phone, domain, am_id, mm_id, dm_id,
+        name, email, phone, domain, am_id, mm_id, dm_id, am_head_id,
         account_manager_id, marketing_manager_id, dev_manager_id, services,
         agreement_status, invoice_status
     } = req.body;
@@ -401,6 +413,7 @@ app.post('/api/clients', authenticate, async (req, res) => {
     const final_am = parseId(am_id || account_manager_id);
     const final_mm = parseId(mm_id || marketing_manager_id);
     const final_dm = parseId(dm_id || dev_manager_id);
+    const final_am_head = parseId(am_head_id);
     const onboarding_by = req.user.id;
 
     const canApproveFinance = ['super_admin', 'admin', 'finance'].includes(role) || req.user.permissions?.includes('approve_finance');
@@ -417,25 +430,25 @@ app.post('/api/clients', authenticate, async (req, res) => {
 
     try {
         const clientRes = await db.run(`
-            INSERT INTO clients (name, email, phone, domain, account_manager_id, marketing_manager_id, dev_manager_id, onboarding_date, agreement_status, invoice_status, onboarding_by, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `, name, email, phone, domain, final_am, final_mm, final_dm, new Date().toISOString().split('T')[0], final_agreement, final_invoice, onboarding_by, initialStatus);
+            INSERT INTO clients (name, email, phone, domain, account_manager_id, marketing_manager_id, dev_manager_id, am_head_id, onboarding_date, agreement_status, invoice_status, onboarding_by, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, name, email, phone, domain, final_am, final_mm, final_dm, final_am_head, new Date().toISOString().split('T')[0], final_agreement, final_invoice, onboarding_by, initialStatus);
 
         const clientId = clientRes.lastID;
 
         if (services && Array.isArray(services)) {
             for (const svc of services) {
                 const final_tl = parseId(svc.tl_id);
+                // --- FIX: Services attached during client creation now default to Active / Green ---
                 await db.run(`
-                    INSERT INTO services (client_id, type, monthly_fee, ad_spend, tl_id, status)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                `, clientId, svc.type, svc.fee || 0, svc.spend || 0, final_tl, 'Pending');
+                    INSERT INTO services (client_id, type, monthly_fee, ad_spend, tl_id, status, status_color, revenue_type, revenue_month)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                `, clientId, svc.type, svc.fee || 0, svc.spend || 0, final_tl, 'Active', 'Green', svc.revenue_type || 'Recurring', svc.revenue_month || null);
             }
         }
 
         res.status(201).json({ id: clientId, name });
 
-        // Notifications
         if (final_agreement === 'Signed' && final_invoice === 'Paid') {
             const managers = await db.all('SELECT id FROM users WHERE role IN ("super_admin", "admin", "am_head", "sales")');
             const managerIds = managers.map(m => m.id);
@@ -454,7 +467,6 @@ app.post('/api/clients', authenticate, async (req, res) => {
     }
 });
 
-// Project Analysis (Detailed per Service)
 app.get('/api/projects', authenticate, async (req, res) => {
     const db = await openDb();
     const { department, role, id } = req.user;
@@ -504,7 +516,6 @@ app.get('/api/projects', authenticate, async (req, res) => {
     res.json({ projects });
 });
 
-// Get Clients with AM and basic revenue info
 app.get('/api/clients', authenticate, async (req, res) => {
     const db = await openDb();
     const { role, id, permissions } = req.user;
@@ -519,6 +530,7 @@ app.get('/api/clients', authenticate, async (req, res) => {
         LEFT JOIN users u ON c.account_manager_id = u.id
     `;
     let params = [];
+
     const view = req.query.view || 'team';
 
     if (view === 'mine' && hasFullAccess) {
@@ -548,6 +560,7 @@ app.get('/api/clients', authenticate, async (req, res) => {
                 FROM services 
                 WHERE client_id IN (${placeholders}) AND status = 'Active'
             `, clientIds);
+
             clients.forEach(client => {
                 client.services = allServices.filter(s => s.client_id === client.id);
             });
@@ -555,10 +568,10 @@ app.get('/api/clients', authenticate, async (req, res) => {
             clients.forEach(c => c.services = []);
         }
     }
+
     res.json({ clients });
 });
 
-// Get Single Client with Services
 app.get('/api/clients/:id', authenticate, async (req, res) => {
     const { id } = req.params;
     try {
@@ -592,7 +605,6 @@ app.get('/api/clients/:id', authenticate, async (req, res) => {
     }
 });
 
-// Update Client Basic Info
 app.put('/api/clients/:id', authenticate, async (req, res) => {
     const { role } = req.user;
     const isPrivileged = ['super_admin', 'admin', 'sales', 'finance', 'am_head', 'marketing_manager', 'dev_manager'].includes(role);
@@ -656,7 +668,6 @@ app.put('/api/clients/:id', authenticate, async (req, res) => {
     }
 });
 
-// Update Client Finance Status
 app.patch('/api/clients/:id/finance', authenticate, async (req, res) => {
     const { role } = req.user;
     if (role !== 'super_admin' && role !== 'admin' && role !== 'finance') {
@@ -674,7 +685,6 @@ app.patch('/api/clients/:id/finance', authenticate, async (req, res) => {
         const agreementChangedToPending = (updates.agreement_status === 'Pending' || updates.agreement_status === 'Review Required');
         const invoiceChangedToPending = (updates.invoice_status === 'Pending' || updates.invoice_status === 'Review Required');
 
-        // Only clear AM Head, MM, and DM on reverting. Leave Account Manager alone!
         if (agreementChangedToPending || invoiceChangedToPending) {
             updates.marketing_manager_id = null;
             updates.dev_manager_id = null;
