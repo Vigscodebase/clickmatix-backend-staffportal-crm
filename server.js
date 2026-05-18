@@ -41,7 +41,6 @@ const authenticate = (req, res, next) => {
     }
 };
 
-// --- FIX: Safely parse all incoming string IDs to Integers or exact NULLs ---
 const parseId = (id) => {
     if (id === undefined || id === null || id === "" || id === "null") return null;
     const parsed = parseInt(id, 10);
@@ -58,7 +57,6 @@ app.post('/api/login', async (req, res) => {
         return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Parse permissions from DB string to array
     let permissions = [];
     try {
         permissions = user.permissions ? JSON.parse(user.permissions) : [];
@@ -93,12 +91,27 @@ app.post('/api/login', async (req, res) => {
     });
 });
 
-// Helper for Notifications
+const wsClients = new Map();
+
+// Helper for Notifications (Updated to push WebSockets instantly)
 const createNotification = async (userIds, message, type = 'info') => {
     const db = await openDb();
     const ids = Array.isArray(userIds) ? userIds : [userIds];
     for (const id of ids) {
-        if (id) await db.run('INSERT INTO notifications (user_id, message, type) VALUES (?, ?, ?)', id, message, type);
+        if (id) {
+            // 1. Save to Database
+            await db.run('INSERT INTO notifications (user_id, message, type) VALUES (?, ?, ?)', id, message, type);
+
+            // 2. Instantly Push to Connected Client via WebSocket
+            const userSockets = wsClients.get(id);
+            if (userSockets) {
+                for (const ws of userSockets) {
+                    if (ws.readyState === 1) { // 1 = OPEN
+                        ws.send(JSON.stringify({ event: 'new_notification' }));
+                    }
+                }
+            }
+        }
     }
 };
 
@@ -115,7 +128,7 @@ app.patch('/api/notifications/:id/read', authenticate, async (req, res) => {
     res.json({ success: true });
 });
 
-// Dashboard Data Route (Expanded)
+// Dashboard Data Route
 app.get('/api/dashboard', authenticate, async (req, res) => {
     try {
         const db = await openDb();
@@ -124,12 +137,10 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
         const view = req.query.view || 'team';
         const hasFullAccess = ['super_admin', 'admin', 'sales', 'finance', 'am_head'].includes(role) || permissions?.includes('view_all_clients');
 
-        // Auto-correct empty dates so nothing breaks
         await db.run(`UPDATE clients SET onboarding_date = date('now') WHERE onboarding_date = '' OR onboarding_date IS NULL`);
 
         const monthParam = month + '%';
 
-        // Trigger recurring alerts in background
         const triggerNotifications = async () => {
             try {
                 const today = new Date();
@@ -168,9 +179,8 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
                 console.error("Notification trigger failed:", notifyErr);
             }
         };
-        triggerNotifications(); // Fire and forget
+        triggerNotifications();
 
-        // 1. Fetch Stats
         const stats = {
             totalMRR: 0, oneOffRevenue: 0, activeAccounts: 0, activeServices: 0,
             pendingInvoices: 0, paidInvoices: 0, lostAccounts: 0
@@ -181,8 +191,8 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
         let params = [];
 
         if (view === 'mine' && (role === 'am_head' || role === 'marketing_manager' || role === 'dev_manager' || role === 'super_admin' || role === 'admin')) {
-            clientFilter = `WHERE (c.account_manager_id = ? OR c.marketing_manager_id = ? OR c.dev_manager_id = ?)`;
-            params = [id, id, id];
+            clientFilter = `WHERE (c.account_manager_id = ? OR c.marketing_manager_id = ? OR c.dev_manager_id = ? OR c.am_head_id = ?)`;
+            params = [id, id, id, id];
         } else if (hasFullAccess) {
             clientFilter = '';
         } else if (role === 'sales') {
@@ -198,7 +208,6 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
             clientFilter = `WHERE c.account_manager_id = ?`;
             params = [id];
         } else {
-            // Staff/TLs
             clientFilter = `WHERE EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND s2.tl_id = ?)`;
             params = [id];
         }
@@ -258,6 +267,7 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
             ${clientFilter}
             ${joiner} c.status = 'Active'
             GROUP BY c.account_manager_id
+            ${view === 'mine' ? "HAVING COALESCE(u.name, 'Unassigned') != 'Unassigned'" : ""}
             ORDER BY revenue DESC
         `, params);
 
@@ -439,7 +449,6 @@ app.post('/api/clients', authenticate, async (req, res) => {
         if (services && Array.isArray(services)) {
             for (const svc of services) {
                 const final_tl = parseId(svc.tl_id);
-                // --- FIX: Services attached during client creation now default to Active / Green ---
                 await db.run(`
                     INSERT INTO services (client_id, type, monthly_fee, ad_spend, tl_id, status, status_color, revenue_type, revenue_month)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -516,6 +525,9 @@ app.get('/api/projects', authenticate, async (req, res) => {
     res.json({ projects });
 });
 
+
+// -------- FIXES APPLIED BELOW --------
+
 app.get('/api/clients', authenticate, async (req, res) => {
     const db = await openDb();
     const { role, id, permissions } = req.user;
@@ -535,7 +547,8 @@ app.get('/api/clients', authenticate, async (req, res) => {
 
     if (view === 'mine' && hasFullAccess) {
         query += ` WHERE (c.account_manager_id = ? OR c.marketing_manager_id = ? OR c.dev_manager_id = ? OR c.am_head_id = ? OR c.onboarding_by = ?
-                   OR EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND s2.tl_id = ?))`;
+                   OR EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND s2.tl_id = ?))
+                   AND c.account_manager_id IS NOT NULL`; // MERGED FIX 1: Hides Unassigned accounts in My Accounts view
         params = [id, id, id, id, id, id];
     } else if (hasFullAccess) {
         // Full visibility
@@ -546,6 +559,10 @@ app.get('/api/clients', authenticate, async (req, res) => {
         query += ` WHERE (c.account_manager_id = ? OR c.marketing_manager_id = ? OR c.dev_manager_id = ? OR c.am_head_id = ? OR c.onboarding_by = ?
                    OR EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND s2.tl_id = ?))
                    AND (c.agreement_status = 'Signed' AND c.invoice_status = 'Paid')`;
+
+        if (view === 'mine') {
+            query += ` AND c.account_manager_id IS NOT NULL`; // MERGED FIX 1: Hides Unassigned accounts in My Accounts view
+        }
         params = [id, id, id, id, id, id];
     }
 
@@ -555,14 +572,17 @@ app.get('/api/clients', authenticate, async (req, res) => {
         const clientIds = clients.map(c => c.id).filter(id => id != null);
         if (clientIds.length > 0) {
             const placeholders = clientIds.map(() => '?').join(',');
+
+            // MERGED FIX 2: Removed "AND status = 'Active'" to show ALL services on Clients page
             const allServices = await db.all(`
                 SELECT client_id, type 
                 FROM services 
-                WHERE client_id IN (${placeholders}) AND status = 'Active'
+                WHERE client_id IN (${placeholders})
             `, clientIds);
 
             clients.forEach(client => {
-                client.services = allServices.filter(s => s.client_id === client.id);
+                // MERGED FIX 2: Added Number() around IDs to fix string/int mapping issues
+                client.services = allServices.filter(s => Number(s.client_id) === Number(client.id));
             });
         } else {
             clients.forEach(c => c.services = []);
@@ -571,6 +591,9 @@ app.get('/api/clients', authenticate, async (req, res) => {
 
     res.json({ clients });
 });
+
+// -------- FIXES APPLIED ABOVE --------
+
 
 app.get('/api/clients/:id', authenticate, async (req, res) => {
     const { id } = req.params;
@@ -689,6 +712,7 @@ app.patch('/api/clients/:id/finance', authenticate, async (req, res) => {
             updates.marketing_manager_id = null;
             updates.dev_manager_id = null;
             updates.am_head_id = null;
+            updates.account_manager_id = null;
         } else {
             if (updates.marketing_manager_id === "") updates.marketing_manager_id = null;
             if (updates.dev_manager_id === "") updates.dev_manager_id = null;
@@ -1043,7 +1067,48 @@ app.put('/api/profile', authenticate, async (req, res) => {
     }
 })();
 
+// --- WEBSOCKET SERVER INITIALIZATION ---
+// Start the Express HTTP server first, then attach WebSocket to it.
 const PORT = 5000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+});
+
+const { WebSocketServer } = require('ws');
+const wss = new WebSocketServer({ server });
+
+wss.on('connection', (ws, req) => {
+    // 1. Extract the token from the query parameters: ws://localhost:5000?token=xyz
+    const url = new URL(req.url, `http://${req.headers.host}`);
+    const token = url.searchParams.get('token');
+
+    if (!token) {
+        ws.close(1008, 'Token missing');
+        return;
+    }
+
+    try {
+        // 2. Authenticate user
+        const decoded = jwt.verify(token, SECRET_KEY);
+        const userId = decoded.id;
+
+        // 3. Register socket to the user
+        if (!wsClients.has(userId)) {
+            wsClients.set(userId, new Set());
+        }
+        wsClients.get(userId).add(ws);
+
+        // 4. Handle Disconnects securely to prevent memory leaks
+        ws.on('close', () => {
+            const userSockets = wsClients.get(userId);
+            if (userSockets) {
+                userSockets.delete(ws);
+                if (userSockets.size === 0) {
+                    wsClients.delete(userId);
+                }
+            }
+        });
+    } catch (err) {
+        ws.close(1008, 'Invalid token');
+    }
 });
