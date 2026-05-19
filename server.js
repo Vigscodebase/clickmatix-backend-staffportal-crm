@@ -525,9 +525,6 @@ app.get('/api/projects', authenticate, async (req, res) => {
     res.json({ projects });
 });
 
-
-// -------- FIXES APPLIED BELOW --------
-
 app.get('/api/clients', authenticate, async (req, res) => {
     const db = await openDb();
     const { role, id, permissions } = req.user;
@@ -548,7 +545,7 @@ app.get('/api/clients', authenticate, async (req, res) => {
     if (view === 'mine' && hasFullAccess) {
         query += ` WHERE (c.account_manager_id = ? OR c.marketing_manager_id = ? OR c.dev_manager_id = ? OR c.am_head_id = ? OR c.onboarding_by = ?
                    OR EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND s2.tl_id = ?))
-                   AND c.account_manager_id IS NOT NULL`; // MERGED FIX 1: Hides Unassigned accounts in My Accounts view
+                   AND c.account_manager_id IS NOT NULL`;
         params = [id, id, id, id, id, id];
     } else if (hasFullAccess) {
         // Full visibility
@@ -561,7 +558,7 @@ app.get('/api/clients', authenticate, async (req, res) => {
                    AND (c.agreement_status = 'Signed' AND c.invoice_status = 'Paid')`;
 
         if (view === 'mine') {
-            query += ` AND c.account_manager_id IS NOT NULL`; // MERGED FIX 1: Hides Unassigned accounts in My Accounts view
+            query += ` AND c.account_manager_id IS NOT NULL`;
         }
         params = [id, id, id, id, id, id];
     }
@@ -572,8 +569,6 @@ app.get('/api/clients', authenticate, async (req, res) => {
         const clientIds = clients.map(c => c.id).filter(id => id != null);
         if (clientIds.length > 0) {
             const placeholders = clientIds.map(() => '?').join(',');
-
-            // MERGED FIX 2: Removed "AND status = 'Active'" to show ALL services on Clients page
             const allServices = await db.all(`
                 SELECT client_id, type 
                 FROM services 
@@ -581,7 +576,6 @@ app.get('/api/clients', authenticate, async (req, res) => {
             `, clientIds);
 
             clients.forEach(client => {
-                // MERGED FIX 2: Added Number() around IDs to fix string/int mapping issues
                 client.services = allServices.filter(s => Number(s.client_id) === Number(client.id));
             });
         } else {
@@ -591,9 +585,6 @@ app.get('/api/clients', authenticate, async (req, res) => {
 
     res.json({ clients });
 });
-
-// -------- FIXES APPLIED ABOVE --------
-
 
 app.get('/api/clients/:id', authenticate, async (req, res) => {
     const { id } = req.params;
@@ -622,9 +613,57 @@ app.get('/api/clients/:id', authenticate, async (req, res) => {
             WHERE s.client_id = ?
         `, id);
 
-        res.json({ client, services });
+        // Fetch custom WYSIWYG Notes
+        const notes = await db.all(`
+            SELECT n.*, u.name as created_by_name 
+            FROM client_notes n
+            LEFT JOIN users u ON n.created_by = u.id
+            WHERE n.client_id = ?
+            ORDER BY n.created_at DESC
+        `, id);
+
+        res.json({ client, services, notes });
     } catch (err) {
         res.status(500).json({ message: 'Internal server error', error: err.message });
+    }
+});
+
+app.post('/api/clients/:id/notes', authenticate, async (req, res) => {
+    const { role, id: userId } = req.user;
+    if (role !== 'super_admin' && role !== 'admin' && role !== 'am_head') return res.status(403).json({ message: 'Forbidden' });
+
+    const db = await openDb();
+    try {
+        await db.run('INSERT INTO client_notes (client_id, content, created_by, created_at) VALUES (?, ?, ?, datetime("now", "localtime"))', req.params.id, req.body.content, userId);
+        res.status(201).json({ success: true });
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to add note' });
+    }
+});
+
+app.put('/api/notes/:id', authenticate, async (req, res) => {
+    const { role } = req.user;
+    if (role !== 'super_admin' && role !== 'admin' && role !== 'am_head') return res.status(403).json({ message: 'Forbidden' });
+
+    const db = await openDb();
+    try {
+        await db.run('UPDATE client_notes SET content = ? WHERE id = ?', req.body.content, req.params.id);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to update note' });
+    }
+});
+
+app.delete('/api/notes/:id', authenticate, async (req, res) => {
+    const { role } = req.user;
+    if (role !== 'super_admin' && role !== 'admin' && role !== 'am_head') return res.status(403).json({ message: 'Forbidden' });
+
+    const db = await openDb();
+    try {
+        await db.run('DELETE FROM client_notes WHERE id = ?', req.params.id);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to delete note' });
     }
 });
 
@@ -1055,6 +1094,7 @@ app.put('/api/profile', authenticate, async (req, res) => {
                 await db.run("UPDATE users SET created_at = datetime('now') WHERE created_at IS NULL");
             }
         }
+
         const clientsTable = await db.get("SELECT name FROM sqlite_master WHERE type='table' AND name='clients'");
         if (clientsTable) {
             await db.run("UPDATE clients SET onboarding_date = date('now') WHERE onboarding_date = '' OR onboarding_date IS NULL");
@@ -1068,7 +1108,6 @@ app.put('/api/profile', authenticate, async (req, res) => {
 })();
 
 // --- WEBSOCKET SERVER INITIALIZATION ---
-// Start the Express HTTP server first, then attach WebSocket to it.
 const PORT = 5000;
 const server = app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
@@ -1078,7 +1117,6 @@ const { WebSocketServer } = require('ws');
 const wss = new WebSocketServer({ server });
 
 wss.on('connection', (ws, req) => {
-    // 1. Extract the token from the query parameters: ws://localhost:5000?token=xyz
     const url = new URL(req.url, `http://${req.headers.host}`);
     const token = url.searchParams.get('token');
 
@@ -1088,17 +1126,14 @@ wss.on('connection', (ws, req) => {
     }
 
     try {
-        // 2. Authenticate user
         const decoded = jwt.verify(token, SECRET_KEY);
         const userId = decoded.id;
 
-        // 3. Register socket to the user
         if (!wsClients.has(userId)) {
             wsClients.set(userId, new Set());
         }
         wsClients.get(userId).add(ws);
 
-        // 4. Handle Disconnects securely to prevent memory leaks
         ws.on('close', () => {
             const userSockets = wsClients.get(userId);
             if (userSockets) {

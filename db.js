@@ -16,18 +16,20 @@ async function openDb() {
             await db.exec('PRAGMA journal_mode = WAL');
             await db.configure('busyTimeout', 10000);
 
-            // --- THIS IS THE NEW MIGRATION SYSTEM ---
+            // --- THE MIGRATION SYSTEM IS NOW ACTIVE ---
             try {
-                //logToFile('[DB] MIGRATE: Checking for pending migrations...');
+                logToFile('[DB] MIGRATE: Checking for pending migrations...');
+
                 // This command automatically looks inside your "migrations" folder
-                // and runs 001, 002, 003, etc., in order.
-                // await db.migrate({
-                //     migrationsPath: path.join(__dirname, 'migrations')
-                // });
-                //logToFile('[DB] MIGRATE: Database schema is up to date.');
+                // and runs 001, 002, 003, 004, etc., in order.
+                await db.migrate({
+                    migrationsPath: path.join(__dirname, 'migrations')
+                });
+
+                logToFile('[DB] MIGRATE: Database schema is up to date.');
             } catch (migrationError) {
-                //logToFile(`[DB] MIGRATE ERROR: ${migrationError.message}`);
-                //console.error("Migration Error:", migrationError);
+                logToFile(`[DB] MIGRATE ERROR: ${migrationError.message}`);
+                console.error("Migration Error:", migrationError);
             }
             // ----------------------------------------
 
