@@ -542,25 +542,33 @@ app.get('/api/clients', authenticate, async (req, res) => {
 
     const view = req.query.view || 'team';
 
-    if (view === 'mine' && hasFullAccess) {
-        query += ` WHERE (c.account_manager_id = ? OR c.marketing_manager_id = ? OR c.dev_manager_id = ? OR c.am_head_id = ? OR c.onboarding_by = ?
-                   OR EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND s2.tl_id = ?))
-                   AND c.account_manager_id IS NOT NULL`;
-        params = [id, id, id, id, id, id];
-    } else if (hasFullAccess) {
-        // Full visibility
+    // 1. Full Visibility: Only if they have access AND are NOT viewing "mine"
+    if (hasFullAccess && view !== 'mine') {
+        // No WHERE clause, load everything.
     } else if (role === 'sales') {
         query += ` WHERE c.onboarding_by = ?`;
         params = [id];
+    } else if (role === 'account_manager') {
+        // Explicitly restrict AMs from seeing clients they onboarded for others!
+        query += ` WHERE c.account_manager_id = ? AND (c.agreement_status = 'Signed' AND c.invoice_status = 'Paid')`;
+        params = [id];
     } else {
-        query += ` WHERE (c.account_manager_id = ? OR c.marketing_manager_id = ? OR c.dev_manager_id = ? OR c.am_head_id = ? OR c.onboarding_by = ?
-                   OR EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND s2.tl_id = ?))
-                   AND (c.agreement_status = 'Signed' AND c.invoice_status = 'Paid')`;
+        // 2. Personal Visibility: Strictly load currently loaded user ID's client
+        // FIX: Removed 'c.am_head_id = ?' from this block. 
+        // Now, an AM Head won't see other AMs' clients when they switch to "My Accounts"
+        query += ` WHERE (c.account_manager_id = ? OR c.marketing_manager_id = ? OR c.dev_manager_id = ? OR c.onboarding_by = ?
+                   OR EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND s2.tl_id = ?))`;
+        params = [id, id, id, id, id]; // Reduced to 5 params to match the removed condition
 
-        if (view === 'mine') {
-            query += ` AND c.account_manager_id IS NOT NULL`;
+        // If a non-privileged user gets here, strictly limit to Signed/Paid
+        if (!hasFullAccess) {
+            query += ` AND (c.agreement_status = 'Signed' AND c.invoice_status = 'Paid')`;
         }
-        params = [id, id, id, id, id, id];
+
+        // Hide dirty "Unassigned" data from the My Accounts view
+        if (view === 'mine') {
+            query += ` AND c.account_manager_id IS NOT NULL AND c.account_manager_id != '' AND c.account_manager_id != 'null'`;
+        }
     }
 
     const clients = await db.all(query, params);
