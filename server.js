@@ -139,8 +139,7 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
 
         await db.run(`UPDATE clients SET onboarding_date = date('now') WHERE onboarding_date = '' OR onboarding_date IS NULL`);
 
-        const monthParam = month + '%';
-
+        // --- Notifications Trigger ---
         const triggerNotifications = async () => {
             try {
                 const today = new Date();
@@ -148,81 +147,83 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
                 const currentMonthStr = today.toISOString().slice(0, 7);
                 const ldb = await openDb();
 
-                const clientsToNotify = await ldb.all(`
-                    SELECT * FROM clients 
-                    WHERE CAST(recurring_day AS INTEGER) = ?
-                `, [currentDay]);
+                const clientsToNotify = await ldb.all(`SELECT * FROM clients WHERE CAST(recurring_day AS INTEGER) = ?`, [currentDay]);
 
                 for (const c of clientsToNotify) {
                     const alreadyNotified = await ldb.get(`
                         SELECT 1 FROM notifications 
-                        WHERE message LIKE ? 
-                        AND created_at LIKE ? 
-                        LIMIT 1
+                        WHERE message LIKE ? AND created_at LIKE ? LIMIT 1
                     `, [`%Recurring payment review needed for ${c.name}%`, `${currentMonthStr}%`]);
 
                     if (!alreadyNotified) {
                         const managers = await ldb.all('SELECT id FROM users WHERE role IN ("super_admin", "admin", "finance", "am_head")');
-                        const managerIds = managers.map(m => m.id);
-                        if (c.account_manager_id) managerIds.push(c.account_manager_id);
-                        if (c.marketing_manager_id) managerIds.push(c.marketing_manager_id);
-                        if (c.dev_manager_id) managerIds.push(c.dev_manager_id);
-
-                        await createNotification(
-                            [...new Set(managerIds)],
-                            `Recurring payment review needed for ${c.name} (Day ${c.recurring_day})`,
-                            'payment'
-                        );
+                        const managerIds = [...new Set([...managers.map(m => m.id), c.account_manager_id, c.marketing_manager_id, c.dev_manager_id].filter(Boolean))];
+                        await createNotification(managerIds, `Recurring payment review needed for ${c.name} (Day ${c.recurring_day})`, 'payment');
                     }
                 }
-            } catch (notifyErr) {
-                console.error("Notification trigger failed:", notifyErr);
-            }
+            } catch (notifyErr) { console.error("Notification trigger failed:", notifyErr); }
         };
         triggerNotifications();
 
-        const stats = {
-            totalMRR: 0, oneOffRevenue: 0, activeAccounts: 0, activeServices: 0,
-            pendingInvoices: 0, paidInvoices: 0, lostAccounts: 0
-        };
-
-        // Base filters for RBAC
+        // --- Filtering Logic ---
         let clientFilter = '';
         let params = [];
-
-        if (view === 'mine' && (role === 'am_head' || role === 'marketing_manager' || role === 'dev_manager' || role === 'super_admin' || role === 'admin')) {
-            clientFilter = `WHERE (c.account_manager_id = ? OR c.marketing_manager_id = ? OR c.dev_manager_id = ? OR c.am_head_id = ?)`;
-            params = [id, id, id, id];
-        } else if (hasFullAccess) {
-            clientFilter = '';
-        } else if (role === 'sales') {
-            clientFilter = `WHERE c.onboarding_by = ?`;
-            params = [id];
-        } else if (role === 'marketing_manager' || permissions?.includes('marketing_manager')) {
+        console.log(id)
+        console.log(role)
+        if (view === 'mine') {
+            if (role === 'marketing_manager') {
+                // MM: Only see clients where they are the assigned Marketing Manager
+                clientFilter = `WHERE EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND s2.tl_id = ?)`;
+                params = [id];
+            } else if (role === 'dev_manager') {
+                // DM: Only see clients where they are the assigned Dev  Manager
+                clientFilter = `WHERE EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND s2.tl_id = ?)`;
+                params = [id];
+            } else if (role === 'am_head') {
+                clientFilter = `WHERE c.account_manager_id = ?`;
+                params = [id];
+            } else if (role === 'sales') {
+                clientFilter = `WHERE c.onboarding_by = ?`;
+                params = [id];
+            }
+        } else if (view === 'team' && role === 'marketing_manager') {
             clientFilter = `WHERE c.marketing_manager_id = ?`;
             params = [id];
-        } else if (role === 'dev_manager' || permissions?.includes('dev_manager')) {
+        }
+        else if (view === 'team' && role === 'dev_manager') {
             clientFilter = `WHERE c.dev_manager_id = ?`;
             params = [id];
-        } else if (role === 'account_manager' || permissions?.includes('account_manager')) {
+        }
+        else if (view === 'team' && role === 'am_head') {
+            clientFilter = `WHERE c.am_head_id = ?`;
+            params = [id];
+        }
+        else if (view === 'team' && role === 'account_manager') {
             clientFilter = `WHERE c.account_manager_id = ?`;
             params = [id];
         } else {
-            clientFilter = `WHERE EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND s2.tl_id = ?)`;
-            params = [id];
+            // Team View: DO NOT TOUCH - Left exactly as it was
+            clientFilter = hasFullAccess ? '' : `WHERE EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND s2.tl_id = ?)`;
+            params = hasFullAccess ? [] : [id];
         }
 
-        const privilegedRoles = ['super_admin', 'admin', 'finance', 'sales', 'am_head', 'marketing_manager', 'dev_manager', 'am_manager'];
+        const privilegedRoles = ['super_admin', 'admin', 'finance', 'sales'];
         if (!privilegedRoles.includes(role) && !permissions?.includes('view_all_clients')) {
             clientFilter += (clientFilter ? ' AND ' : ' WHERE ') + "c.agreement_status = 'Signed' AND c.invoice_status = 'Paid'";
         }
 
         const joiner = clientFilter ? ' AND ' : ' WHERE ';
 
+        // --- Statistics Calculations ---
+        const stats = { totalMRR: 0, oneOffRevenue: 0, activeAccounts: 0, activeServices: 0, pendingInvoices: 0, paidInvoices: 0, lostAccounts: 0 };
         const mrrRes = await db.get(`SELECT COALESCE(SUM(s.monthly_fee), 0) as total FROM services s JOIN clients c ON s.client_id = c.id ${clientFilter} ${joiner} s.revenue_type = 'Recurring' AND s.status = 'Active'`, params);
         stats.totalMRR = mrrRes?.total || 0;
 
-        const lostRes = await db.get(`SELECT COUNT(DISTINCT c.id) as total FROM clients c ${clientFilter} ${joiner} (EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND (s2.status_color = 'Red' OR s2.status IN ('Hold', 'Pause'))))`, params);
+        const isGlobalViewer = ['super_admin', 'admin', 'sales', 'finance', 'am_head'].includes(role) || permissions?.includes('view_all_clients');
+        const lostQuery = isGlobalViewer
+            ? `SELECT COUNT(DISTINCT c.id) as total FROM clients c WHERE EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND (s2.status_color = 'Red' OR s2.status IN ('Hold', 'Pause')))`
+            : `SELECT COUNT(DISTINCT c.id) as total FROM clients c ${clientFilter} ${joiner} (EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND (s2.status_color = 'Red' OR s2.status IN ('Hold', 'Pause'))))`;
+        const lostRes = await db.get(lostQuery, isGlobalViewer ? [] : params);
         stats.lostAccounts = lostRes?.total || 0;
 
         const accCount = await db.get(`SELECT COUNT(DISTINCT c.id) as count FROM clients c ${clientFilter} ${joiner} c.status = 'Active'`, params);
@@ -231,85 +232,24 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
         const svcCount = await db.get(`SELECT COUNT(*) as count FROM services s JOIN clients c ON s.client_id = c.id ${clientFilter} ${joiner} s.status = 'Active'`, params);
         stats.activeServices = svcCount?.count || 0;
 
-        const oneOffRes = await db.get(`SELECT COALESCE(SUM(s.monthly_fee), 0) as total FROM services s JOIN clients c ON s.client_id = c.id ${clientFilter} ${joiner} s.revenue_type = 'One-off' AND s.revenue_month LIKE ?`, [...params, monthParam]);
+        const oneOffRes = await db.get(`SELECT COALESCE(SUM(s.monthly_fee), 0) as total FROM services s JOIN clients c ON s.client_id = c.id ${clientFilter} ${joiner} s.revenue_type = 'One-off' AND s.revenue_month LIKE ?`, [...params, month + '%']);
         stats.oneOffRevenue = oneOffRes?.total || 0;
 
-        const invoiceRes = await db.all(`SELECT i.status, COALESCE(SUM(i.amount), 0) as total, COUNT(*) as count FROM invoices i JOIN clients c ON i.client_id = c.id ${clientFilter} ${joiner} i.month LIKE ? GROUP BY i.status`, [...params, monthParam]);
-
-        stats.paidInvoices = 0; stats.pendingInvoices = 0; stats.numPaidInvoices = 0; stats.numPendingInvoices = 0;
+        const invoiceRes = await db.all(`SELECT i.status, COALESCE(SUM(i.amount), 0) as total, COUNT(*) as count FROM invoices i JOIN clients c ON i.client_id = c.id ${clientFilter} ${joiner} i.month LIKE ? GROUP BY i.status`, [...params, month + '%']);
         invoiceRes.forEach(r => {
-            if (r.status === 'Paid') {
-                stats.paidInvoices = r.total;
-                stats.numPaidInvoices = r.count;
-            } else if (r.status === 'Pending') {
-                stats.pendingInvoices = r.total;
-                stats.numPendingInvoices = r.count;
-            }
+            if (r.status === 'Paid') { stats.paidInvoices = r.total; stats.numPaidInvoices = r.count; }
+            else if (r.status === 'Pending') { stats.pendingInvoices = r.total; stats.numPendingInvoices = r.count; }
         });
 
-        const serviceDistribution = await db.all(`
-            SELECT s.type, SUM(s.monthly_fee) as revenue, COUNT(DISTINCT s.client_id) as active_accounts
-            FROM services s
-            JOIN clients c ON s.client_id = c.id
-            ${clientFilter}
-            ${joiner} s.status = 'Active'
-            GROUP BY s.type
-            ORDER BY revenue DESC
-        `, params);
+        // --- Lists (View-Aware) ---
+        const serviceDistribution = await db.all(`SELECT s.type, SUM(s.monthly_fee) as revenue, COUNT(DISTINCT s.client_id) as active_accounts FROM services s JOIN clients c ON s.client_id = c.id ${clientFilter} ${joiner} s.status = 'Active' GROUP BY s.type ORDER BY revenue DESC`, params);
+        const amTable = await db.all(`SELECT COALESCE(u.name, 'Unassigned') as name, COUNT(DISTINCT c.id) as num_accounts, COALESCE(SUM(s.monthly_fee), 0) as revenue FROM clients c LEFT JOIN users u ON c.account_manager_id = u.id LEFT JOIN services s ON s.client_id = c.id AND s.status = 'Active' ${clientFilter} ${joiner} c.status = 'Active' GROUP BY c.account_manager_id ${view === 'mine' ? "HAVING COALESCE(u.name, 'Unassigned') != 'Unassigned'" : ""} ORDER BY revenue DESC`, params);
 
-        const amTable = await db.all(`
-            SELECT COALESCE(u.name, 'Unassigned') as name, 
-                   COUNT(DISTINCT c.id) as num_accounts, 
-                   COALESCE(SUM(s.monthly_fee), 0) as revenue
-            FROM clients c
-            LEFT JOIN users u ON c.account_manager_id = u.id
-            LEFT JOIN services s ON s.client_id = c.id AND s.status = 'Active'
-            ${clientFilter}
-            ${joiner} c.status = 'Active'
-            GROUP BY c.account_manager_id
-            ${view === 'mine' ? "HAVING COALESCE(u.name, 'Unassigned') != 'Unassigned'" : ""}
-            ORDER BY revenue DESC
-        `, params);
+        const pendingReviewClients = await db.all(`SELECT id, name, agreement_status, invoice_status, onboarding_date FROM clients c ${clientFilter} ${clientFilter ? 'AND' : 'WHERE'} (agreement_status != 'Signed' OR invoice_status != 'Paid') ORDER BY onboarding_date DESC LIMIT 10`, params);
+        const pendingAssignmentClients = await db.all(`SELECT id, name, marketing_manager_id, dev_manager_id, am_head_id, account_manager_id FROM clients c ${clientFilter} ${clientFilter ? 'AND' : 'WHERE'} c.status = 'Active' AND (account_manager_id IS NULL OR marketing_manager_id IS NULL OR dev_manager_id IS NULL OR EXISTS (SELECT 1 FROM services s WHERE s.client_id = c.id AND s.tl_id IS NULL AND s.status = 'Active')) LIMIT 10`, params);
+        const pendingOnboardingClients = await db.all(`SELECT id, name, onboarding_date, onboarding_pdf_url FROM clients c ${clientFilter} ${clientFilter ? 'AND' : 'WHERE'} c.account_manager_id = ? AND (onboarding_pdf_url IS NULL OR onboarding_pdf_url = '') LIMIT 10`, [...params, id]);
 
-        let pendingReviewClients = [];
-        let pendingAssignmentClients = [];
-        let pendingOnboardingClients = [];
-
-        let pendingQuery = `SELECT id, name, agreement_status, invoice_status, onboarding_date FROM clients c WHERE (agreement_status != 'Signed' OR invoice_status != 'Paid')`;
-        let pendingParams = [];
-        if (role === 'sales') {
-            pendingQuery += ` AND c.onboarding_by = ?`;
-            pendingParams.push(id);
-        }
-        pendingQuery += ` ORDER BY onboarding_date DESC LIMIT 10`;
-        pendingReviewClients = await db.all(pendingQuery, pendingParams);
-
-        if (hasFullAccess || role === 'marketing_manager' || role === 'dev_manager') {
-            pendingAssignmentClients = await db.all(`
-                SELECT id, name, marketing_manager_id, dev_manager_id, am_head_id, account_manager_id 
-                FROM clients 
-                WHERE agreement_status = 'Signed' AND invoice_status = 'Paid'
-                AND (account_manager_id IS NULL OR EXISTS (SELECT 1 FROM services s WHERE s.client_id = clients.id AND s.tl_id IS NULL))
-                LIMIT 10
-            `);
-        }
-
-        pendingOnboardingClients = await db.all(`
-            SELECT id, name, onboarding_date, onboarding_pdf_url 
-            FROM clients 
-            WHERE account_manager_id = ? 
-            AND (onboarding_pdf_url IS NULL OR onboarding_pdf_url = '')
-            LIMIT 10
-        `, [id]);
-
-        res.json({
-            stats,
-            serviceDistribution,
-            accountManagers: amTable,
-            pendingReviewClients,
-            pendingAssignmentClients,
-            pendingOnboardingClients
-        });
+        res.json({ stats, serviceDistribution, accountManagers: amTable, pendingReviewClients, pendingAssignmentClients, pendingOnboardingClients });
     } catch (err) {
         console.error("Dashboard error:", err);
         res.status(500).json({ message: 'Failed to fetch dashboard data', error: err.message });
@@ -380,6 +320,11 @@ app.put('/api/users/:id', authenticate, isAdmin, async (req, res) => {
             name, email, role, department, can_add || 0, can_edit || 0, can_delete || 0, permissions || '[]', id
         );
     }
+
+    if (parseInt(id) !== req.user.id) {
+        await createNotification(parseInt(id), `Your profile and permissions were updated by an administrator.`, 'info');
+    }
+
     res.json({ success: true });
 });
 
@@ -542,30 +487,22 @@ app.get('/api/clients', authenticate, async (req, res) => {
 
     const view = req.query.view || 'team';
 
-    // 1. Full Visibility: Only if they have access AND are NOT viewing "mine"
     if (hasFullAccess && view !== 'mine') {
         // No WHERE clause, load everything.
     } else if (role === 'sales') {
         query += ` WHERE c.onboarding_by = ?`;
         params = [id];
     } else if (role === 'account_manager') {
-        // Explicitly restrict AMs from seeing clients they onboarded for others!
         query += ` WHERE c.account_manager_id = ? AND (c.agreement_status = 'Signed' AND c.invoice_status = 'Paid')`;
         params = [id];
     } else {
-        // 2. Personal Visibility: Strictly load currently loaded user ID's client
-        // FIX: Removed 'c.am_head_id = ?' from this block. 
-        // Now, an AM Head won't see other AMs' clients when they switch to "My Accounts"
         query += ` WHERE (c.account_manager_id = ? OR c.marketing_manager_id = ? OR c.dev_manager_id = ? OR c.onboarding_by = ?
                    OR EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND s2.tl_id = ?))`;
-        params = [id, id, id, id, id]; // Reduced to 5 params to match the removed condition
+        params = [id, id, id, id, id];
 
-        // If a non-privileged user gets here, strictly limit to Signed/Paid
         if (!hasFullAccess) {
             query += ` AND (c.agreement_status = 'Signed' AND c.invoice_status = 'Paid')`;
         }
-
-        // Hide dirty "Unassigned" data from the My Accounts view
         if (view === 'mine') {
             query += ` AND c.account_manager_id IS NOT NULL AND c.account_manager_id != '' AND c.account_manager_id != 'null'`;
         }
@@ -643,6 +580,15 @@ app.post('/api/clients/:id/notes', authenticate, async (req, res) => {
     const db = await openDb();
     try {
         await db.run('INSERT INTO client_notes (client_id, content, created_by, created_at) VALUES (?, ?, ?, datetime("now", "localtime"))', req.params.id, req.body.content, userId);
+
+        const client = await db.get('SELECT name, account_manager_id, am_head_id FROM clients WHERE id = ?', req.params.id);
+        if (client) {
+            const notifyIds = [client.account_manager_id, client.am_head_id].filter(i => i && i != userId);
+            if (notifyIds.length > 0) {
+                await createNotification([...new Set(notifyIds)], `A new note was added to ${client.name} by ${req.user.name}.`, 'info');
+            }
+        }
+
         res.status(201).json({ success: true });
     } catch (err) {
         res.status(500).json({ message: 'Failed to add note' });
@@ -650,12 +596,22 @@ app.post('/api/clients/:id/notes', authenticate, async (req, res) => {
 });
 
 app.put('/api/notes/:id', authenticate, async (req, res) => {
-    const { role } = req.user;
+    const { role, id: userId } = req.user;
     if (role !== 'super_admin' && role !== 'admin' && role !== 'am_head') return res.status(403).json({ message: 'Forbidden' });
 
     const db = await openDb();
     try {
+        const existingNote = await db.get('SELECT n.client_id, c.name, c.account_manager_id, c.am_head_id FROM client_notes n JOIN clients c ON n.client_id = c.id WHERE n.id = ?', req.params.id);
+
         await db.run('UPDATE client_notes SET content = ? WHERE id = ?', req.body.content, req.params.id);
+
+        if (existingNote) {
+            const notifyIds = [existingNote.account_manager_id, existingNote.am_head_id].filter(i => i && i != userId);
+            if (notifyIds.length > 0) {
+                await createNotification([...new Set(notifyIds)], `A note for ${existingNote.name} was updated by ${req.user.name}.`, 'info');
+            }
+        }
+
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ message: 'Failed to update note' });
@@ -663,12 +619,22 @@ app.put('/api/notes/:id', authenticate, async (req, res) => {
 });
 
 app.delete('/api/notes/:id', authenticate, async (req, res) => {
-    const { role } = req.user;
+    const { role, id: userId } = req.user;
     if (role !== 'super_admin' && role !== 'admin' && role !== 'am_head') return res.status(403).json({ message: 'Forbidden' });
 
     const db = await openDb();
     try {
+        const existingNote = await db.get('SELECT n.client_id, c.name, c.account_manager_id, c.am_head_id FROM client_notes n JOIN clients c ON n.client_id = c.id WHERE n.id = ?', req.params.id);
+
         await db.run('DELETE FROM client_notes WHERE id = ?', req.params.id);
+
+        if (existingNote) {
+            const notifyIds = [existingNote.account_manager_id, existingNote.am_head_id].filter(i => i && i != userId);
+            if (notifyIds.length > 0) {
+                await createNotification([...new Set(notifyIds)], `A note for ${existingNote.name} was deleted by ${req.user.name}.`, 'warning');
+            }
+        }
+
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ message: 'Failed to delete note' });
@@ -722,18 +688,47 @@ app.put('/api/clients/:id', authenticate, async (req, res) => {
             WHERE id = ?
         `, name, email, phone, domain, final_am, final_mm, final_dm, final_am_head, status, id);
 
-        if (final_am && final_am !== existing.account_manager_id) {
-            await createNotification(final_am, `You have been assigned as the Account Manager for ${name || existing.name}`, 'info');
-        }
-        if (final_mm && final_mm !== existing.marketing_manager_id) {
-            await createNotification(final_mm, `You have been assigned as the Marketing Manager for ${name || existing.name}`, 'info');
-        }
-        if (final_dm && final_dm !== existing.dev_manager_id) {
-            await createNotification(final_dm, `You have been assigned as the Dev Manager for ${name || existing.name}`, 'info');
+        // 1. Specific Assignment/Removal Notifications
+        let specificNotified = new Set();
+        const clientName = name || existing.name;
+
+        const notifyAssignmentChange = async (roleName, finalId, existingId) => {
+            if (finalId !== existingId) {
+                if (finalId) {
+                    await createNotification(finalId, `You have been assigned as the ${roleName} for ${clientName}`, 'info');
+                    specificNotified.add(finalId);
+                }
+                if (existingId) {
+                    await createNotification(existingId, `You have been removed as the ${roleName} for ${clientName}`, 'warning');
+                    specificNotified.add(existingId);
+                }
+            }
+        };
+
+        await notifyAssignmentChange('Account Manager', final_am, existing.account_manager_id);
+        await notifyAssignmentChange('Marketing Manager', final_mm, existing.marketing_manager_id);
+        await notifyAssignmentChange('Dev Manager', final_dm, existing.dev_manager_id);
+        await notifyAssignmentChange('AM Head', final_am_head, existing.am_head_id);
+
+        // 2. Fetch Global Role IDs for General Update Notification
+        const privilegedRoles = ["super_admin", "admin", "sales", "finance", "am_head"];
+        const privilegedUsers = await db.all(`SELECT id FROM users WHERE role IN (${privilegedRoles.map(r => `'${r}'`).join(',')})`);
+        const privilegedIds = privilegedUsers.map(u => u.id);
+
+        // 3. Combine with current stakeholders
+        const stakeholderIds = [existing.account_manager_id, existing.marketing_manager_id, existing.dev_manager_id, existing.am_head_id, final_am, final_mm, final_dm, final_am_head];
+
+        // 4. Merge, Unique, and exclude current user + already specifically notified users
+        const notifyIds = [...new Set([...privilegedIds, ...stakeholderIds])]
+            .filter(i => i && i != req.user.id && !specificNotified.has(i));
+
+        if (notifyIds.length > 0) {
+            await createNotification(notifyIds, `Client details for ${clientName} have been updated.`, 'info');
         }
 
         res.json({ success: true });
     } catch (err) {
+        logToFile(`[API] CLIENT UPDATE ERROR: ${err.message}`);
         res.status(500).json({ message: 'Failed to update client', error: err.message });
     }
 });
@@ -755,12 +750,32 @@ app.patch('/api/clients/:id/finance', authenticate, async (req, res) => {
         const agreementChangedToPending = (updates.agreement_status === 'Pending' || updates.agreement_status === 'Review Required');
         const invoiceChangedToPending = (updates.invoice_status === 'Pending' || updates.invoice_status === 'Review Required');
 
+        // Helper to notify assignments/removals
+        const notifyRoleChange = async (roleName, newId, oldId) => {
+            if (newId !== oldId) {
+                if (newId) await createNotification(newId, `You have been assigned as the ${roleName} for ${client.name}.`, 'info');
+                if (oldId) await createNotification(oldId, `You have been removed as the ${roleName} for ${client.name}.`, 'warning');
+            }
+        };
+
         if (agreementChangedToPending || invoiceChangedToPending) {
+            // Notify removals because Finance is stripping roles
+            await notifyRoleChange('Marketing Manager', null, client.marketing_manager_id);
+            await notifyRoleChange('Dev Manager', null, client.dev_manager_id);
+            await notifyRoleChange('AM Head', null, client.am_head_id);
+            await notifyRoleChange('Account Manager', null, client.account_manager_id);
+
             updates.marketing_manager_id = null;
             updates.dev_manager_id = null;
             updates.am_head_id = null;
             updates.account_manager_id = null;
         } else {
+            // Notify assignments/removals for explicit changes
+            await notifyRoleChange('Marketing Manager', updates.marketing_manager_id, client.marketing_manager_id);
+            await notifyRoleChange('Dev Manager', updates.dev_manager_id, client.dev_manager_id);
+            await notifyRoleChange('AM Head', updates.am_head_id, client.am_head_id);
+            await notifyRoleChange('Account Manager', updates.account_manager_id, client.account_manager_id);
+
             if (updates.marketing_manager_id === "") updates.marketing_manager_id = null;
             if (updates.dev_manager_id === "") updates.dev_manager_id = null;
             if (updates.am_head_id === "") updates.am_head_id = null;
@@ -786,30 +801,25 @@ app.patch('/api/clients/:id/finance', authenticate, async (req, res) => {
             await db.run(`UPDATE clients SET ${setClauses.join(', ')} WHERE id = ?`, params);
         }
 
+        // --- GENERAL FINANCE NOTIFICATIONS ---
         const agreementChanged = updates.agreement_status !== undefined && updates.agreement_status !== client.agreement_status;
         const invoiceChanged = updates.invoice_status !== undefined && updates.invoice_status !== client.invoice_status;
 
         if (agreementChanged || invoiceChanged) {
-            const salesUsers = await db.all('SELECT id FROM users WHERE role = "sales"');
-            const salesIds = salesUsers.map(u => u.id);
+            const notifyUsers = await db.all('SELECT id FROM users WHERE role IN ("sales", "super_admin", "admin", "am_head")');
+            const notifyIds = notifyUsers.map(u => u.id);
+
+            if (client.account_manager_id) notifyIds.push(client.account_manager_id);
+
+            const uniqueNotifyIds = [...new Set(notifyIds)].filter(userId => userId !== req.user.id);
 
             let changeMsgs = [];
             if (agreementChanged) changeMsgs.push(`Agreement: ${updates.agreement_status}`);
             if (invoiceChanged) changeMsgs.push(`Invoice: ${updates.invoice_status}`);
 
-            if (salesIds.length > 0) {
-                await createNotification(salesIds, `Finance status updated for ${client.name} -> ${changeMsgs.join(' | ')}`, 'info');
+            if (uniqueNotifyIds.length > 0) {
+                await createNotification(uniqueNotifyIds, `Finance status updated for ${client.name} -> ${changeMsgs.join(' | ')}`, 'info');
             }
-        }
-
-        if (updates.agreement_status === 'Signed' || updates.invoice_status === 'Paid') {
-            const managers = await db.all('SELECT id FROM users WHERE role IN ("super_admin", "admin", "am_head", "sales")');
-            const managerIds = managers.map(m => m.id);
-            if (client.marketing_manager_id) managerIds.push(client.marketing_manager_id);
-            if (client.dev_manager_id) managerIds.push(client.dev_manager_id);
-            if (client.am_head_id) managerIds.push(client.am_head_id);
-
-            await createNotification([...new Set(managerIds)], `Client ${client.name} has been updated/verified by Finance.`, 'approval');
         }
 
         res.json({ success: true });
@@ -854,9 +864,17 @@ app.post('/api/services', authenticate, async (req, res) => {
 
         const serviceId = result.lastID;
 
+        const clientForSvc = await db.get('SELECT name, account_manager_id, am_head_id FROM clients WHERE id = ?', client_id);
+
         if (final_tl) {
-            const client = await db.get('SELECT name FROM clients WHERE id = ?', client_id);
-            await createNotification(final_tl, `You have been assigned as the Team Lead for ${type} service for ${client?.name || 'a client'}`, 'info');
+            await createNotification(final_tl, `You have been assigned as the Team Lead for ${type} service for ${clientForSvc?.name || 'a client'}`, 'info');
+        }
+
+        if (clientForSvc) {
+            const amIds = [clientForSvc.account_manager_id, clientForSvc.am_head_id].filter(i => i && i != req.user.id && i !== final_tl);
+            if (amIds.length > 0) {
+                await createNotification([...new Set(amIds)], `A new ${type} service was added to ${clientForSvc.name}.`, 'info');
+            }
         }
 
         res.status(201).json({ id: serviceId });
@@ -888,15 +906,39 @@ app.put('/api/services/:id', authenticate, async (req, res) => {
         const existing = await db.get('SELECT * FROM services WHERE id = ?', id);
         if (!existing) return res.status(404).json({ message: 'Service not found' });
 
+        const clientForUpd = await db.get('SELECT name, account_manager_id, am_head_id FROM clients WHERE id = ?', existing.client_id);
+
         await db.run(`
             UPDATE services 
             SET type = ?, monthly_fee = ?, ad_spend = ?, tl_id = ?, status = ?, status_color = ?, revenue_type = ?, revenue_month = ?
             WHERE id = ?
         `, type, monthly_fee || 0, ad_spend || 0, final_tl, status, status_color, revenue_type, revenue_month, id);
 
-        if (final_tl && final_tl !== existing.tl_id) {
-            const client = await db.get('SELECT name FROM clients WHERE id = ?', existing.client_id);
-            await createNotification(final_tl, `You have been assigned as the Team Lead for ${type || existing.type} service for ${client?.name || 'a client'}`, 'info');
+        // --- TL Assignment and Removal Notifications ---
+        if (final_tl !== existing.tl_id) {
+            if (final_tl) {
+                await createNotification(final_tl, `You have been assigned as the Team Lead for ${type || existing.type} service for ${clientForUpd?.name || 'a client'}`, 'info');
+            }
+            if (existing.tl_id) {
+                await createNotification(existing.tl_id, `You have been removed as the Team Lead for ${type || existing.type} service for ${clientForUpd?.name || 'a client'}`, 'warning');
+            }
+        }
+
+        // --- NEW: Notify Privileged Roles + Client Managers ---
+        // 1. Get all IDs for the requested roles
+        const privilegedUsers = await db.all('SELECT id FROM users WHERE role IN ("super_admin", "admin", "sales", "finance", "am_head")');
+        const privilegedIds = privilegedUsers.map(u => u.id);
+
+        // 2. Combine with client-specific stakeholders
+        const allCandidates = [...privilegedIds, clientForUpd?.account_manager_id, clientForUpd?.am_head_id];
+
+        // 3. Filter: Remove current user and avoid double-notifying the TL (who is handled above)
+        const finalNotifyIds = [...new Set(allCandidates)].filter(i =>
+            i && i != req.user.id && i !== final_tl && i !== existing.tl_id
+        );
+
+        if (finalNotifyIds.length > 0) {
+            await createNotification(finalNotifyIds, `Service details for ${type || existing.type} (${clientForUpd?.name || 'Client'}) have been updated.`, 'info');
         }
 
         res.json({ success: true });
@@ -922,16 +964,31 @@ app.patch('/api/clients/:id/assign', authenticate, async (req, res) => {
         if (account_manager_id !== undefined && isAMHead) {
             const finalAm = parseId(account_manager_id);
             await db.run('UPDATE clients SET account_manager_id = ? WHERE id = ?', finalAm, id);
-            if (finalAm) {
-                await createNotification(finalAm, `New account assigned: ${client.name}. Please start onboarding.`, 'assignment');
+
+            // --- NEW: Specific Removal on Patch ---
+            if (finalAm !== client.account_manager_id) {
+                if (finalAm) {
+                    await createNotification(finalAm, `New account assigned: ${client.name}. Please start onboarding.`, 'assignment');
+                }
+                if (client.account_manager_id) {
+                    await createNotification(client.account_manager_id, `You have been removed as the Account Manager for ${client.name}.`, 'warning');
+                }
             }
         }
 
         if (tl_id !== undefined && service_type && (isMM || isDM)) {
             const finalTl = parseId(tl_id);
+            const existingService = await db.get('SELECT tl_id FROM services WHERE client_id = ? AND type = ?', id, service_type);
             await db.run('UPDATE services SET tl_id = ? WHERE client_id = ? AND type = ?', finalTl, id, service_type);
-            if (finalTl) {
-                await createNotification(finalTl, `You have been assigned as TL for ${service_type} on client ${client.name}`, 'assignment');
+
+            // --- NEW: Specific TL Removal on Patch ---
+            if (existingService && finalTl !== existingService.tl_id) {
+                if (finalTl) {
+                    await createNotification(finalTl, `You have been assigned as TL for ${service_type} on client ${client.name}`, 'assignment');
+                }
+                if (existingService.tl_id) {
+                    await createNotification(existingService.tl_id, `You have been removed as TL for ${service_type} on client ${client.name}`, 'warning');
+                }
             }
         }
 
@@ -950,9 +1007,26 @@ app.patch('/api/clients/:id/onboarding', authenticate, async (req, res) => {
         await db.run('UPDATE clients SET onboarding_date = ?, onboarding_pdf_url = ? WHERE id = ?',
             onboarding_date, onboarding_pdf_url, id);
 
-        const client = await db.get('SELECT name FROM clients WHERE id = ?', id);
-        const managers = await db.all('SELECT id FROM users WHERE role IN ("super_admin", "admin", "am_head", "finance")');
-        await createNotification(managers.map(m => m.id), `Onboarding completed for ${client.name} on ${onboarding_date}`, 'onboarding');
+        // Fetch client details including the assigned Account Manager
+        const client = await db.get('SELECT name, account_manager_id FROM clients WHERE id = ?', id);
+
+        // Fetch all users with the required roles
+        const targetUsers = await db.all('SELECT id FROM users WHERE role IN ("super_admin", "admin", "am_head", "account_manager", "finance")');
+
+        // Create an array of all IDs to notify
+        let notifyIds = targetUsers.map(m => m.id);
+
+        // Ensure the client's assigned account manager is in the list
+        if (client.account_manager_id) {
+            notifyIds.push(client.account_manager_id);
+        }
+
+        // Remove duplicates and exclude the user who triggered the update
+        const uniqueNotifyIds = [...new Set(notifyIds)].filter(userId => userId != req.user.id);
+
+        if (uniqueNotifyIds.length > 0) {
+            await createNotification(uniqueNotifyIds, `Onboarding completed for ${client.name} on ${onboarding_date}`, 'onboarding');
+        }
 
         res.json({ success: true });
     } catch (err) {
@@ -966,7 +1040,7 @@ app.patch('/api/services/:id/status', authenticate, async (req, res) => {
     let { status, status_color } = req.body;
 
     try {
-        const existing = await db.get('SELECT s.*, c.name as client_name FROM services s JOIN clients c ON s.client_id = c.id WHERE s.id = ?', id);
+        const existing = await db.get('SELECT s.*, c.name as client_name, c.account_manager_id, c.am_head_id FROM services s JOIN clients c ON s.client_id = c.id WHERE s.id = ?', id);
         if (!existing) return res.status(404).json({ message: 'Service not found' });
 
         if (status && !status_color) {
@@ -982,16 +1056,34 @@ app.patch('/api/services/:id/status', authenticate, async (req, res) => {
         if (status) await db.run('UPDATE services SET status = ? WHERE id = ?', status, id);
         if (status_color) await db.run('UPDATE services SET status_color = ? WHERE id = ?', status_color, id);
 
-        if ((status && ['Pause', 'Hold'].includes(status)) || (status_color && status_color === 'Red')) {
-            const managers = await db.all('SELECT id FROM users WHERE role IN ("super_admin", "admin", "am_head")');
-            const managerIds = managers.map(m => m.id);
-            if (existing.tl_id) managerIds.push(existing.tl_id);
+        // 1. Get IDs of all users with the requested privileged roles
+        const privilegedUsers = await db.all('SELECT id FROM users WHERE role IN ("super_admin", "admin", "sales", "finance", "am_head")');
+        const privilegedIds = privilegedUsers.map(u => u.id);
 
-            await createNotification([...new Set(managerIds)], `Critical status update for ${existing.client_name}: ${existing.type} is now ${status || existing.status} (${status_color || existing.status_color})`, 'warning');
+        // 2. Combine with client-specific stakeholders (TL, AM, AM Head)
+        const allCandidates = [
+            ...privilegedIds,
+            existing.account_manager_id,
+            existing.am_head_id,
+            existing.tl_id
+        ];
+
+        // 3. Deduplicate and remove the user performing the action
+        const finalNotifyIds = [...new Set(allCandidates)].filter(i => i && i != req.user.id);
+
+        const isCritical = (status && ['Pause', 'Hold'].includes(status)) || (status_color && status_color === 'Red');
+
+        if (finalNotifyIds.length > 0) {
+            await createNotification(
+                finalNotifyIds,
+                `Status update for ${existing.client_name}: ${existing.type} is now ${status || existing.status} (${status_color || existing.status_color})`,
+                isCritical ? 'warning' : 'info'
+            );
         }
 
         res.json({ success: true, status, status_color });
     } catch (err) {
+        logToFile(`[API] STATUS UPDATE ERROR: ${err.message}`);
         res.status(500).json({ message: 'Failed to update status' });
     }
 });
@@ -1005,7 +1097,17 @@ app.get('/api/invoices', authenticate, async (req, res) => {
 app.post('/api/invoices', authenticate, isAdmin, async (req, res) => {
     const db = await openDb();
     const { client_id, amount, status, month } = req.body;
+
     await db.run('INSERT INTO invoices (client_id, amount, status, month) VALUES (?, ?, ?, ?)', client_id, amount, status, month);
+
+    const clientForInv = await db.get('SELECT name, account_manager_id FROM clients WHERE id = ?', client_id);
+    const financeUsers = await db.all('SELECT id FROM users WHERE role = "finance" OR role = "super_admin"');
+
+    const invNotifyIds = [...financeUsers.map(u => u.id), clientForInv?.account_manager_id].filter(i => i && i != req.user.id);
+    if (invNotifyIds.length > 0) {
+        await createNotification([...new Set(invNotifyIds)], `New invoice created for ${clientForInv?.name || 'Client'} (${month}) - Amount: $${amount}`, 'payment');
+    }
+
     res.status(201).json({ success: true });
 });
 
@@ -1013,7 +1115,17 @@ app.delete('/api/services/:id', authenticate, async (req, res) => {
     if (!req.user.can_edit && req.user.role !== 'super_admin' && req.user.role !== 'admin') return res.status(403).json({ message: 'Forbidden' });
     const db = await openDb();
     try {
+        const svcToDelete = await db.get('SELECT s.type, s.tl_id, c.name as client_name, c.account_manager_id, c.am_head_id FROM services s JOIN clients c ON s.client_id = c.id WHERE s.id = ?', req.params.id);
+
         await db.run('DELETE FROM services WHERE id = ?', req.params.id);
+
+        if (svcToDelete) {
+            const delNotifyIds = [svcToDelete.account_manager_id, svcToDelete.am_head_id, svcToDelete.tl_id].filter(i => i && i != req.user.id);
+            if (delNotifyIds.length > 0) {
+                await createNotification([...new Set(delNotifyIds)], `Service ${svcToDelete.type} for ${svcToDelete.client_name} was deleted.`, 'warning');
+            }
+        }
+
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ message: 'Failed to delete service', error: err.message });
@@ -1024,8 +1136,18 @@ app.delete('/api/clients/:id', authenticate, async (req, res) => {
     if (!req.user.can_delete && req.user.role !== 'super_admin' && req.user.role !== 'admin') return res.status(403).json({ message: 'Forbidden' });
     const db = await openDb();
     try {
+        const cliToDelete = await db.get('SELECT * FROM clients WHERE id = ?', req.params.id);
+
         await db.run('DELETE FROM services WHERE client_id = ?', req.params.id);
         await db.run('DELETE FROM clients WHERE id = ?', req.params.id);
+
+        if (cliToDelete) {
+            const delCliIds = [cliToDelete.account_manager_id, cliToDelete.marketing_manager_id, cliToDelete.dev_manager_id, cliToDelete.am_head_id, cliToDelete.onboarding_by].filter(i => i && i != req.user.id);
+            if (delCliIds.length > 0) {
+                await createNotification([...new Set(delCliIds)], `Client ${cliToDelete.name} and all related services were deleted.`, 'warning');
+            }
+        }
+
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ message: 'Failed to delete client', error: err.message });
@@ -1046,9 +1168,31 @@ app.post('/api/service-types', authenticate, async (req, res) => {
     try {
         const { name } = req.body;
         if (!name || name.trim() === '') return res.status(400).json({ error: "Service name is required" });
+
         const db = await openDb();
         const result = await db.run("INSERT INTO service_types (name) VALUES (?)", name.trim());
-        res.status(201).json({ id: result.lastID, name: name.trim() });
+        const serviceName = name.trim();
+
+        // --- NEW NOTIFICATION LOGIC ---
+        // Fetch all users with the requested roles
+        const notifyUsers = await db.all(`
+            SELECT id FROM users 
+            WHERE role IN ("super_admin", "admin", "sales", "finance", "am_head")
+        `);
+
+        // Map to IDs and remove the current user (sender) from the list
+        const notifyIds = notifyUsers.map(u => u.id).filter(id => id != req.user.id);
+
+        if (notifyIds.length > 0) {
+            await createNotification(
+                notifyIds,
+                `New service type '${serviceName}' has been added by ${req.user.name}.`,
+                'info'
+            );
+        }
+        // ------------------------------
+
+        res.status(201).json({ id: result.lastID, name: serviceName });
     } catch (err) {
         if (err.message.includes("UNIQUE")) return res.status(400).json({ error: "Service already exists" });
         res.status(500).json({ error: err.message });
