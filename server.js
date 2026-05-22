@@ -168,8 +168,7 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
         // --- Filtering Logic ---
         let clientFilter = '';
         let params = [];
-        console.log(id)
-        console.log(role)
+
         if (view === 'mine') {
             if (role === 'marketing_manager') {
                 // MM: Only see clients where they are the assigned Marketing Manager
@@ -1231,6 +1230,50 @@ app.put('/api/profile', authenticate, async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ message: 'Failed to update profile' });
+    }
+});
+
+app.delete('/api/clients/:id', authenticate, async (req, res) => {
+    const { id } = req.params;
+    const db = await openDb();
+
+    try {
+        await db.run('BEGIN TRANSACTION');
+
+        // 1. Fetch client data to copy
+        const client = await db.get('SELECT * FROM clients WHERE id = ?', id);
+
+        if (!client) {
+            await db.run('ROLLBACK');
+            return res.status(404).json({ message: 'Client not found' });
+        }
+
+        // 2. Copy client to lost_clients
+        await db.run(`
+            INSERT INTO lost_clients (
+                id, name, email, phone, domain, account_manager_id, marketing_manager_id, 
+                dev_manager_id, am_head_id, team_leader_id, status, agreement_status, 
+                invoice_status, onboarding_by, onboarding_date, onboarding_pdf_url, 
+                recurring_day, contract_end_date
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [
+            client.id, client.name, client.email, client.phone, client.domain,
+            client.account_manager_id, client.marketing_manager_id, client.dev_manager_id,
+            client.am_head_id, client.team_leader_id, client.status, client.agreement_status,
+            client.invoice_status, client.onboarding_by, client.onboarding_date,
+            client.onboarding_pdf_url, client.recurring_day, client.contract_end_date
+        ]);
+
+        // 3. Delete from original clients table
+        await db.run('DELETE FROM clients WHERE id = ?', id);
+
+        await db.run('COMMIT');
+
+        res.json({ success: true, message: 'Client archived and deleted successfully' });
+    } catch (err) {
+        await db.run('ROLLBACK');
+        console.error("Delete client error:", err);
+        res.status(500).json({ message: 'Failed to delete client', error: err.message });
     }
 });
 
