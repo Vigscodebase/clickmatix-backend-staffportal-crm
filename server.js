@@ -181,7 +181,8 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
             } else if (role === 'am_head') {
                 clientFilter = `WHERE c.account_manager_id = ?`;
                 params = [id];
-            } else if (role === 'sales') {
+            }
+            else if (role === 'sales') {
                 clientFilter = `WHERE c.onboarding_by = ?`;
                 params = [id];
             }
@@ -222,7 +223,8 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
         const lostQuery = isGlobalViewer
             ? `SELECT COUNT(DISTINCT c.id) as total FROM clients c WHERE EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND (s2.status_color = 'Red' OR s2.status IN ('Hold', 'Pause')))`
             : `SELECT COUNT(DISTINCT c.id) as total FROM clients c ${clientFilter} ${joiner} (EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND (s2.status_color = 'Red' OR s2.status IN ('Hold', 'Pause'))))`;
-        const lostRes = await db.get(lostQuery, isGlobalViewer ? [] : params);
+        // const lostRes = await db.get(lostQuery, isGlobalViewer ? [] : params);
+        const lostRes = await db.get(`SELECT COUNT(*) as total FROM lost_clients`);
         stats.lostAccounts = lostRes?.total || 0;
 
         const accCount = await db.get(`SELECT COUNT(DISTINCT c.id) as count FROM clients c ${clientFilter} ${joiner} c.status = 'Active'`, params);
@@ -242,8 +244,13 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
 
         // --- Lists (View-Aware) ---
         const serviceDistribution = await db.all(`SELECT s.type, SUM(s.monthly_fee) as revenue, COUNT(DISTINCT s.client_id) as active_accounts FROM services s JOIN clients c ON s.client_id = c.id ${clientFilter} ${joiner} s.status = 'Active' GROUP BY s.type ORDER BY revenue DESC`, params);
-        const amTable = await db.all(`SELECT COALESCE(u.name, 'Unassigned') as name, COUNT(DISTINCT c.id) as num_accounts, COALESCE(SUM(s.monthly_fee), 0) as revenue FROM clients c LEFT JOIN users u ON c.account_manager_id = u.id LEFT JOIN services s ON s.client_id = c.id AND s.status = 'Active' ${clientFilter} ${joiner} c.status = 'Active' GROUP BY c.account_manager_id ${view === 'mine' ? "HAVING COALESCE(u.name, 'Unassigned') != 'Unassigned'" : ""} ORDER BY revenue DESC`, params);
-
+        //const amTable = await db.all(`SELECT COALESCE(u.name, 'Unassigned') as name, COUNT(DISTINCT c.id) as num_accounts, COALESCE(SUM(s.monthly_fee), 0) as revenue FROM clients c LEFT JOIN users u ON c.account_manager_id = u.id LEFT JOIN services s ON s.client_id = c.id AND s.status = 'Active' ${clientFilter} ${joiner} c.status = 'Active' GROUP BY c.account_manager_id ${view === 'mine' ? "HAVING COALESCE(u.name, 'Unassigned') != 'Unassigned'" : ""} ORDER BY revenue DESC`, params);
+        // Dynamically choose column to group by based on user role
+        const groupCol = (role === 'marketing_manager') ? 'c.marketing_manager_id' :
+            (role === 'dev_manager') ? 'c.dev_manager_id' : 'c.account_manager_id';
+        const amTable = await db.all(`SELECT COALESCE(u.name, 'Unassigned') as name, COUNT(DISTINCT c.id) as num_accounts, COALESCE(SUM(s.monthly_fee), 0) as revenue FROM clients c LEFT JOIN users u ON ${groupCol} = u.id LEFT JOIN services s ON s.client_id = c.id AND s.status = 'Active' ${clientFilter} ${joiner} c.status = 'Active' GROUP BY ${groupCol} ${view === 'mine' ? "HAVING COALESCE(u.name, 'Unassigned') != 'Unassigned'" : ""} ORDER BY revenue DESC`, params);
+        console.log(groupCol)
+        console.log(clientFilter)
         const pendingReviewClients = await db.all(`SELECT id, name, agreement_status, invoice_status, onboarding_date FROM clients c ${clientFilter} ${clientFilter ? 'AND' : 'WHERE'} (agreement_status != 'Signed' OR invoice_status != 'Paid') ORDER BY onboarding_date DESC LIMIT 10`, params);
         const pendingAssignmentClients = await db.all(`SELECT id, name, marketing_manager_id, dev_manager_id, am_head_id, account_manager_id FROM clients c ${clientFilter} ${clientFilter ? 'AND' : 'WHERE'} c.status = 'Active' AND (account_manager_id IS NULL OR marketing_manager_id IS NULL OR dev_manager_id IS NULL OR EXISTS (SELECT 1 FROM services s WHERE s.client_id = c.id AND s.tl_id IS NULL AND s.status = 'Active')) LIMIT 10`, params);
         const pendingOnboardingClients = await db.all(`SELECT id, name, onboarding_date, onboarding_pdf_url FROM clients c ${clientFilter} ${clientFilter ? 'AND' : 'WHERE'} c.account_manager_id = ? AND (onboarding_pdf_url IS NULL OR onboarding_pdf_url = '') LIMIT 10`, [...params, id]);
@@ -327,16 +334,52 @@ app.put('/api/users/:id', authenticate, isAdmin, async (req, res) => {
     res.json({ success: true });
 });
 
-app.delete('/api/users/:id', authenticate, isAdmin, async (req, res) => {
+app.delete('/api/clients/:id', authenticate, async (req, res) => {
     const db = await openDb();
     const { id } = req.params;
 
-    if (parseInt(id) === req.user.id) {
-        return res.status(400).json({ message: 'Cannot delete yourself' });
-    }
+    try {
+        // Start a transaction so we don't end up with data in the wrong place
+        await db.run('BEGIN TRANSACTION');
 
-    await db.run('DELETE FROM users WHERE id = ?', id);
-    res.json({ success: true });
+        // 1. Fetch client data to copy
+        const client = await db.get('SELECT * FROM clients WHERE id = ?', id);
+
+        if (!client) {
+            await db.run('ROLLBACK');
+            return res.status(404).json({ message: 'Client not found' });
+        }
+
+        // 2. Copy client to lost_clients table
+        // Ensure column names match exactly with your 005-add-lost-clients.sql schema
+        await db.run(`
+            INSERT INTO lost_clients (
+                id, name, email, phone, domain, account_manager_id, marketing_manager_id, 
+                dev_manager_id, am_head_id, team_leader_id, status, agreement_status, 
+                invoice_status, onboarding_by, onboarding_date, onboarding_pdf_url, 
+                recurring_day, contract_end_date
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [
+            client.id, client.name, client.email, client.phone, client.domain,
+            client.account_manager_id, client.marketing_manager_id, client.dev_manager_id,
+            client.am_head_id, client.team_leader_id, client.status, client.agreement_status,
+            client.invoice_status, client.onboarding_by, client.onboarding_date,
+            client.onboarding_pdf_url, client.recurring_day, client.contract_end_date
+        ]);
+
+        // 3. Delete from the CLIENTS table (NOT users table)
+        await db.run('DELETE FROM clients WHERE id = ?', id);
+
+        // Commit the transaction
+        await db.run('COMMIT');
+
+        res.json({ success: true, message: 'Client archived to lost_clients and deleted successfully' });
+    } catch (err) {
+        // If anything fails, revert all changes
+        await db.run('ROLLBACK');
+        console.error("Delete client error:", err);
+        res.status(500).json({ message: 'Failed to delete client', error: err.message });
+    }
 });
 
 // Client Management - Add Client

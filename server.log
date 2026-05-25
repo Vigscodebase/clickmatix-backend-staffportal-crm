@@ -297243,3 +297243,1872 @@
 [2026-05-21T12:37:27.810Z] [API] END   GET /api/clients?view=team - 304 (21ms)
 [2026-05-21T12:37:27.812Z] [API] END   GET /api/service-types - 304 (9ms)
 [2026-05-21T12:37:27.814Z] [API] END   GET /api/profile - 200 (8ms)
+[2026-05-22T05:28:14.645Z] [API] START POST /api/login
+[2026-05-22T05:28:14.802Z] [API] END   POST /api/login - 200 (157ms)
+[2026-05-22T05:28:14.866Z] [API] START GET /api/notifications
+[2026-05-22T05:28:14.871Z] [API] END   GET /api/notifications - 200 (5ms)
+[2026-05-22T05:28:14.889Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T05:28:14.894Z] [API] START GET /api/profile
+[2026-05-22T05:28:14.905Z] [API] END   GET /api/profile - 200 (11ms)
+[2026-05-22T05:28:14.921Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (32ms)
+[2026-05-22T05:28:18.425Z] [API] START GET /api/users
+[2026-05-22T05:28:18.427Z] [API] START GET /api/profile
+[2026-05-22T05:28:18.431Z] [API] END   GET /api/users - 200 (6ms)
+[2026-05-22T05:28:18.436Z] [API] END   GET /api/profile - 200 (9ms)
+[2026-05-22T05:34:31.201Z] [API] START GET /api/profile
+[2026-05-22T05:34:31.206Z] [API] END   GET /api/profile - 200 (5ms)
+[2026-05-22T05:34:31.319Z] [API] START GET /api/notifications
+[2026-05-22T05:34:31.322Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T05:34:31.327Z] [API] END   GET /api/notifications - 304 (8ms)
+[2026-05-22T05:34:31.337Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (15ms)
+[2026-05-22T05:34:40.958Z] [API] START GET /api/profile
+[2026-05-22T05:34:40.962Z] [API] END   GET /api/profile - 200 (4ms)
+[2026-05-22T05:34:41.027Z] [API] START GET /api/notifications
+[2026-05-22T05:34:41.033Z] [API] END   GET /api/notifications - 304 (6ms)
+[2026-05-22T05:34:41.044Z] [API] START GET /api/clients?view=team
+[2026-05-22T05:34:41.053Z] [API] END   GET /api/clients?view=team - 200 (9ms)
+[2026-05-22T05:34:41.068Z] [API] START GET /api/staff
+[2026-05-22T05:34:41.070Z] [API] START GET /api/service-types
+[2026-05-22T05:34:41.073Z] [API] END   GET /api/staff - 200 (5ms)
+[2026-05-22T05:34:41.075Z] [API] END   GET /api/service-types - 200 (5ms)
+[2026-05-22T05:36:56.115Z] [API] START GET /api/profile
+[2026-05-22T05:36:56.119Z] [API] END   GET /api/profile - 200 (4ms)
+[2026-05-22T05:36:56.162Z] [API] START GET /api/notifications
+[2026-05-22T05:36:56.165Z] [API] END   GET /api/notifications - 304 (3ms)
+[2026-05-22T05:36:56.169Z] [API] START GET /api/service-types
+[2026-05-22T05:36:56.174Z] [API] END   GET /api/service-types - 304 (5ms)
+[2026-05-22T05:36:56.178Z] [API] START GET /api/projects?view=team
+[2026-05-22T05:36:56.182Z] [API] END   GET /api/projects?view=team - 200 (4ms)
+[2026-05-22T05:39:39.059Z] [API] START GET /api/profile
+[2026-05-22T05:39:39.069Z] [API] END   GET /api/profile - 200 (10ms)
+[2026-05-22T05:39:39.187Z] [API] START GET /api/notifications
+[2026-05-22T05:39:39.195Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T05:39:39.201Z] [API] END   GET /api/notifications - 304 (14ms)
+[2026-05-22T05:39:39.207Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (12ms)
+[2026-05-22T06:05:33.392Z] [DB] FIRST OPEN: Initializing database promise...
+[2026-05-22T06:05:33.778Z] [DB] CONFIGURE: Setting performance PRAGMAs...
+[2026-05-22T06:05:33.800Z] [DB] MIGRATE: Checking for pending migrations...
+[2026-05-22T06:05:33.832Z] [DB] MIGRATE: Database schema is up to date.
+[2026-05-22T06:05:33.833Z] [DB] CONFIGURE: Database initialized and ready.
+[2026-05-22T06:05:42.592Z] [API] START GET /api/profile
+[2026-05-22T06:05:42.619Z] [API] END   GET /api/profile - 200 (27ms)
+[2026-05-22T06:05:42.669Z] [API] START GET /api/notifications
+[2026-05-22T06:05:42.677Z] [API] END   GET /api/notifications - 200 (8ms)
+[2026-05-22T06:05:42.694Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:05:42.710Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (16ms)
+[2026-05-22T06:05:57.916Z] [API] START GET /api/profile
+[2026-05-22T06:05:57.925Z] [API] END   GET /api/profile - 200 (9ms)
+[2026-05-22T06:05:57.994Z] [API] START GET /api/notifications
+[2026-05-22T06:05:57.997Z] [API] END   GET /api/notifications - 304 (3ms)
+[2026-05-22T06:05:58.000Z] [API] START GET /api/users
+[2026-05-22T06:05:58.016Z] [API] END   GET /api/users - 200 (16ms)
+[2026-05-22T06:06:09.858Z] [API] START POST /api/login
+[2026-05-22T06:06:09.986Z] [API] END   POST /api/login - 200 (128ms)
+[2026-05-22T06:06:10.052Z] [API] START GET /api/notifications
+[2026-05-22T06:06:10.058Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:06:10.066Z] [API] START GET /api/profile
+[2026-05-22T06:06:10.073Z] [API] END   GET /api/notifications - 200 (21ms)
+[2026-05-22T06:06:10.081Z] [API] END   GET /api/profile - 200 (15ms)
+[2026-05-22T06:06:10.108Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (50ms)
+[2026-05-22T06:06:32.083Z] [API] START POST /api/login
+[2026-05-22T06:06:32.195Z] [API] END   POST /api/login - 200 (112ms)
+[2026-05-22T06:06:32.243Z] [API] START GET /api/notifications
+[2026-05-22T06:06:32.247Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:06:32.249Z] [API] START GET /api/profile
+[2026-05-22T06:06:32.252Z] [API] END   GET /api/notifications - 200 (9ms)
+[2026-05-22T06:06:32.254Z] [API] END   GET /api/profile - 200 (5ms)
+[2026-05-22T06:06:32.267Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (20ms)
+[2026-05-22T06:15:53.189Z] [API] START POST /api/login
+[2026-05-22T06:15:53.333Z] [API] END   POST /api/login - 200 (144ms)
+[2026-05-22T06:15:53.383Z] [API] START GET /api/notifications
+[2026-05-22T06:15:53.390Z] [API] END   GET /api/notifications - 200 (7ms)
+[2026-05-22T06:15:53.393Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:15:53.397Z] [API] START GET /api/profile
+[2026-05-22T06:15:53.400Z] [API] END   GET /api/profile - 200 (3ms)
+[2026-05-22T06:15:53.408Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (15ms)
+[2026-05-22T06:15:56.213Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T06:15:56.224Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 200 (11ms)
+[2026-05-22T06:15:57.396Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:15:57.402Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (6ms)
+[2026-05-22T06:17:03.267Z] [API] START POST /api/login
+[2026-05-22T06:17:03.385Z] [API] END   POST /api/login - 200 (118ms)
+[2026-05-22T06:17:03.440Z] [API] START GET /api/notifications
+[2026-05-22T06:17:03.443Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:17:03.446Z] [API] START GET /api/profile
+[2026-05-22T06:17:03.448Z] [API] END   GET /api/notifications - 304 (8ms)
+[2026-05-22T06:17:03.453Z] [API] END   GET /api/profile - 200 (7ms)
+[2026-05-22T06:17:03.462Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (19ms)
+[2026-05-22T06:17:12.844Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T06:17:12.850Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 304 (6ms)
+[2026-05-22T06:17:26.379Z] [API] START POST /api/login
+[2026-05-22T06:17:26.493Z] [API] END   POST /api/login - 200 (114ms)
+[2026-05-22T06:17:26.538Z] [API] START GET /api/notifications
+[2026-05-22T06:17:26.540Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:17:26.544Z] [API] END   GET /api/notifications - 200 (6ms)
+[2026-05-22T06:17:26.555Z] [API] START GET /api/profile
+[2026-05-22T06:17:26.559Z] [API] END   GET /api/profile - 200 (4ms)
+[2026-05-22T06:17:26.563Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (23ms)
+[2026-05-22T06:19:26.715Z] [API] START POST /api/login
+[2026-05-22T06:19:26.831Z] [API] END   POST /api/login - 200 (116ms)
+[2026-05-22T06:19:26.886Z] [API] START GET /api/notifications
+[2026-05-22T06:19:26.889Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:19:26.893Z] [API] START GET /api/profile
+[2026-05-22T06:19:26.896Z] [API] END   GET /api/notifications - 200 (10ms)
+[2026-05-22T06:19:26.900Z] [API] END   GET /api/profile - 200 (7ms)
+[2026-05-22T06:19:26.906Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (17ms)
+[2026-05-22T06:19:35.331Z] [API] START POST /api/login
+[2026-05-22T06:19:35.448Z] [API] END   POST /api/login - 200 (117ms)
+[2026-05-22T06:19:35.493Z] [API] START GET /api/notifications
+[2026-05-22T06:19:35.495Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:19:35.497Z] [API] START GET /api/profile
+[2026-05-22T06:19:35.503Z] [API] END   GET /api/notifications - 304 (10ms)
+[2026-05-22T06:19:35.510Z] [API] END   GET /api/profile - 200 (13ms)
+[2026-05-22T06:19:35.517Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (22ms)
+[2026-05-22T06:19:37.019Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T06:19:37.031Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 200 (12ms)
+[2026-05-22T06:19:38.541Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:19:38.548Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (7ms)
+[2026-05-22T06:19:49.058Z] [API] START POST /api/login
+[2026-05-22T06:19:49.177Z] [API] END   POST /api/login - 200 (119ms)
+[2026-05-22T06:19:49.230Z] [API] START GET /api/notifications
+[2026-05-22T06:19:49.233Z] [API] START GET /api/profile
+[2026-05-22T06:19:49.237Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:19:49.240Z] [API] END   GET /api/notifications - 200 (10ms)
+[2026-05-22T06:19:49.246Z] [API] END   GET /api/profile - 200 (13ms)
+[2026-05-22T06:19:49.261Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (24ms)
+[2026-05-22T06:19:52.754Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T06:19:52.766Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 200 (12ms)
+[2026-05-22T06:19:54.268Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:19:54.274Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (6ms)
+[2026-05-22T06:20:05.379Z] [API] START POST /api/login
+[2026-05-22T06:20:05.495Z] [API] END   POST /api/login - 200 (116ms)
+[2026-05-22T06:20:05.546Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:20:05.548Z] [API] START GET /api/notifications
+[2026-05-22T06:20:05.552Z] [API] START GET /api/profile
+[2026-05-22T06:20:05.555Z] [API] END   GET /api/notifications - 200 (7ms)
+[2026-05-22T06:20:05.557Z] [API] END   GET /api/profile - 200 (5ms)
+[2026-05-22T06:20:05.565Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (19ms)
+[2026-05-22T06:21:42.202Z] [API] START POST /api/login
+[2026-05-22T06:21:42.316Z] [API] END   POST /api/login - 200 (114ms)
+[2026-05-22T06:21:42.384Z] [API] START GET /api/notifications
+[2026-05-22T06:21:42.386Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:21:42.388Z] [API] START GET /api/profile
+[2026-05-22T06:21:42.396Z] [API] END   GET /api/notifications - 200 (12ms)
+[2026-05-22T06:21:42.400Z] [API] END   GET /api/profile - 200 (12ms)
+[2026-05-22T06:21:42.416Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (30ms)
+[2026-05-22T06:22:15.727Z] [API] START GET /api/service-types
+[2026-05-22T06:22:15.729Z] [API] START GET /api/projects?view=team
+[2026-05-22T06:22:15.731Z] [API] START GET /api/profile
+[2026-05-22T06:22:15.734Z] [API] END   GET /api/service-types - 304 (7ms)
+[2026-05-22T06:22:15.736Z] [API] END   GET /api/projects?view=team - 200 (7ms)
+[2026-05-22T06:22:15.738Z] [API] END   GET /api/profile - 200 (7ms)
+[2026-05-22T06:22:27.615Z] [API] START GET /api/profile
+[2026-05-22T06:22:27.617Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:22:27.620Z] [API] END   GET /api/profile - 200 (5ms)
+[2026-05-22T06:22:27.636Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (19ms)
+[2026-05-22T06:22:47.544Z] [API] START GET /api/profile
+[2026-05-22T06:22:47.552Z] [API] END   GET /api/profile - 200 (8ms)
+[2026-05-22T06:22:47.627Z] [API] START GET /api/notifications
+[2026-05-22T06:22:47.629Z] [API] END   GET /api/notifications - 200 (2ms)
+[2026-05-22T06:22:47.644Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:22:47.656Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (12ms)
+[2026-05-22T06:23:04.154Z] [API] START POST /api/login
+[2026-05-22T06:23:04.272Z] [API] END   POST /api/login - 200 (118ms)
+[2026-05-22T06:23:04.312Z] [API] START GET /api/notifications
+[2026-05-22T06:23:04.314Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:23:04.316Z] [API] START GET /api/profile
+[2026-05-22T06:23:04.321Z] [API] END   GET /api/notifications - 200 (9ms)
+[2026-05-22T06:23:04.328Z] [API] END   GET /api/profile - 200 (12ms)
+[2026-05-22T06:23:04.342Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (28ms)
+[2026-05-22T06:24:43.289Z] [API] START POST /api/login
+[2026-05-22T06:24:43.403Z] [API] END   POST /api/login - 200 (114ms)
+[2026-05-22T06:24:43.443Z] [API] START GET /api/notifications
+[2026-05-22T06:24:43.445Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:24:43.447Z] [API] START GET /api/profile
+[2026-05-22T06:24:43.451Z] [API] END   GET /api/notifications - 200 (8ms)
+[2026-05-22T06:24:43.459Z] [API] END   GET /api/profile - 200 (12ms)
+[2026-05-22T06:24:43.478Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (33ms)
+[2026-05-22T06:25:17.264Z] [API] START POST /api/login
+[2026-05-22T06:25:17.373Z] [API] END   POST /api/login - 200 (109ms)
+[2026-05-22T06:25:17.424Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:25:17.426Z] [API] START GET /api/notifications
+[2026-05-22T06:25:17.427Z] [API] START GET /api/profile
+[2026-05-22T06:25:17.433Z] [API] END   GET /api/notifications - 200 (7ms)
+[2026-05-22T06:25:17.434Z] [API] END   GET /api/profile - 200 (7ms)
+[2026-05-22T06:25:17.444Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (20ms)
+[2026-05-22T06:25:20.623Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:25:20.626Z] [API] START GET /api/staff
+[2026-05-22T06:25:20.627Z] [API] START GET /api/service-types
+[2026-05-22T06:25:20.629Z] [API] START GET /api/profile
+[2026-05-22T06:25:20.635Z] [API] END   GET /api/staff - 304 (9ms)
+[2026-05-22T06:25:20.637Z] [API] END   GET /api/service-types - 304 (10ms)
+[2026-05-22T06:25:20.639Z] [API] END   GET /api/profile - 200 (10ms)
+[2026-05-22T06:25:20.643Z] [API] END   GET /api/clients?view=team - 304 (20ms)
+[2026-05-22T06:27:43.090Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:27:43.092Z] [API] START GET /api/profile
+[2026-05-22T06:27:43.099Z] [API] END   GET /api/profile - 200 (7ms)
+[2026-05-22T06:27:43.105Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (15ms)
+[2026-05-22T06:27:47.102Z] [API] START GET /api/users
+[2026-05-22T06:27:47.105Z] [API] END   GET /api/users - 200 (3ms)
+[2026-05-22T06:27:47.108Z] [API] START GET /api/profile
+[2026-05-22T06:27:47.116Z] [API] END   GET /api/profile - 200 (8ms)
+[2026-05-22T06:28:08.660Z] [API] START POST /api/login
+[2026-05-22T06:28:08.781Z] [API] END   POST /api/login - 200 (121ms)
+[2026-05-22T06:28:08.824Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:28:08.828Z] [API] START GET /api/profile
+[2026-05-22T06:28:08.830Z] [API] START GET /api/notifications
+[2026-05-22T06:28:08.834Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T06:28:08.838Z] [API] END   GET /api/notifications - 304 (8ms)
+[2026-05-22T06:28:08.842Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (18ms)
+[2026-05-22T06:28:12.321Z] [API] START GET /api/service-types
+[2026-05-22T06:28:12.324Z] [API] START GET /api/projects?view=team
+[2026-05-22T06:28:12.326Z] [API] START GET /api/profile
+[2026-05-22T06:28:12.331Z] [API] END   GET /api/projects?view=team - 200 (7ms)
+[2026-05-22T06:28:12.333Z] [API] END   GET /api/service-types - 304 (12ms)
+[2026-05-22T06:28:12.336Z] [API] END   GET /api/profile - 200 (10ms)
+[2026-05-22T06:30:09.034Z] [API] START POST /api/login
+[2026-05-22T06:30:09.149Z] [API] END   POST /api/login - 200 (115ms)
+[2026-05-22T06:30:09.200Z] [API] START GET /api/notifications
+[2026-05-22T06:30:09.210Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:30:09.213Z] [API] END   GET /api/notifications - 200 (13ms)
+[2026-05-22T06:30:09.215Z] [API] START GET /api/profile
+[2026-05-22T06:30:09.235Z] [API] END   GET /api/profile - 200 (20ms)
+[2026-05-22T06:30:09.250Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (40ms)
+[2026-05-22T06:30:28.128Z] [API] START GET /api/service-types
+[2026-05-22T06:30:28.130Z] [API] START GET /api/projects?view=team
+[2026-05-22T06:30:28.132Z] [API] START GET /api/profile
+[2026-05-22T06:30:28.135Z] [API] END   GET /api/service-types - 304 (7ms)
+[2026-05-22T06:30:28.137Z] [API] END   GET /api/projects?view=team - 200 (7ms)
+[2026-05-22T06:30:28.141Z] [API] END   GET /api/profile - 200 (9ms)
+[2026-05-22T06:30:41.407Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:30:41.412Z] [API] START GET /api/staff
+[2026-05-22T06:30:41.414Z] [API] START GET /api/service-types
+[2026-05-22T06:30:41.417Z] [API] START GET /api/profile
+[2026-05-22T06:30:41.420Z] [API] END   GET /api/staff - 304 (8ms)
+[2026-05-22T06:30:41.422Z] [API] END   GET /api/service-types - 304 (8ms)
+[2026-05-22T06:30:41.427Z] [API] END   GET /api/clients?view=team - 200 (20ms)
+[2026-05-22T06:30:41.434Z] [API] END   GET /api/profile - 200 (17ms)
+[2026-05-22T06:31:00.505Z] [API] START POST /api/login
+[2026-05-22T06:31:00.617Z] [API] END   POST /api/login - 200 (112ms)
+[2026-05-22T06:31:00.658Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:31:00.660Z] [API] START GET /api/profile
+[2026-05-22T06:31:00.665Z] [API] END   GET /api/profile - 200 (5ms)
+[2026-05-22T06:31:00.669Z] [API] START GET /api/notifications
+[2026-05-22T06:31:00.675Z] [API] END   GET /api/notifications - 200 (6ms)
+[2026-05-22T06:31:00.681Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (23ms)
+[2026-05-22T06:31:03.484Z] [API] START GET /api/service-types
+[2026-05-22T06:31:03.487Z] [API] END   GET /api/service-types - 304 (3ms)
+[2026-05-22T06:31:03.506Z] [API] START GET /api/projects?view=team
+[2026-05-22T06:31:03.508Z] [API] START GET /api/profile
+[2026-05-22T06:31:03.513Z] [API] END   GET /api/projects?view=team - 304 (7ms)
+[2026-05-22T06:31:03.517Z] [API] END   GET /api/profile - 200 (9ms)
+[2026-05-22T06:31:07.346Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:31:07.349Z] [API] START GET /api/staff
+[2026-05-22T06:31:07.352Z] [API] START GET /api/service-types
+[2026-05-22T06:31:07.355Z] [API] START GET /api/profile
+[2026-05-22T06:31:07.359Z] [API] END   GET /api/clients?view=team - 200 (13ms)
+[2026-05-22T06:31:07.360Z] [API] END   GET /api/staff - 304 (11ms)
+[2026-05-22T06:31:07.366Z] [API] END   GET /api/profile - 200 (11ms)
+[2026-05-22T06:31:07.369Z] [API] END   GET /api/service-types - 304 (17ms)
+[2026-05-22T06:31:24.635Z] [API] START POST /api/login
+[2026-05-22T06:31:24.744Z] [API] END   POST /api/login - 200 (109ms)
+[2026-05-22T06:31:24.779Z] [API] START GET /api/notifications
+[2026-05-22T06:31:24.782Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:31:24.784Z] [API] START GET /api/profile
+[2026-05-22T06:31:24.786Z] [API] END   GET /api/notifications - 200 (7ms)
+[2026-05-22T06:31:24.790Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T06:31:24.801Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (19ms)
+[2026-05-22T06:31:27.626Z] [API] START GET /api/service-types
+[2026-05-22T06:31:27.629Z] [API] END   GET /api/service-types - 304 (3ms)
+[2026-05-22T06:31:27.641Z] [API] START GET /api/projects?view=team
+[2026-05-22T06:31:27.644Z] [API] START GET /api/profile
+[2026-05-22T06:31:27.651Z] [API] END   GET /api/projects?view=team - 304 (10ms)
+[2026-05-22T06:31:27.654Z] [API] END   GET /api/profile - 200 (10ms)
+[2026-05-22T06:31:29.095Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:31:29.101Z] [API] START GET /api/staff
+[2026-05-22T06:31:29.105Z] [API] START GET /api/service-types
+[2026-05-22T06:31:29.107Z] [API] START GET /api/profile
+[2026-05-22T06:31:29.109Z] [API] END   GET /api/clients?view=team - 200 (14ms)
+[2026-05-22T06:31:29.111Z] [API] END   GET /api/staff - 304 (10ms)
+[2026-05-22T06:31:29.113Z] [API] END   GET /api/service-types - 304 (8ms)
+[2026-05-22T06:31:29.118Z] [API] END   GET /api/profile - 200 (11ms)
+[2026-05-22T06:31:47.247Z] [API] START POST /api/login
+[2026-05-22T06:31:47.358Z] [API] END   POST /api/login - 200 (111ms)
+[2026-05-22T06:31:47.396Z] [API] START GET /api/notifications
+[2026-05-22T06:31:47.398Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:31:47.401Z] [API] START GET /api/profile
+[2026-05-22T06:31:47.404Z] [API] END   GET /api/notifications - 200 (8ms)
+[2026-05-22T06:31:47.407Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T06:31:47.412Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (14ms)
+[2026-05-22T06:32:12.523Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T06:32:12.530Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 200 (7ms)
+[2026-05-22T06:32:13.407Z] [API] START GET /api/service-types
+[2026-05-22T06:32:13.409Z] [API] START GET /api/projects?view=team
+[2026-05-22T06:32:13.415Z] [API] START GET /api/profile
+[2026-05-22T06:32:13.418Z] [API] END   GET /api/service-types - 304 (11ms)
+[2026-05-22T06:32:13.420Z] [API] END   GET /api/profile - 200 (5ms)
+[2026-05-22T06:32:13.422Z] [API] END   GET /api/projects?view=team - 304 (13ms)
+[2026-05-22T06:32:15.154Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:32:15.159Z] [API] START GET /api/staff
+[2026-05-22T06:32:15.164Z] [API] END   GET /api/clients?view=team - 304 (10ms)
+[2026-05-22T06:32:15.166Z] [API] START GET /api/service-types
+[2026-05-22T06:32:15.168Z] [API] START GET /api/profile
+[2026-05-22T06:32:15.170Z] [API] END   GET /api/staff - 304 (11ms)
+[2026-05-22T06:32:15.172Z] [API] END   GET /api/service-types - 304 (6ms)
+[2026-05-22T06:32:15.174Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T06:32:20.321Z] [API] START GET /api/service-types
+[2026-05-22T06:32:20.327Z] [API] START GET /api/projects?view=team
+[2026-05-22T06:32:20.330Z] [API] START GET /api/profile
+[2026-05-22T06:32:20.335Z] [API] END   GET /api/service-types - 304 (14ms)
+[2026-05-22T06:32:20.339Z] [API] END   GET /api/projects?view=team - 304 (12ms)
+[2026-05-22T06:32:20.343Z] [API] END   GET /api/profile - 200 (13ms)
+[2026-05-22T06:32:24.536Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:32:24.538Z] [API] START GET /api/staff
+[2026-05-22T06:32:24.542Z] [API] START GET /api/profile
+[2026-05-22T06:32:24.546Z] [API] END   GET /api/staff - 304 (8ms)
+[2026-05-22T06:32:24.549Z] [API] START GET /api/service-types
+[2026-05-22T06:32:24.552Z] [API] END   GET /api/profile - 200 (10ms)
+[2026-05-22T06:32:24.554Z] [API] END   GET /api/clients?view=team - 304 (18ms)
+[2026-05-22T06:32:24.555Z] [API] END   GET /api/service-types - 304 (6ms)
+[2026-05-22T06:32:40.633Z] [API] START POST /api/login
+[2026-05-22T06:32:40.740Z] [API] END   POST /api/login - 200 (107ms)
+[2026-05-22T06:32:40.776Z] [API] START GET /api/notifications
+[2026-05-22T06:32:40.778Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:32:40.780Z] [API] START GET /api/profile
+[2026-05-22T06:32:40.782Z] [API] END   GET /api/notifications - 200 (6ms)
+[2026-05-22T06:32:40.787Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T06:32:40.791Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (13ms)
+[2026-05-22T06:32:44.461Z] [API] START GET /api/service-types
+[2026-05-22T06:32:44.463Z] [API] START GET /api/projects?view=team
+[2026-05-22T06:32:44.466Z] [API] START GET /api/profile
+[2026-05-22T06:32:44.471Z] [API] END   GET /api/service-types - 304 (10ms)
+[2026-05-22T06:32:44.475Z] [API] END   GET /api/projects?view=team - 200 (12ms)
+[2026-05-22T06:32:44.481Z] [API] END   GET /api/profile - 200 (15ms)
+[2026-05-22T06:32:46.029Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:32:46.035Z] [API] END   GET /api/clients?view=team - 200 (6ms)
+[2026-05-22T06:32:46.036Z] [API] START GET /api/staff
+[2026-05-22T06:32:46.040Z] [API] START GET /api/service-types
+[2026-05-22T06:32:46.041Z] [API] START GET /api/profile
+[2026-05-22T06:32:46.046Z] [API] END   GET /api/staff - 304 (10ms)
+[2026-05-22T06:32:46.048Z] [API] END   GET /api/profile - 200 (7ms)
+[2026-05-22T06:32:46.053Z] [API] END   GET /api/service-types - 304 (13ms)
+[2026-05-22T06:32:57.113Z] [API] START POST /api/login
+[2026-05-22T06:32:57.221Z] [API] END   POST /api/login - 200 (108ms)
+[2026-05-22T06:32:57.259Z] [API] START GET /api/notifications
+[2026-05-22T06:32:57.261Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:32:57.263Z] [API] START GET /api/profile
+[2026-05-22T06:32:57.269Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T06:32:57.274Z] [API] END   GET /api/notifications - 200 (15ms)
+[2026-05-22T06:32:57.289Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (28ms)
+[2026-05-22T06:33:15.344Z] [API] START POST /api/login
+[2026-05-22T06:33:15.455Z] [API] END   POST /api/login - 200 (111ms)
+[2026-05-22T06:33:15.493Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:33:15.494Z] [API] START GET /api/notifications
+[2026-05-22T06:33:15.499Z] [API] START GET /api/profile
+[2026-05-22T06:33:15.502Z] [API] END   GET /api/notifications - 200 (8ms)
+[2026-05-22T06:33:15.503Z] [API] END   GET /api/profile - 200 (4ms)
+[2026-05-22T06:33:15.510Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (17ms)
+[2026-05-22T06:33:24.096Z] [API] START GET /api/profile
+[2026-05-22T06:33:24.104Z] [API] END   GET /api/profile - 200 (8ms)
+[2026-05-22T06:33:24.224Z] [API] START GET /api/notifications
+[2026-05-22T06:33:24.238Z] [API] END   GET /api/notifications - 200 (14ms)
+[2026-05-22T06:33:24.243Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:33:24.258Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (15ms)
+[2026-05-22T06:33:28.805Z] [API] START GET /api/profile
+[2026-05-22T06:33:28.808Z] [API] END   GET /api/profile - 200 (3ms)
+[2026-05-22T06:33:28.962Z] [API] START GET /api/notifications
+[2026-05-22T06:33:28.965Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:33:28.967Z] [API] END   GET /api/notifications - 200 (5ms)
+[2026-05-22T06:33:28.977Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (12ms)
+[2026-05-22T06:33:38.595Z] [API] START POST /api/login
+[2026-05-22T06:33:38.706Z] [API] END   POST /api/login - 200 (111ms)
+[2026-05-22T06:33:38.764Z] [API] START GET /api/notifications
+[2026-05-22T06:33:38.768Z] [API] START GET /api/profile
+[2026-05-22T06:33:38.771Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:33:38.773Z] [API] END   GET /api/notifications - 200 (9ms)
+[2026-05-22T06:33:38.781Z] [API] END   GET /api/profile - 200 (13ms)
+[2026-05-22T06:33:38.794Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (23ms)
+[2026-05-22T06:33:40.679Z] [API] START GET /api/service-types
+[2026-05-22T06:33:40.682Z] [API] END   GET /api/service-types - 200 (3ms)
+[2026-05-22T06:33:40.685Z] [API] START GET /api/projects?view=team
+[2026-05-22T06:33:40.686Z] [API] START GET /api/profile
+[2026-05-22T06:33:40.694Z] [API] END   GET /api/projects?view=team - 200 (9ms)
+[2026-05-22T06:33:40.698Z] [API] END   GET /api/profile - 200 (12ms)
+[2026-05-22T06:33:42.275Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:33:42.283Z] [API] START GET /api/staff
+[2026-05-22T06:33:42.285Z] [API] START GET /api/service-types
+[2026-05-22T06:33:42.286Z] [API] START GET /api/profile
+[2026-05-22T06:33:42.293Z] [API] END   GET /api/clients?view=team - 200 (18ms)
+[2026-05-22T06:33:42.297Z] [API] END   GET /api/staff - 200 (14ms)
+[2026-05-22T06:33:42.301Z] [API] END   GET /api/profile - 200 (15ms)
+[2026-05-22T06:33:42.303Z] [API] END   GET /api/service-types - 304 (18ms)
+[2026-05-22T06:33:58.185Z] [API] START POST /api/login
+[2026-05-22T06:33:58.295Z] [API] END   POST /api/login - 200 (110ms)
+[2026-05-22T06:33:58.334Z] [API] START GET /api/notifications
+[2026-05-22T06:33:58.337Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:33:58.339Z] [API] START GET /api/profile
+[2026-05-22T06:33:58.343Z] [API] END   GET /api/notifications - 200 (9ms)
+[2026-05-22T06:33:58.352Z] [API] END   GET /api/profile - 200 (13ms)
+[2026-05-22T06:33:58.367Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (30ms)
+[2026-05-22T06:34:03.540Z] [API] START GET /api/service-types
+[2026-05-22T06:34:03.543Z] [API] END   GET /api/service-types - 304 (3ms)
+[2026-05-22T06:34:03.545Z] [API] START GET /api/projects?view=team
+[2026-05-22T06:34:03.547Z] [API] START GET /api/profile
+[2026-05-22T06:34:03.554Z] [API] END   GET /api/projects?view=team - 304 (9ms)
+[2026-05-22T06:34:03.558Z] [API] END   GET /api/profile - 200 (11ms)
+[2026-05-22T06:34:05.063Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:34:05.070Z] [API] START GET /api/staff
+[2026-05-22T06:34:05.071Z] [API] START GET /api/service-types
+[2026-05-22T06:34:05.073Z] [API] START GET /api/profile
+[2026-05-22T06:34:05.076Z] [API] END   GET /api/staff - 304 (6ms)
+[2026-05-22T06:34:05.077Z] [API] END   GET /api/service-types - 304 (6ms)
+[2026-05-22T06:34:05.086Z] [API] END   GET /api/profile - 200 (13ms)
+[2026-05-22T06:34:05.088Z] [API] END   GET /api/clients?view=team - 200 (25ms)
+[2026-05-22T06:34:12.849Z] [API] START POST /api/login
+[2026-05-22T06:34:12.958Z] [API] END   POST /api/login - 200 (109ms)
+[2026-05-22T06:34:12.996Z] [API] START GET /api/notifications
+[2026-05-22T06:34:12.998Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:34:13.000Z] [API] START GET /api/profile
+[2026-05-22T06:34:13.003Z] [API] END   GET /api/notifications - 200 (7ms)
+[2026-05-22T06:34:13.006Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T06:34:13.018Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (20ms)
+[2026-05-22T06:34:18.727Z] [API] START GET /api/service-types
+[2026-05-22T06:34:18.729Z] [API] START GET /api/projects?view=team
+[2026-05-22T06:34:18.731Z] [API] START GET /api/profile
+[2026-05-22T06:34:18.738Z] [API] END   GET /api/service-types - 304 (11ms)
+[2026-05-22T06:34:18.742Z] [API] END   GET /api/projects?view=team - 304 (13ms)
+[2026-05-22T06:34:18.744Z] [API] END   GET /api/profile - 200 (13ms)
+[2026-05-22T06:34:20.755Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:34:20.762Z] [API] END   GET /api/clients?view=team - 200 (7ms)
+[2026-05-22T06:34:20.763Z] [API] START GET /api/staff
+[2026-05-22T06:34:20.765Z] [API] START GET /api/service-types
+[2026-05-22T06:34:20.769Z] [API] START GET /api/profile
+[2026-05-22T06:34:20.777Z] [API] END   GET /api/staff - 304 (14ms)
+[2026-05-22T06:34:20.780Z] [API] END   GET /api/service-types - 304 (15ms)
+[2026-05-22T06:34:20.782Z] [API] END   GET /api/profile - 200 (13ms)
+[2026-05-22T06:34:29.800Z] [API] START POST /api/login
+[2026-05-22T06:34:29.908Z] [API] END   POST /api/login - 200 (108ms)
+[2026-05-22T06:34:29.947Z] [API] START GET /api/notifications
+[2026-05-22T06:34:29.949Z] [API] START GET /api/profile
+[2026-05-22T06:34:29.952Z] [API] END   GET /api/notifications - 200 (5ms)
+[2026-05-22T06:34:29.956Z] [API] END   GET /api/profile - 200 (7ms)
+[2026-05-22T06:34:29.958Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:34:29.964Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (6ms)
+[2026-05-22T06:34:35.213Z] [API] START GET /api/service-types
+[2026-05-22T06:34:35.215Z] [API] START GET /api/projects?view=team
+[2026-05-22T06:34:35.218Z] [API] START GET /api/profile
+[2026-05-22T06:34:35.223Z] [API] END   GET /api/service-types - 304 (10ms)
+[2026-05-22T06:34:35.227Z] [API] END   GET /api/projects?view=team - 304 (12ms)
+[2026-05-22T06:34:35.233Z] [API] END   GET /api/profile - 200 (15ms)
+[2026-05-22T06:34:39.005Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:34:39.010Z] [API] START GET /api/staff
+[2026-05-22T06:34:39.012Z] [API] START GET /api/service-types
+[2026-05-22T06:34:39.015Z] [API] START GET /api/profile
+[2026-05-22T06:34:39.021Z] [API] END   GET /api/staff - 304 (11ms)
+[2026-05-22T06:34:39.023Z] [API] END   GET /api/service-types - 304 (11ms)
+[2026-05-22T06:34:39.026Z] [API] END   GET /api/profile - 200 (12ms)
+[2026-05-22T06:34:39.028Z] [API] END   GET /api/clients?view=team - 304 (23ms)
+[2026-05-22T06:34:42.118Z] [API] START GET /api/profile
+[2026-05-22T06:34:42.122Z] [API] END   GET /api/profile - 200 (4ms)
+[2026-05-22T06:34:42.126Z] [API] START GET /api/profile
+[2026-05-22T06:34:42.129Z] [API] END   GET /api/profile - 304 (3ms)
+[2026-05-22T06:34:43.354Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:34:43.359Z] [API] END   GET /api/clients?view=team - 304 (5ms)
+[2026-05-22T06:34:43.373Z] [API] START GET /api/staff
+[2026-05-22T06:34:43.377Z] [API] START GET /api/service-types
+[2026-05-22T06:34:43.379Z] [API] START GET /api/profile
+[2026-05-22T06:34:43.381Z] [API] END   GET /api/staff - 304 (8ms)
+[2026-05-22T06:34:43.383Z] [API] END   GET /api/service-types - 304 (6ms)
+[2026-05-22T06:34:43.386Z] [API] END   GET /api/profile - 200 (7ms)
+[2026-05-22T06:35:03.921Z] [API] START POST /api/login
+[2026-05-22T06:35:04.034Z] [API] END   POST /api/login - 200 (113ms)
+[2026-05-22T06:35:04.070Z] [API] START GET /api/notifications
+[2026-05-22T06:35:04.071Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:35:04.073Z] [API] START GET /api/profile
+[2026-05-22T06:35:04.077Z] [API] END   GET /api/notifications - 200 (7ms)
+[2026-05-22T06:35:04.081Z] [API] END   GET /api/profile - 200 (8ms)
+[2026-05-22T06:35:04.092Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (21ms)
+[2026-05-22T06:35:07.255Z] [API] START GET /api/service-types
+[2026-05-22T06:35:07.258Z] [API] START GET /api/projects?view=team
+[2026-05-22T06:35:07.260Z] [API] START GET /api/profile
+[2026-05-22T06:35:07.264Z] [API] END   GET /api/service-types - 304 (9ms)
+[2026-05-22T06:35:07.266Z] [API] END   GET /api/projects?view=team - 200 (8ms)
+[2026-05-22T06:35:07.268Z] [API] END   GET /api/profile - 200 (8ms)
+[2026-05-22T06:35:11.260Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:35:11.263Z] [API] START GET /api/staff
+[2026-05-22T06:35:11.264Z] [API] START GET /api/service-types
+[2026-05-22T06:35:11.266Z] [API] START GET /api/profile
+[2026-05-22T06:35:11.270Z] [API] END   GET /api/staff - 304 (7ms)
+[2026-05-22T06:35:11.271Z] [API] END   GET /api/service-types - 304 (7ms)
+[2026-05-22T06:35:11.273Z] [API] END   GET /api/profile - 200 (7ms)
+[2026-05-22T06:35:11.276Z] [API] END   GET /api/clients?view=team - 200 (16ms)
+[2026-05-22T06:35:50.720Z] [API] START POST /api/login
+[2026-05-22T06:35:50.831Z] [API] END   POST /api/login - 200 (111ms)
+[2026-05-22T06:35:50.859Z] [API] START GET /api/notifications
+[2026-05-22T06:35:50.865Z] [API] END   GET /api/notifications - 200 (6ms)
+[2026-05-22T06:35:50.866Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:35:50.869Z] [API] START GET /api/profile
+[2026-05-22T06:35:50.874Z] [API] END   GET /api/profile - 200 (5ms)
+[2026-05-22T06:35:50.886Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (20ms)
+[2026-05-22T06:35:53.543Z] [API] START GET /api/service-types
+[2026-05-22T06:35:53.546Z] [API] END   GET /api/service-types - 304 (3ms)
+[2026-05-22T06:35:53.549Z] [API] START GET /api/projects?view=team
+[2026-05-22T06:35:53.551Z] [API] START GET /api/profile
+[2026-05-22T06:35:53.554Z] [API] END   GET /api/projects?view=team - 200 (5ms)
+[2026-05-22T06:35:53.557Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T06:35:54.980Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:35:54.987Z] [API] START GET /api/staff
+[2026-05-22T06:35:54.989Z] [API] END   GET /api/clients?view=team - 200 (9ms)
+[2026-05-22T06:35:54.990Z] [API] START GET /api/service-types
+[2026-05-22T06:35:54.992Z] [API] START GET /api/profile
+[2026-05-22T06:35:54.994Z] [API] END   GET /api/staff - 304 (7ms)
+[2026-05-22T06:35:55.000Z] [API] END   GET /api/service-types - 304 (10ms)
+[2026-05-22T06:35:55.003Z] [API] END   GET /api/profile - 200 (11ms)
+[2026-05-22T06:36:10.290Z] [API] START POST /api/login
+[2026-05-22T06:36:10.398Z] [API] END   POST /api/login - 200 (108ms)
+[2026-05-22T06:36:10.440Z] [API] START GET /api/profile
+[2026-05-22T06:36:10.442Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:36:10.444Z] [API] START GET /api/notifications
+[2026-05-22T06:36:10.449Z] [API] END   GET /api/profile - 200 (9ms)
+[2026-05-22T06:36:10.452Z] [API] END   GET /api/notifications - 200 (8ms)
+[2026-05-22T06:36:10.465Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (23ms)
+[2026-05-22T06:36:13.877Z] [API] START GET /api/service-types
+[2026-05-22T06:36:13.879Z] [API] END   GET /api/service-types - 304 (2ms)
+[2026-05-22T06:36:13.890Z] [API] START GET /api/projects?view=team
+[2026-05-22T06:36:13.893Z] [API] START GET /api/profile
+[2026-05-22T06:36:13.896Z] [API] END   GET /api/projects?view=team - 200 (6ms)
+[2026-05-22T06:36:13.900Z] [API] END   GET /api/profile - 200 (7ms)
+[2026-05-22T06:36:14.963Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:36:14.968Z] [API] END   GET /api/clients?view=team - 200 (5ms)
+[2026-05-22T06:36:14.972Z] [API] START GET /api/staff
+[2026-05-22T06:36:14.974Z] [API] START GET /api/profile
+[2026-05-22T06:36:14.976Z] [API] START GET /api/service-types
+[2026-05-22T06:36:14.979Z] [API] END   GET /api/staff - 304 (7ms)
+[2026-05-22T06:36:14.983Z] [API] END   GET /api/profile - 200 (9ms)
+[2026-05-22T06:36:14.984Z] [API] END   GET /api/service-types - 304 (8ms)
+[2026-05-22T06:36:25.313Z] [API] START POST /api/login
+[2026-05-22T06:36:25.421Z] [API] END   POST /api/login - 200 (108ms)
+[2026-05-22T06:36:25.454Z] [API] START GET /api/notifications
+[2026-05-22T06:36:25.457Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:36:25.459Z] [API] START GET /api/profile
+[2026-05-22T06:36:25.462Z] [API] END   GET /api/notifications - 200 (8ms)
+[2026-05-22T06:36:25.465Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T06:36:25.478Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (21ms)
+[2026-05-22T06:36:26.785Z] [API] START GET /api/service-types
+[2026-05-22T06:36:26.789Z] [API] END   GET /api/service-types - 304 (4ms)
+[2026-05-22T06:36:26.802Z] [API] START GET /api/projects?view=team
+[2026-05-22T06:36:26.805Z] [API] START GET /api/profile
+[2026-05-22T06:36:26.809Z] [API] END   GET /api/projects?view=team - 200 (7ms)
+[2026-05-22T06:36:26.811Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T06:36:40.466Z] [API] START POST /api/login
+[2026-05-22T06:36:40.573Z] [API] END   POST /api/login - 200 (107ms)
+[2026-05-22T06:36:40.609Z] [API] START GET /api/notifications
+[2026-05-22T06:36:40.613Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:36:40.616Z] [API] START GET /api/profile
+[2026-05-22T06:36:40.618Z] [API] END   GET /api/notifications - 200 (9ms)
+[2026-05-22T06:36:40.620Z] [API] END   GET /api/profile - 200 (4ms)
+[2026-05-22T06:36:40.626Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (13ms)
+[2026-05-22T06:36:42.244Z] [API] START GET /api/service-types
+[2026-05-22T06:36:42.250Z] [API] START GET /api/projects?view=team
+[2026-05-22T06:36:42.252Z] [API] END   GET /api/service-types - 304 (8ms)
+[2026-05-22T06:36:42.254Z] [API] START GET /api/profile
+[2026-05-22T06:36:42.256Z] [API] END   GET /api/projects?view=team - 304 (6ms)
+[2026-05-22T06:36:42.259Z] [API] END   GET /api/profile - 200 (5ms)
+[2026-05-22T06:36:52.713Z] [API] START POST /api/login
+[2026-05-22T06:36:52.828Z] [API] END   POST /api/login - 200 (115ms)
+[2026-05-22T06:36:52.863Z] [API] START GET /api/notifications
+[2026-05-22T06:36:52.866Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:36:52.868Z] [API] START GET /api/profile
+[2026-05-22T06:36:52.871Z] [API] END   GET /api/notifications - 304 (8ms)
+[2026-05-22T06:36:52.875Z] [API] END   GET /api/profile - 200 (7ms)
+[2026-05-22T06:36:52.880Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (14ms)
+[2026-05-22T06:36:54.507Z] [API] START GET /api/service-types
+[2026-05-22T06:36:54.509Z] [API] END   GET /api/service-types - 304 (2ms)
+[2026-05-22T06:36:54.525Z] [API] START GET /api/projects?view=team
+[2026-05-22T06:36:54.527Z] [API] START GET /api/profile
+[2026-05-22T06:36:54.530Z] [API] END   GET /api/projects?view=team - 304 (5ms)
+[2026-05-22T06:36:54.533Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T06:37:02.631Z] [API] START GET /api/profile
+[2026-05-22T06:37:02.636Z] [API] END   GET /api/profile - 200 (5ms)
+[2026-05-22T06:37:02.680Z] [API] START GET /api/notifications
+[2026-05-22T06:37:02.683Z] [API] END   GET /api/notifications - 304 (3ms)
+[2026-05-22T06:37:02.690Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:37:02.692Z] [API] START GET /api/staff
+[2026-05-22T06:37:02.695Z] [API] END   GET /api/staff - 200 (3ms)
+[2026-05-22T06:37:02.697Z] [API] END   GET /api/clients?view=team - 200 (7ms)
+[2026-05-22T06:37:02.713Z] [API] START GET /api/service-types
+[2026-05-22T06:37:02.715Z] [API] END   GET /api/service-types - 200 (2ms)
+[2026-05-22T06:37:30.269Z] [API] START GET /api/clients/29
+[2026-05-22T06:37:30.272Z] [API] START GET /api/staff
+[2026-05-22T06:37:30.274Z] [API] END   GET /api/staff - 304 (2ms)
+[2026-05-22T06:37:30.282Z] [API] END   GET /api/clients/29 - 200 (13ms)
+[2026-05-22T06:37:30.298Z] [API] START GET /api/service-types
+[2026-05-22T06:37:30.302Z] [API] END   GET /api/service-types - 304 (4ms)
+[2026-05-22T06:37:30.309Z] [API] START GET /api/profile
+[2026-05-22T06:37:30.318Z] [API] END   GET /api/profile - 200 (9ms)
+[2026-05-22T06:37:33.085Z] [API] START DELETE /api/clients/29
+[2026-05-22T06:37:33.099Z] [API] END   DELETE /api/clients/29 - 200 (14ms)
+[2026-05-22T06:37:33.159Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:37:33.160Z] [API] START GET /api/staff
+[2026-05-22T06:37:33.163Z] [API] START GET /api/service-types
+[2026-05-22T06:37:33.167Z] [API] START GET /api/profile
+[2026-05-22T06:37:33.169Z] [API] END   GET /api/staff - 304 (9ms)
+[2026-05-22T06:37:33.171Z] [API] END   GET /api/service-types - 304 (8ms)
+[2026-05-22T06:37:33.175Z] [API] END   GET /api/profile - 200 (8ms)
+[2026-05-22T06:37:33.180Z] [API] END   GET /api/clients?view=team - 200 (21ms)
+[2026-05-22T06:37:35.646Z] [API] START GET /api/profile
+[2026-05-22T06:37:35.651Z] [API] END   GET /api/profile - 200 (5ms)
+[2026-05-22T06:37:35.706Z] [API] START GET /api/notifications
+[2026-05-22T06:37:35.708Z] [API] END   GET /api/notifications - 304 (2ms)
+[2026-05-22T06:37:35.718Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:37:35.726Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (8ms)
+[2026-05-22T06:37:43.029Z] [API] START GET /api/profile
+[2026-05-22T06:37:43.040Z] [API] END   GET /api/profile - 200 (11ms)
+[2026-05-22T06:37:43.176Z] [API] START GET /api/notifications
+[2026-05-22T06:37:43.179Z] [API] END   GET /api/notifications - 304 (3ms)
+[2026-05-22T06:37:43.186Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:37:43.193Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (7ms)
+[2026-05-22T06:37:43.656Z] [API] START GET /api/profile
+[2026-05-22T06:37:43.662Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T06:37:43.798Z] [API] START GET /api/notifications
+[2026-05-22T06:37:43.804Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:37:43.809Z] [API] END   GET /api/notifications - 304 (11ms)
+[2026-05-22T06:37:43.817Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (13ms)
+[2026-05-22T06:38:05.856Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:38:05.864Z] [API] END   GET /api/clients?view=team - 304 (8ms)
+[2026-05-22T06:38:05.867Z] [API] START GET /api/staff
+[2026-05-22T06:38:05.869Z] [API] START GET /api/service-types
+[2026-05-22T06:38:05.872Z] [API] END   GET /api/staff - 304 (5ms)
+[2026-05-22T06:38:05.874Z] [API] START GET /api/profile
+[2026-05-22T06:38:05.882Z] [API] END   GET /api/service-types - 304 (13ms)
+[2026-05-22T06:38:05.886Z] [API] END   GET /api/profile - 200 (12ms)
+[2026-05-22T06:39:04.090Z] [API] START POST /api/clients
+[2026-05-22T06:39:04.097Z] [API] END   POST /api/clients - 201 (7ms)
+[2026-05-22T06:39:04.130Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:39:04.134Z] [API] END   GET /api/clients?view=team - 200 (4ms)
+[2026-05-22T06:39:04.154Z] [API] START GET /api/notifications
+[2026-05-22T06:39:04.162Z] [API] END   GET /api/notifications - 200 (8ms)
+[2026-05-22T06:39:04.182Z] [API] START GET /api/notifications
+[2026-05-22T06:39:04.191Z] [API] END   GET /api/notifications - 304 (9ms)
+[2026-05-22T06:39:04.213Z] [API] START GET /api/notifications
+[2026-05-22T06:39:04.216Z] [API] END   GET /api/notifications - 304 (3ms)
+[2026-05-22T06:39:07.119Z] [API] START GET /api/clients/30
+[2026-05-22T06:39:07.122Z] [API] START GET /api/staff
+[2026-05-22T06:39:07.124Z] [API] END   GET /api/staff - 304 (2ms)
+[2026-05-22T06:39:07.127Z] [API] END   GET /api/clients/30 - 200 (8ms)
+[2026-05-22T06:39:07.145Z] [API] START GET /api/service-types
+[2026-05-22T06:39:07.148Z] [API] END   GET /api/service-types - 304 (3ms)
+[2026-05-22T06:39:07.155Z] [API] START GET /api/profile
+[2026-05-22T06:39:07.169Z] [API] END   GET /api/profile - 200 (14ms)
+[2026-05-22T06:39:14.389Z] [API] START DELETE /api/clients/30
+[2026-05-22T06:39:14.398Z] [API] END   DELETE /api/clients/30 - 200 (9ms)
+[2026-05-22T06:39:14.434Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:39:14.438Z] [API] END   GET /api/clients?view=team - 200 (4ms)
+[2026-05-22T06:39:14.443Z] [API] START GET /api/staff
+[2026-05-22T06:39:14.449Z] [API] END   GET /api/staff - 304 (6ms)
+[2026-05-22T06:39:14.523Z] [API] START GET /api/service-types
+[2026-05-22T06:39:14.527Z] [API] END   GET /api/service-types - 304 (4ms)
+[2026-05-22T06:39:14.557Z] [API] START GET /api/profile
+[2026-05-22T06:39:14.564Z] [API] END   GET /api/profile - 200 (7ms)
+[2026-05-22T06:40:08.638Z] [API] START POST /api/login
+[2026-05-22T06:40:08.750Z] [API] END   POST /api/login - 200 (112ms)
+[2026-05-22T06:40:08.808Z] [API] START GET /api/notifications
+[2026-05-22T06:40:08.814Z] [API] END   GET /api/notifications - 200 (6ms)
+[2026-05-22T06:40:08.819Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:40:08.821Z] [API] START GET /api/profile
+[2026-05-22T06:40:08.823Z] [API] END   GET /api/profile - 200 (2ms)
+[2026-05-22T06:40:08.834Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (15ms)
+[2026-05-22T06:40:11.861Z] [API] START GET /api/profile
+[2026-05-22T06:40:11.866Z] [API] END   GET /api/profile - 200 (5ms)
+[2026-05-22T06:40:11.982Z] [API] START GET /api/notifications
+[2026-05-22T06:40:11.983Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:40:11.987Z] [API] END   GET /api/notifications - 200 (5ms)
+[2026-05-22T06:40:12.003Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (20ms)
+[2026-05-22T06:47:08.150Z] [DB] FIRST OPEN: Initializing database promise...
+[2026-05-22T06:47:08.200Z] [DB] CONFIGURE: Setting performance PRAGMAs...
+[2026-05-22T06:47:08.227Z] [DB] MIGRATE: Checking for pending migrations...
+[2026-05-22T06:47:08.231Z] [DB] MIGRATE: Database schema is up to date.
+[2026-05-22T06:47:08.232Z] [DB] CONFIGURE: Database initialized and ready.
+[2026-05-22T06:47:20.872Z] [API] START GET /api/profile
+[2026-05-22T06:47:20.908Z] [API] END   GET /api/profile - 200 (36ms)
+[2026-05-22T06:47:21.039Z] [API] START GET /api/notifications
+[2026-05-22T06:47:21.045Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:47:21.053Z] [API] START GET /api/staff
+[2026-05-22T06:47:21.057Z] [API] END   GET /api/notifications - 304 (18ms)
+[2026-05-22T06:47:21.058Z] [API] START GET /api/service-types
+[2026-05-22T06:47:21.066Z] [API] END   GET /api/staff - 304 (13ms)
+[2026-05-22T06:47:21.071Z] [API] END   GET /api/service-types - 304 (13ms)
+[2026-05-22T06:47:21.073Z] [API] END   GET /api/clients?view=team - 304 (28ms)
+[2026-05-22T06:48:32.992Z] [API] START POST /api/clients
+[2026-05-22T06:48:33.011Z] [API] END   POST /api/clients - 201 (19ms)
+[2026-05-22T06:48:33.032Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:48:33.048Z] [API] END   GET /api/clients?view=team - 200 (16ms)
+[2026-05-22T06:48:33.088Z] [API] START GET /api/notifications
+[2026-05-22T06:48:33.090Z] [API] END   GET /api/notifications - 200 (2ms)
+[2026-05-22T06:49:32.884Z] [API] START GET /api/clients/31
+[2026-05-22T06:49:32.887Z] [API] START GET /api/staff
+[2026-05-22T06:49:32.890Z] [API] END   GET /api/staff - 304 (3ms)
+[2026-05-22T06:49:32.897Z] [API] END   GET /api/clients/31 - 200 (13ms)
+[2026-05-22T06:49:32.911Z] [API] START GET /api/service-types
+[2026-05-22T06:49:32.913Z] [API] END   GET /api/service-types - 304 (2ms)
+[2026-05-22T06:49:32.924Z] [API] START GET /api/profile
+[2026-05-22T06:49:32.931Z] [API] END   GET /api/profile - 200 (7ms)
+[2026-05-22T06:50:21.214Z] [API] START DELETE /api/clients/31
+[2026-05-22T06:50:21.227Z] [API] END   DELETE /api/clients/31 - 200 (13ms)
+[2026-05-22T06:50:21.314Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:50:21.324Z] [API] START GET /api/staff
+[2026-05-22T06:50:21.327Z] [API] END   GET /api/clients?view=team - 200 (13ms)
+[2026-05-22T06:50:21.331Z] [API] END   GET /api/staff - 304 (7ms)
+[2026-05-22T06:50:21.357Z] [API] START GET /api/service-types
+[2026-05-22T06:50:21.362Z] [API] START GET /api/profile
+[2026-05-22T06:50:21.364Z] [API] END   GET /api/service-types - 304 (7ms)
+[2026-05-22T06:50:21.370Z] [API] END   GET /api/profile - 200 (8ms)
+[2026-05-22T06:50:32.058Z] [API] START GET /api/profile
+[2026-05-22T06:50:32.067Z] [API] END   GET /api/profile - 200 (9ms)
+[2026-05-22T06:50:32.156Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T06:50:32.158Z] [API] START GET /api/notifications
+[2026-05-22T06:50:32.161Z] [API] END   GET /api/notifications - 200 (3ms)
+[2026-05-22T06:50:32.169Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (13ms)
+[2026-05-22T06:51:29.970Z] [API] START GET /api/profile
+[2026-05-22T06:51:29.982Z] [API] END   GET /api/profile - 200 (12ms)
+[2026-05-22T06:51:30.153Z] [API] START GET /api/notifications
+[2026-05-22T06:51:30.156Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:51:30.160Z] [API] START GET /api/staff
+[2026-05-22T06:51:30.162Z] [API] END   GET /api/notifications - 304 (9ms)
+[2026-05-22T06:51:30.166Z] [API] END   GET /api/staff - 304 (6ms)
+[2026-05-22T06:51:30.168Z] [API] END   GET /api/clients?view=team - 304 (12ms)
+[2026-05-22T06:51:30.171Z] [API] START GET /api/service-types
+[2026-05-22T06:51:30.174Z] [API] END   GET /api/service-types - 304 (3ms)
+[2026-05-22T06:51:43.817Z] [API] START GET /api/profile
+[2026-05-22T06:51:43.823Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T06:51:43.977Z] [API] START GET /api/notifications
+[2026-05-22T06:51:43.983Z] [API] END   GET /api/notifications - 304 (6ms)
+[2026-05-22T06:51:43.990Z] [API] START GET /api/clients?view=team
+[2026-05-22T06:51:43.997Z] [API] END   GET /api/clients?view=team - 304 (7ms)
+[2026-05-22T06:51:44.008Z] [API] START GET /api/staff
+[2026-05-22T06:51:44.014Z] [API] START GET /api/service-types
+[2026-05-22T06:51:44.019Z] [API] END   GET /api/staff - 304 (11ms)
+[2026-05-22T06:51:44.020Z] [API] END   GET /api/service-types - 304 (6ms)
+[2026-05-22T07:19:58.466Z] [API] START GET /api/clients/28
+[2026-05-22T07:19:58.471Z] [API] START GET /api/staff
+[2026-05-22T07:19:58.474Z] [API] END   GET /api/staff - 200 (3ms)
+[2026-05-22T07:19:58.476Z] [API] END   GET /api/clients/28 - 200 (10ms)
+[2026-05-22T07:19:58.483Z] [API] START GET /api/service-types
+[2026-05-22T07:19:58.487Z] [API] END   GET /api/service-types - 200 (4ms)
+[2026-05-22T07:19:58.501Z] [API] START GET /api/profile
+[2026-05-22T07:19:58.506Z] [API] END   GET /api/profile - 200 (5ms)
+[2026-05-22T07:22:48.896Z] [DB] FIRST OPEN: Initializing database promise...
+[2026-05-22T07:22:48.925Z] [DB] CONFIGURE: Setting performance PRAGMAs...
+[2026-05-22T07:22:48.933Z] [DB] MIGRATE: Checking for pending migrations...
+[2026-05-22T07:22:48.939Z] [DB] MIGRATE: Database schema is up to date.
+[2026-05-22T07:22:48.940Z] [DB] CONFIGURE: Database initialized and ready.
+[2026-05-22T07:22:58.871Z] [API] START GET /api/clients?view=team
+[2026-05-22T07:22:58.880Z] [API] START GET /api/staff
+[2026-05-22T07:22:58.883Z] [API] START GET /api/service-types
+[2026-05-22T07:22:58.889Z] [API] START GET /api/profile
+[2026-05-22T07:22:58.907Z] [API] END   GET /api/staff - 304 (27ms)
+[2026-05-22T07:22:58.911Z] [API] END   GET /api/service-types - 304 (28ms)
+[2026-05-22T07:22:58.927Z] [API] END   GET /api/profile - 200 (38ms)
+[2026-05-22T07:22:58.937Z] [API] END   GET /api/clients?view=team - 200 (66ms)
+[2026-05-22T07:24:56.373Z] [API] START POST /api/clients
+[2026-05-22T07:24:56.386Z] [API] END   POST /api/clients - 201 (13ms)
+[2026-05-22T07:24:56.416Z] [API] START GET /api/clients?view=team
+[2026-05-22T07:24:56.428Z] [API] END   GET /api/clients?view=team - 200 (12ms)
+[2026-05-22T07:24:58.482Z] [API] START GET /api/clients/32
+[2026-05-22T07:24:58.489Z] [API] START GET /api/staff
+[2026-05-22T07:24:58.493Z] [API] START GET /api/service-types
+[2026-05-22T07:24:58.496Z] [API] START GET /api/profile
+[2026-05-22T07:24:58.499Z] [API] END   GET /api/staff - 304 (10ms)
+[2026-05-22T07:24:58.505Z] [API] END   GET /api/service-types - 304 (12ms)
+[2026-05-22T07:24:58.511Z] [API] END   GET /api/profile - 200 (15ms)
+[2026-05-22T07:24:58.516Z] [API] END   GET /api/clients/32 - 200 (34ms)
+[2026-05-22T07:25:08.798Z] [API] START DELETE /api/clients/32
+[2026-05-22T07:25:08.803Z] [API] END   DELETE /api/clients/32 - 200 (5ms)
+[2026-05-22T07:25:08.834Z] [API] START GET /api/clients?view=team
+[2026-05-22T07:25:08.842Z] [API] START GET /api/staff
+[2026-05-22T07:25:08.847Z] [API] END   GET /api/staff - 304 (5ms)
+[2026-05-22T07:25:08.851Z] [API] END   GET /api/clients?view=team - 200 (17ms)
+[2026-05-22T07:25:08.867Z] [API] START GET /api/service-types
+[2026-05-22T07:25:08.869Z] [API] START GET /api/profile
+[2026-05-22T07:25:08.875Z] [API] END   GET /api/service-types - 304 (8ms)
+[2026-05-22T07:25:08.881Z] [API] END   GET /api/profile - 200 (12ms)
+[2026-05-22T07:25:12.920Z] [API] START GET /api/profile
+[2026-05-22T07:25:12.928Z] [API] END   GET /api/profile - 200 (8ms)
+[2026-05-22T07:25:12.975Z] [API] START GET /api/notifications
+[2026-05-22T07:25:12.979Z] [API] END   GET /api/notifications - 200 (4ms)
+[2026-05-22T07:25:12.983Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T07:25:12.994Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (11ms)
+[2026-05-22T07:26:24.818Z] [API] START POST /api/login
+[2026-05-22T07:26:24.935Z] [API] END   POST /api/login - 200 (117ms)
+[2026-05-22T07:26:24.975Z] [API] START GET /api/notifications
+[2026-05-22T07:26:24.981Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T07:26:24.985Z] [API] START GET /api/profile
+[2026-05-22T07:26:24.988Z] [API] END   GET /api/notifications - 200 (13ms)
+[2026-05-22T07:26:24.997Z] [API] END   GET /api/profile - 200 (12ms)
+[2026-05-22T07:26:25.006Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (25ms)
+[2026-05-22T07:26:56.749Z] [API] START POST /api/login
+[2026-05-22T07:26:56.856Z] [API] END   POST /api/login - 200 (107ms)
+[2026-05-22T07:26:56.897Z] [API] START GET /api/notifications
+[2026-05-22T07:26:56.900Z] [API] END   GET /api/notifications - 200 (3ms)
+[2026-05-22T07:26:56.909Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T07:26:56.916Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (7ms)
+[2026-05-22T07:26:56.918Z] [API] START GET /api/profile
+[2026-05-22T07:26:56.923Z] [API] END   GET /api/profile - 200 (5ms)
+[2026-05-22T07:26:58.125Z] [API] START GET /api/users
+[2026-05-22T07:26:58.128Z] [API] START GET /api/profile
+[2026-05-22T07:26:58.132Z] [API] END   GET /api/users - 200 (7ms)
+[2026-05-22T07:26:58.139Z] [API] END   GET /api/profile - 200 (11ms)
+[2026-05-22T07:28:09.756Z] [API] START POST /api/login
+[2026-05-22T07:28:09.874Z] [API] END   POST /api/login - 200 (118ms)
+[2026-05-22T07:28:09.920Z] [API] START GET /api/notifications
+[2026-05-22T07:28:09.934Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T07:28:09.936Z] [API] START GET /api/profile
+[2026-05-22T07:28:09.940Z] [API] END   GET /api/notifications - 304 (20ms)
+[2026-05-22T07:28:09.948Z] [API] END   GET /api/profile - 200 (12ms)
+[2026-05-22T07:28:09.955Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (21ms)
+[2026-05-22T07:29:50.651Z] [API] START POST /api/login
+[2026-05-22T07:29:50.765Z] [API] END   POST /api/login - 200 (114ms)
+[2026-05-22T07:29:50.806Z] [API] START GET /api/notifications
+[2026-05-22T07:29:50.816Z] [API] END   GET /api/notifications - 200 (10ms)
+[2026-05-22T07:29:50.818Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T07:29:50.821Z] [API] START GET /api/profile
+[2026-05-22T07:29:50.824Z] [API] END   GET /api/profile - 200 (3ms)
+[2026-05-22T07:29:50.835Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (17ms)
+[2026-05-22T07:39:28.943Z] [API] START POST /api/login
+[2026-05-22T07:39:29.060Z] [API] END   POST /api/login - 200 (117ms)
+[2026-05-22T07:39:29.108Z] [API] START GET /api/notifications
+[2026-05-22T07:39:29.109Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T07:39:29.111Z] [API] START GET /api/profile
+[2026-05-22T07:39:29.115Z] [API] END   GET /api/notifications - 200 (7ms)
+[2026-05-22T07:39:29.121Z] [API] END   GET /api/profile - 200 (10ms)
+[2026-05-22T07:39:29.134Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (25ms)
+[2026-05-22T07:56:11.611Z] [API] START POST /api/login
+[2026-05-22T07:56:11.721Z] [API] END   POST /api/login - 200 (110ms)
+[2026-05-22T07:56:11.760Z] [API] START GET /api/notifications
+[2026-05-22T07:56:11.763Z] [API] START GET /api/profile
+[2026-05-22T07:56:11.765Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T07:56:11.767Z] [API] END   GET /api/notifications - 200 (7ms)
+[2026-05-22T07:56:11.774Z] [API] END   GET /api/profile - 200 (11ms)
+[2026-05-22T07:56:11.786Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (21ms)
+[2026-05-22T07:57:02.146Z] [API] START POST /api/login
+[2026-05-22T07:57:02.252Z] [API] END   POST /api/login - 200 (106ms)
+[2026-05-22T07:57:02.282Z] [API] START GET /api/notifications
+[2026-05-22T07:57:02.288Z] [API] END   GET /api/notifications - 200 (6ms)
+[2026-05-22T07:57:02.290Z] [API] START GET /api/profile
+[2026-05-22T07:57:02.293Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T07:57:02.301Z] [API] END   GET /api/profile - 200 (11ms)
+[2026-05-22T07:57:02.311Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (18ms)
+[2026-05-22T09:16:34.861Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T09:16:34.867Z] [API] START GET /api/profile
+[2026-05-22T09:16:34.872Z] [API] END   GET /api/profile - 200 (5ms)
+[2026-05-22T09:16:34.878Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (17ms)
+[2026-05-22T09:26:05.530Z] [API] START GET /api/profile
+[2026-05-22T09:26:05.535Z] [API] END   GET /api/profile - 200 (5ms)
+[2026-05-22T09:26:05.581Z] [API] START GET /api/notifications
+[2026-05-22T09:26:05.584Z] [API] END   GET /api/notifications - 200 (3ms)
+[2026-05-22T09:26:05.588Z] [API] START GET /api/clients?view=team
+[2026-05-22T09:26:05.594Z] [API] END   GET /api/clients?view=team - 200 (6ms)
+[2026-05-22T09:26:05.603Z] [API] START GET /api/staff
+[2026-05-22T09:26:05.606Z] [API] END   GET /api/staff - 200 (3ms)
+[2026-05-22T09:26:05.611Z] [API] START GET /api/service-types
+[2026-05-22T09:26:05.613Z] [API] END   GET /api/service-types - 200 (2ms)
+[2026-05-22T09:26:28.150Z] [API] START GET /api/clients/9
+[2026-05-22T09:26:28.153Z] [API] START GET /api/staff
+[2026-05-22T09:26:28.156Z] [API] END   GET /api/clients/9 - 200 (6ms)
+[2026-05-22T09:26:28.158Z] [API] END   GET /api/staff - 200 (5ms)
+[2026-05-22T09:26:28.170Z] [API] START GET /api/service-types
+[2026-05-22T09:26:28.175Z] [API] END   GET /api/service-types - 200 (5ms)
+[2026-05-22T09:26:28.181Z] [API] START GET /api/profile
+[2026-05-22T09:26:28.189Z] [API] END   GET /api/profile - 200 (8ms)
+[2026-05-22T09:26:42.725Z] [API] START GET /api/clients?view=team
+[2026-05-22T09:26:42.728Z] [API] START GET /api/staff
+[2026-05-22T09:26:42.731Z] [API] END   GET /api/staff - 304 (3ms)
+[2026-05-22T09:26:42.734Z] [API] END   GET /api/clients?view=team - 200 (9ms)
+[2026-05-22T09:26:42.737Z] [API] START GET /api/service-types
+[2026-05-22T09:26:42.742Z] [API] END   GET /api/service-types - 304 (5ms)
+[2026-05-22T09:26:42.744Z] [API] START GET /api/profile
+[2026-05-22T09:26:42.749Z] [API] END   GET /api/profile - 200 (5ms)
+[2026-05-22T09:26:57.081Z] [API] START GET /api/clients/11
+[2026-05-22T09:26:57.083Z] [API] START GET /api/staff
+[2026-05-22T09:26:57.085Z] [API] START GET /api/service-types
+[2026-05-22T09:26:57.087Z] [API] END   GET /api/staff - 304 (4ms)
+[2026-05-22T09:26:57.089Z] [API] END   GET /api/service-types - 304 (4ms)
+[2026-05-22T09:26:57.095Z] [API] END   GET /api/clients/11 - 200 (14ms)
+[2026-05-22T09:26:57.107Z] [API] START GET /api/profile
+[2026-05-22T09:26:57.117Z] [API] END   GET /api/profile - 200 (10ms)
+[2026-05-22T09:27:20.957Z] [API] START GET /api/clients?view=team
+[2026-05-22T09:27:20.961Z] [API] END   GET /api/clients?view=team - 304 (4ms)
+[2026-05-22T09:27:20.962Z] [API] START GET /api/staff
+[2026-05-22T09:27:20.966Z] [API] END   GET /api/staff - 304 (4ms)
+[2026-05-22T09:27:20.977Z] [API] START GET /api/service-types
+[2026-05-22T09:27:20.982Z] [API] END   GET /api/service-types - 304 (5ms)
+[2026-05-22T09:27:20.996Z] [API] START GET /api/profile
+[2026-05-22T09:27:21.009Z] [API] END   GET /api/profile - 200 (13ms)
+[2026-05-22T09:27:24.086Z] [API] START GET /api/clients/14
+[2026-05-22T09:27:24.091Z] [API] END   GET /api/clients/14 - 200 (5ms)
+[2026-05-22T09:27:24.093Z] [API] START GET /api/staff
+[2026-05-22T09:27:24.096Z] [API] END   GET /api/staff - 304 (3ms)
+[2026-05-22T09:27:24.111Z] [API] START GET /api/service-types
+[2026-05-22T09:27:24.113Z] [API] START GET /api/profile
+[2026-05-22T09:27:24.116Z] [API] END   GET /api/service-types - 304 (5ms)
+[2026-05-22T09:27:24.124Z] [API] END   GET /api/profile - 200 (11ms)
+[2026-05-22T09:27:40.368Z] [API] START GET /api/clients?view=team
+[2026-05-22T09:27:40.371Z] [API] START GET /api/staff
+[2026-05-22T09:27:40.374Z] [API] END   GET /api/staff - 304 (3ms)
+[2026-05-22T09:27:40.378Z] [API] END   GET /api/clients?view=team - 304 (10ms)
+[2026-05-22T09:27:40.381Z] [API] START GET /api/service-types
+[2026-05-22T09:27:40.383Z] [API] START GET /api/profile
+[2026-05-22T09:27:40.385Z] [API] END   GET /api/service-types - 304 (4ms)
+[2026-05-22T09:27:40.389Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T09:27:47.716Z] [API] START GET /api/clients/23
+[2026-05-22T09:27:47.720Z] [API] START GET /api/staff
+[2026-05-22T09:27:47.722Z] [API] START GET /api/service-types
+[2026-05-22T09:27:47.724Z] [API] START GET /api/profile
+[2026-05-22T09:27:47.726Z] [API] END   GET /api/staff - 304 (6ms)
+[2026-05-22T09:27:47.729Z] [API] END   GET /api/service-types - 304 (7ms)
+[2026-05-22T09:27:47.735Z] [API] END   GET /api/profile - 200 (11ms)
+[2026-05-22T09:27:47.739Z] [API] END   GET /api/clients/23 - 200 (23ms)
+[2026-05-22T09:28:04.032Z] [API] START GET /api/clients?view=team
+[2026-05-22T09:28:04.036Z] [API] END   GET /api/clients?view=team - 304 (4ms)
+[2026-05-22T09:28:04.044Z] [API] START GET /api/staff
+[2026-05-22T09:28:04.051Z] [API] END   GET /api/staff - 304 (7ms)
+[2026-05-22T09:28:04.063Z] [API] START GET /api/service-types
+[2026-05-22T09:28:04.070Z] [API] END   GET /api/service-types - 304 (7ms)
+[2026-05-22T09:28:04.081Z] [API] START GET /api/profile
+[2026-05-22T09:28:04.087Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T09:28:07.772Z] [API] START GET /api/clients/25
+[2026-05-22T09:28:07.774Z] [API] START GET /api/staff
+[2026-05-22T09:28:07.775Z] [API] START GET /api/service-types
+[2026-05-22T09:28:07.777Z] [API] START GET /api/profile
+[2026-05-22T09:28:07.780Z] [API] END   GET /api/staff - 304 (6ms)
+[2026-05-22T09:28:07.784Z] [API] END   GET /api/service-types - 304 (9ms)
+[2026-05-22T09:28:07.791Z] [API] END   GET /api/profile - 200 (14ms)
+[2026-05-22T09:28:07.795Z] [API] END   GET /api/clients/25 - 200 (23ms)
+[2026-05-22T09:28:19.703Z] [API] START GET /api/clients?view=team
+[2026-05-22T09:28:19.706Z] [API] START GET /api/staff
+[2026-05-22T09:28:19.709Z] [API] END   GET /api/staff - 304 (3ms)
+[2026-05-22T09:28:19.711Z] [API] END   GET /api/clients?view=team - 304 (8ms)
+[2026-05-22T09:28:19.719Z] [API] START GET /api/service-types
+[2026-05-22T09:28:19.722Z] [API] END   GET /api/service-types - 304 (3ms)
+[2026-05-22T09:28:19.736Z] [API] START GET /api/profile
+[2026-05-22T09:28:19.742Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T09:28:22.485Z] [API] START GET /api/clients/28
+[2026-05-22T09:28:22.491Z] [API] START GET /api/staff
+[2026-05-22T09:28:22.494Z] [API] END   GET /api/staff - 304 (3ms)
+[2026-05-22T09:28:22.498Z] [API] END   GET /api/clients/28 - 200 (13ms)
+[2026-05-22T09:28:22.511Z] [API] START GET /api/service-types
+[2026-05-22T09:28:22.513Z] [API] END   GET /api/service-types - 304 (2ms)
+[2026-05-22T09:28:22.526Z] [API] START GET /api/profile
+[2026-05-22T09:28:22.530Z] [API] END   GET /api/profile - 200 (4ms)
+[2026-05-22T09:28:30.583Z] [API] START GET /api/clients?view=team
+[2026-05-22T09:28:30.585Z] [API] START GET /api/staff
+[2026-05-22T09:28:30.590Z] [API] END   GET /api/staff - 304 (5ms)
+[2026-05-22T09:28:30.592Z] [API] END   GET /api/clients?view=team - 304 (9ms)
+[2026-05-22T09:28:30.594Z] [API] START GET /api/service-types
+[2026-05-22T09:28:30.597Z] [API] END   GET /api/service-types - 304 (3ms)
+[2026-05-22T09:28:30.600Z] [API] START GET /api/profile
+[2026-05-22T09:28:30.604Z] [API] END   GET /api/profile - 200 (4ms)
+[2026-05-22T09:28:48.418Z] [API] START GET /api/clients/28
+[2026-05-22T09:28:48.420Z] [API] START GET /api/staff
+[2026-05-22T09:28:48.422Z] [API] END   GET /api/staff - 304 (2ms)
+[2026-05-22T09:28:48.425Z] [API] START GET /api/service-types
+[2026-05-22T09:28:48.427Z] [API] START GET /api/profile
+[2026-05-22T09:28:48.429Z] [API] END   GET /api/service-types - 304 (4ms)
+[2026-05-22T09:28:48.431Z] [API] END   GET /api/clients/28 - 304 (13ms)
+[2026-05-22T09:28:48.435Z] [API] END   GET /api/profile - 200 (8ms)
+[2026-05-22T09:29:05.272Z] [API] START GET /api/clients?view=team
+[2026-05-22T09:29:05.274Z] [API] START GET /api/staff
+[2026-05-22T09:29:05.277Z] [API] END   GET /api/staff - 304 (3ms)
+[2026-05-22T09:29:05.279Z] [API] END   GET /api/clients?view=team - 304 (7ms)
+[2026-05-22T09:29:05.282Z] [API] START GET /api/service-types
+[2026-05-22T09:29:05.287Z] [API] START GET /api/profile
+[2026-05-22T09:29:05.290Z] [API] END   GET /api/service-types - 304 (8ms)
+[2026-05-22T09:29:05.294Z] [API] END   GET /api/profile - 200 (7ms)
+[2026-05-22T09:51:10.899Z] [API] START GET /api/service-types
+[2026-05-22T09:51:10.902Z] [API] END   GET /api/service-types - 200 (3ms)
+[2026-05-22T09:51:10.909Z] [API] START GET /api/projects?view=team
+[2026-05-22T09:51:10.915Z] [API] END   GET /api/projects?view=team - 200 (6ms)
+[2026-05-22T09:51:10.926Z] [API] START GET /api/profile
+[2026-05-22T09:51:10.938Z] [API] END   GET /api/profile - 200 (12ms)
+[2026-05-22T09:58:42.798Z] [API] START GET /api/clients/2
+[2026-05-22T09:58:42.801Z] [API] START GET /api/staff
+[2026-05-22T09:58:42.804Z] [API] END   GET /api/staff - 200 (3ms)
+[2026-05-22T09:58:42.808Z] [API] END   GET /api/clients/2 - 200 (10ms)
+[2026-05-22T09:58:42.818Z] [API] START GET /api/service-types
+[2026-05-22T09:58:42.825Z] [API] END   GET /api/service-types - 304 (7ms)
+[2026-05-22T09:58:42.832Z] [API] START GET /api/profile
+[2026-05-22T09:58:42.838Z] [API] END   GET /api/profile - 200 (5ms)
+[2026-05-22T09:59:23.307Z] [API] START GET /api/clients?view=team
+[2026-05-22T09:59:23.312Z] [API] END   GET /api/clients?view=team - 200 (5ms)
+[2026-05-22T09:59:23.330Z] [API] START GET /api/staff
+[2026-05-22T09:59:23.337Z] [API] END   GET /api/staff - 304 (7ms)
+[2026-05-22T09:59:23.342Z] [API] START GET /api/service-types
+[2026-05-22T09:59:23.344Z] [API] END   GET /api/service-types - 304 (2ms)
+[2026-05-22T09:59:23.356Z] [API] START GET /api/profile
+[2026-05-22T09:59:23.360Z] [API] END   GET /api/profile - 200 (4ms)
+[2026-05-22T10:06:19.291Z] [API] START GET /api/service-types
+[2026-05-22T10:06:19.294Z] [API] START GET /api/projects?view=team
+[2026-05-22T10:06:19.297Z] [API] END   GET /api/service-types - 304 (6ms)
+[2026-05-22T10:06:19.302Z] [API] END   GET /api/projects?view=team - 304 (8ms)
+[2026-05-22T10:06:19.312Z] [API] START GET /api/profile
+[2026-05-22T10:06:19.322Z] [API] END   GET /api/profile - 200 (10ms)
+[2026-05-22T10:23:01.863Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T10:23:01.866Z] [API] START GET /api/profile
+[2026-05-22T10:23:06.302Z] [API] START GET /api/profile
+[2026-05-22T10:23:12.816Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 500 (10952ms)
+[2026-05-22T10:23:12.820Z] [API] END   GET /api/profile - 200 (10954ms)
+[2026-05-22T10:23:12.824Z] [API] END   GET /api/profile - 200 (6522ms)
+[2026-05-22T10:23:12.913Z] [API] START GET /api/notifications
+[2026-05-22T10:23:12.923Z] [API] END   GET /api/notifications - 200 (10ms)
+[2026-05-22T10:23:12.958Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T10:23:23.994Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 500 (11036ms)
+[2026-05-22T10:24:30.618Z] [API] START POST /api/login
+[2026-05-22T10:24:30.741Z] [API] END   POST /api/login - 200 (123ms)
+[2026-05-22T10:24:30.999Z] [API] START GET /api/notifications
+[2026-05-22T10:24:31.004Z] [API] END   GET /api/notifications - 304 (5ms)
+[2026-05-22T10:24:31.011Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T10:24:31.026Z] [API] START GET /api/profile
+[2026-05-22T10:24:40.746Z] [API] START GET /api/profile
+[2026-05-22T10:24:42.142Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 500 (11131ms)
+[2026-05-22T10:24:42.154Z] [API] END   GET /api/profile - 200 (1408ms)
+[2026-05-22T10:24:42.170Z] [API] END   GET /api/profile - 200 (11144ms)
+[2026-05-22T10:24:42.234Z] [API] START GET /api/notifications
+[2026-05-22T10:24:42.239Z] [API] END   GET /api/notifications - 304 (5ms)
+[2026-05-22T10:24:42.268Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T10:24:53.268Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 500 (11000ms)
+[2026-05-22T10:25:14.848Z] [API] START GET /api/profile
+[2026-05-22T10:25:14.860Z] [API] END   GET /api/profile - 200 (12ms)
+[2026-05-22T10:25:15.006Z] [API] START GET /api/notifications
+[2026-05-22T10:25:15.010Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T10:25:15.014Z] [API] END   GET /api/notifications - 304 (8ms)
+[2026-05-22T10:25:15.026Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (16ms)
+[2026-05-22T10:29:49.382Z] [API] START GET /api/profile
+[2026-05-22T10:29:49.386Z] [API] END   GET /api/profile - 200 (4ms)
+[2026-05-22T10:29:49.452Z] [API] START GET /api/notifications
+[2026-05-22T10:29:49.457Z] [API] START GET /api/service-types
+[2026-05-22T10:29:49.460Z] [API] END   GET /api/notifications - 304 (8ms)
+[2026-05-22T10:29:49.463Z] [API] START GET /api/projects?view=team
+[2026-05-22T10:29:49.467Z] [API] END   GET /api/service-types - 304 (10ms)
+[2026-05-22T10:29:49.472Z] [API] END   GET /api/projects?view=team - 200 (9ms)
+[2026-05-22T10:29:49.990Z] [API] START GET /api/profile
+[2026-05-22T10:29:49.996Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T10:29:50.066Z] [API] START GET /api/notifications
+[2026-05-22T10:29:50.077Z] [API] END   GET /api/notifications - 304 (11ms)
+[2026-05-22T10:29:50.089Z] [API] START GET /api/service-types
+[2026-05-22T10:29:50.094Z] [API] END   GET /api/service-types - 304 (5ms)
+[2026-05-22T10:29:50.103Z] [API] START GET /api/projects?view=team
+[2026-05-22T10:29:50.109Z] [API] END   GET /api/projects?view=team - 304 (6ms)
+[2026-05-22T10:29:51.330Z] [API] START GET /api/profile
+[2026-05-22T10:29:51.335Z] [API] END   GET /api/profile - 200 (5ms)
+[2026-05-22T10:29:51.390Z] [API] START GET /api/notifications
+[2026-05-22T10:29:51.398Z] [API] END   GET /api/notifications - 304 (8ms)
+[2026-05-22T10:29:51.414Z] [API] START GET /api/service-types
+[2026-05-22T10:29:51.416Z] [API] END   GET /api/service-types - 304 (2ms)
+[2026-05-22T10:29:51.424Z] [API] START GET /api/projects?view=team
+[2026-05-22T10:29:51.433Z] [API] END   GET /api/projects?view=team - 304 (9ms)
+[2026-05-22T10:29:52.370Z] [API] START GET /api/profile
+[2026-05-22T10:29:52.377Z] [API] END   GET /api/profile - 200 (7ms)
+[2026-05-22T10:29:52.421Z] [API] START GET /api/notifications
+[2026-05-22T10:29:52.430Z] [API] END   GET /api/notifications - 304 (9ms)
+[2026-05-22T10:29:52.453Z] [API] START GET /api/service-types
+[2026-05-22T10:29:52.459Z] [API] END   GET /api/service-types - 304 (6ms)
+[2026-05-22T10:29:52.461Z] [API] START GET /api/projects?view=team
+[2026-05-22T10:29:52.466Z] [API] END   GET /api/projects?view=team - 304 (5ms)
+[2026-05-22T10:29:53.063Z] [API] START GET /api/profile
+[2026-05-22T10:29:53.068Z] [API] END   GET /api/profile - 200 (5ms)
+[2026-05-22T10:29:53.129Z] [API] START GET /api/notifications
+[2026-05-22T10:29:53.132Z] [API] END   GET /api/notifications - 304 (3ms)
+[2026-05-22T10:29:53.138Z] [API] START GET /api/service-types
+[2026-05-22T10:29:53.144Z] [API] END   GET /api/service-types - 304 (6ms)
+[2026-05-22T10:29:53.156Z] [API] START GET /api/projects?view=team
+[2026-05-22T10:29:53.162Z] [API] END   GET /api/projects?view=team - 304 (6ms)
+[2026-05-22T10:30:19.166Z] [API] START GET /api/profile
+[2026-05-22T10:30:19.172Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T10:30:19.227Z] [API] START GET /api/notifications
+[2026-05-22T10:30:19.233Z] [API] END   GET /api/notifications - 304 (6ms)
+[2026-05-22T10:30:19.256Z] [API] START GET /api/users
+[2026-05-22T10:30:19.258Z] [API] END   GET /api/users - 200 (2ms)
+[2026-05-22T10:30:20.608Z] [API] START GET /api/profile
+[2026-05-22T10:30:20.612Z] [API] END   GET /api/profile - 200 (4ms)
+[2026-05-22T10:30:20.661Z] [API] START GET /api/notifications
+[2026-05-22T10:30:20.676Z] [API] END   GET /api/notifications - 304 (15ms)
+[2026-05-22T10:30:20.695Z] [API] START GET /api/users
+[2026-05-22T10:30:20.702Z] [API] END   GET /api/users - 304 (7ms)
+[2026-05-22T10:30:21.193Z] [API] START GET /api/profile
+[2026-05-22T10:30:21.202Z] [API] END   GET /api/profile - 200 (9ms)
+[2026-05-22T10:30:21.263Z] [API] START GET /api/notifications
+[2026-05-22T10:30:21.271Z] [API] END   GET /api/notifications - 304 (8ms)
+[2026-05-22T10:30:21.290Z] [API] START GET /api/users
+[2026-05-22T10:30:21.294Z] [API] END   GET /api/users - 304 (4ms)
+[2026-05-22T10:30:29.112Z] [API] START GET /api/clients?view=team
+[2026-05-22T10:30:29.114Z] [API] START GET /api/staff
+[2026-05-22T10:30:29.116Z] [API] END   GET /api/staff - 304 (2ms)
+[2026-05-22T10:30:29.121Z] [API] END   GET /api/clients?view=team - 200 (9ms)
+[2026-05-22T10:30:29.130Z] [API] START GET /api/service-types
+[2026-05-22T10:30:29.131Z] [API] END   GET /api/service-types - 304 (1ms)
+[2026-05-22T10:30:29.145Z] [API] START GET /api/profile
+[2026-05-22T10:30:29.152Z] [API] END   GET /api/profile - 200 (8ms)
+[2026-05-22T10:30:31.690Z] [API] START GET /api/clients/16
+[2026-05-22T10:30:31.693Z] [API] START GET /api/staff
+[2026-05-22T10:30:31.695Z] [API] END   GET /api/clients/16 - 200 (5ms)
+[2026-05-22T10:30:31.697Z] [API] END   GET /api/staff - 304 (4ms)
+[2026-05-22T10:30:31.710Z] [API] START GET /api/service-types
+[2026-05-22T10:30:31.713Z] [API] END   GET /api/service-types - 304 (3ms)
+[2026-05-22T10:30:31.723Z] [API] START GET /api/profile
+[2026-05-22T10:30:31.728Z] [API] END   GET /api/profile - 200 (5ms)
+[2026-05-22T10:34:18.786Z] [API] START PATCH /api/services/29/status
+[2026-05-22T10:34:18.797Z] [API] END   PATCH /api/services/29/status - 200 (11ms)
+[2026-05-22T10:34:39.823Z] [API] START GET /api/profile
+[2026-05-22T10:34:39.827Z] [API] END   GET /api/profile - 200 (4ms)
+[2026-05-22T10:34:39.893Z] [API] START GET /api/notifications
+[2026-05-22T10:34:39.898Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T10:34:39.901Z] [API] END   GET /api/notifications - 304 (8ms)
+[2026-05-22T10:34:39.915Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (17ms)
+[2026-05-22T10:35:39.658Z] [API] START PATCH /api/services/16/status
+[2026-05-22T10:35:39.668Z] [API] END   PATCH /api/services/16/status - 200 (10ms)
+[2026-05-22T10:35:51.913Z] [API] START GET /api/profile
+[2026-05-22T10:35:51.916Z] [API] END   GET /api/profile - 200 (3ms)
+[2026-05-22T10:35:51.998Z] [API] START GET /api/notifications
+[2026-05-22T10:35:52.002Z] [API] END   GET /api/notifications - 200 (4ms)
+[2026-05-22T10:35:52.024Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T10:35:52.031Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (7ms)
+[2026-05-22T10:41:51.490Z] [API] START GET /api/clients?view=team
+[2026-05-22T10:41:51.494Z] [API] START GET /api/staff
+[2026-05-22T10:41:51.499Z] [API] END   GET /api/clients?view=team - 200 (9ms)
+[2026-05-22T10:41:51.501Z] [API] END   GET /api/staff - 200 (7ms)
+[2026-05-22T10:41:51.504Z] [API] START GET /api/service-types
+[2026-05-22T10:41:51.507Z] [API] END   GET /api/service-types - 200 (3ms)
+[2026-05-22T10:41:51.510Z] [API] START GET /api/profile
+[2026-05-22T10:41:51.515Z] [API] END   GET /api/profile - 200 (5ms)
+[2026-05-22T10:45:55.991Z] [API] START GET /api/users
+[2026-05-22T10:45:55.995Z] [API] END   GET /api/users - 200 (4ms)
+[2026-05-22T10:45:55.996Z] [API] START GET /api/profile
+[2026-05-22T10:45:56.001Z] [API] END   GET /api/profile - 200 (5ms)
+[2026-05-22T10:46:02.996Z] [API] START POST /api/login
+[2026-05-22T10:46:03.103Z] [API] END   POST /api/login - 200 (107ms)
+[2026-05-22T10:46:03.140Z] [API] START GET /api/notifications
+[2026-05-22T10:46:03.144Z] [API] END   GET /api/notifications - 200 (4ms)
+[2026-05-22T10:46:03.149Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T10:46:03.152Z] [API] START GET /api/profile
+[2026-05-22T10:46:03.154Z] [API] END   GET /api/profile - 200 (2ms)
+[2026-05-22T10:46:03.163Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (14ms)
+[2026-05-22T10:46:06.545Z] [API] START GET /api/clients?view=team
+[2026-05-22T10:46:06.551Z] [API] START GET /api/staff
+[2026-05-22T10:46:06.552Z] [API] START GET /api/service-types
+[2026-05-22T10:46:06.555Z] [API] START GET /api/profile
+[2026-05-22T10:46:06.558Z] [API] END   GET /api/staff - 200 (7ms)
+[2026-05-22T10:46:06.562Z] [API] END   GET /api/service-types - 200 (10ms)
+[2026-05-22T10:46:06.564Z] [API] END   GET /api/profile - 200 (9ms)
+[2026-05-22T10:46:06.569Z] [API] END   GET /api/clients?view=team - 200 (24ms)
+[2026-05-22T10:46:15.833Z] [API] START GET /api/clients/2
+[2026-05-22T10:46:15.835Z] [API] START GET /api/staff
+[2026-05-22T10:46:15.837Z] [API] START GET /api/service-types
+[2026-05-22T10:46:15.839Z] [API] START GET /api/profile
+[2026-05-22T10:46:15.842Z] [API] END   GET /api/staff - 304 (7ms)
+[2026-05-22T10:46:15.843Z] [API] END   GET /api/service-types - 304 (6ms)
+[2026-05-22T10:46:15.846Z] [API] END   GET /api/profile - 200 (7ms)
+[2026-05-22T10:46:15.855Z] [API] END   GET /api/clients/2 - 200 (22ms)
+[2026-05-22T10:46:43.048Z] [API] START GET /api/clients?view=team
+[2026-05-22T10:46:43.049Z] [API] START GET /api/staff
+[2026-05-22T10:46:43.052Z] [API] START GET /api/service-types
+[2026-05-22T10:46:43.053Z] [API] START GET /api/profile
+[2026-05-22T10:46:43.059Z] [API] END   GET /api/staff - 304 (10ms)
+[2026-05-22T10:46:43.063Z] [API] END   GET /api/service-types - 304 (11ms)
+[2026-05-22T10:46:43.067Z] [API] END   GET /api/profile - 200 (14ms)
+[2026-05-22T10:46:43.075Z] [API] END   GET /api/clients?view=team - 304 (27ms)
+[2026-05-22T10:46:43.968Z] [API] START GET /api/clients/9
+[2026-05-22T10:46:43.975Z] [API] START GET /api/staff
+[2026-05-22T10:46:43.977Z] [API] START GET /api/service-types
+[2026-05-22T10:46:43.979Z] [API] START GET /api/profile
+[2026-05-22T10:46:43.981Z] [API] END   GET /api/staff - 304 (6ms)
+[2026-05-22T10:46:43.982Z] [API] END   GET /api/service-types - 304 (5ms)
+[2026-05-22T10:46:43.984Z] [API] END   GET /api/profile - 304 (5ms)
+[2026-05-22T10:46:43.990Z] [API] END   GET /api/clients/9 - 200 (22ms)
+[2026-05-22T10:47:27.033Z] [API] START GET /api/clients?view=team
+[2026-05-22T10:47:27.036Z] [API] START GET /api/staff
+[2026-05-22T10:47:27.039Z] [API] START GET /api/service-types
+[2026-05-22T10:47:27.041Z] [API] START GET /api/profile
+[2026-05-22T10:47:27.044Z] [API] END   GET /api/staff - 304 (8ms)
+[2026-05-22T10:47:27.046Z] [API] END   GET /api/service-types - 304 (7ms)
+[2026-05-22T10:47:27.048Z] [API] END   GET /api/profile - 200 (7ms)
+[2026-05-22T10:47:27.054Z] [API] END   GET /api/clients?view=team - 304 (21ms)
+[2026-05-22T10:47:28.193Z] [API] START GET /api/clients/14
+[2026-05-22T10:47:28.196Z] [API] END   GET /api/clients/14 - 200 (3ms)
+[2026-05-22T10:47:28.213Z] [API] START GET /api/staff
+[2026-05-22T10:47:28.214Z] [API] START GET /api/service-types
+[2026-05-22T10:47:28.217Z] [API] START GET /api/profile
+[2026-05-22T10:47:28.221Z] [API] END   GET /api/staff - 304 (8ms)
+[2026-05-22T10:47:28.223Z] [API] END   GET /api/service-types - 304 (9ms)
+[2026-05-22T10:47:28.226Z] [API] END   GET /api/profile - 200 (9ms)
+[2026-05-22T10:54:14.757Z] [API] START GET /api/clients?view=team
+[2026-05-22T10:54:14.762Z] [API] START GET /api/staff
+[2026-05-22T10:54:14.764Z] [API] START GET /api/service-types
+[2026-05-22T10:54:14.767Z] [API] END   GET /api/clients?view=team - 304 (10ms)
+[2026-05-22T10:54:14.768Z] [API] START GET /api/profile
+[2026-05-22T10:54:14.772Z] [API] END   GET /api/staff - 304 (10ms)
+[2026-05-22T10:54:14.777Z] [API] END   GET /api/service-types - 304 (13ms)
+[2026-05-22T10:54:14.781Z] [API] END   GET /api/profile - 200 (13ms)
+[2026-05-22T10:54:16.609Z] [API] START GET /api/clients/2
+[2026-05-22T10:54:16.612Z] [API] END   GET /api/clients/2 - 304 (3ms)
+[2026-05-22T10:54:16.630Z] [API] START GET /api/staff
+[2026-05-22T10:54:16.633Z] [API] START GET /api/service-types
+[2026-05-22T10:54:16.634Z] [API] START GET /api/profile
+[2026-05-22T10:54:16.638Z] [API] END   GET /api/staff - 304 (8ms)
+[2026-05-22T10:54:16.641Z] [API] END   GET /api/profile - 200 (7ms)
+[2026-05-22T10:54:16.642Z] [API] END   GET /api/service-types - 304 (9ms)
+[2026-05-22T10:54:37.909Z] [API] START GET /api/clients?view=team
+[2026-05-22T10:54:37.913Z] [API] END   GET /api/clients?view=team - 304 (4ms)
+[2026-05-22T10:54:37.925Z] [API] START GET /api/staff
+[2026-05-22T10:54:37.928Z] [API] START GET /api/service-types
+[2026-05-22T10:54:37.930Z] [API] START GET /api/profile
+[2026-05-22T10:54:37.935Z] [API] END   GET /api/staff - 304 (10ms)
+[2026-05-22T10:54:37.938Z] [API] END   GET /api/service-types - 304 (10ms)
+[2026-05-22T10:54:37.941Z] [API] END   GET /api/profile - 200 (11ms)
+[2026-05-22T10:54:38.601Z] [API] START GET /api/clients/9
+[2026-05-22T10:54:38.605Z] [API] START GET /api/staff
+[2026-05-22T10:54:38.608Z] [API] START GET /api/service-types
+[2026-05-22T10:54:38.609Z] [API] START GET /api/profile
+[2026-05-22T10:54:38.612Z] [API] END   GET /api/staff - 304 (7ms)
+[2026-05-22T10:54:38.613Z] [API] END   GET /api/service-types - 304 (5ms)
+[2026-05-22T10:54:38.615Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T10:54:38.624Z] [API] END   GET /api/clients/9 - 304 (23ms)
+[2026-05-22T10:54:50.389Z] [API] START GET /api/clients?view=team
+[2026-05-22T10:54:50.393Z] [API] END   GET /api/clients?view=team - 304 (4ms)
+[2026-05-22T10:54:50.396Z] [API] START GET /api/staff
+[2026-05-22T10:54:50.400Z] [API] START GET /api/profile
+[2026-05-22T10:54:50.402Z] [API] START GET /api/service-types
+[2026-05-22T10:54:50.412Z] [API] END   GET /api/staff - 304 (16ms)
+[2026-05-22T10:54:50.414Z] [API] END   GET /api/profile - 200 (14ms)
+[2026-05-22T10:54:50.415Z] [API] END   GET /api/service-types - 304 (13ms)
+[2026-05-22T10:54:51.275Z] [API] START GET /api/clients/14
+[2026-05-22T10:54:51.278Z] [API] START GET /api/staff
+[2026-05-22T10:54:51.280Z] [API] START GET /api/service-types
+[2026-05-22T10:54:51.282Z] [API] START GET /api/profile
+[2026-05-22T10:54:51.284Z] [API] END   GET /api/staff - 304 (6ms)
+[2026-05-22T10:54:51.286Z] [API] END   GET /api/service-types - 304 (6ms)
+[2026-05-22T10:54:51.288Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T10:54:51.294Z] [API] END   GET /api/clients/14 - 304 (19ms)
+[2026-05-22T10:55:12.826Z] [API] START GET /api/clients?view=team
+[2026-05-22T10:55:12.831Z] [API] END   GET /api/clients?view=team - 304 (4ms)
+[2026-05-22T10:55:12.834Z] [API] START GET /api/staff
+[2026-05-22T10:55:12.837Z] [API] START GET /api/service-types
+[2026-05-22T10:55:12.840Z] [API] START GET /api/profile
+[2026-05-22T10:55:12.844Z] [API] END   GET /api/staff - 304 (10ms)
+[2026-05-22T10:55:12.846Z] [API] END   GET /api/service-types - 304 (9ms)
+[2026-05-22T10:55:12.848Z] [API] END   GET /api/profile - 200 (8ms)
+[2026-05-22T10:55:13.528Z] [API] START GET /api/clients/9
+[2026-05-22T10:55:13.531Z] [API] START GET /api/staff
+[2026-05-22T10:55:13.534Z] [API] START GET /api/service-types
+[2026-05-22T10:55:13.538Z] [API] START GET /api/profile
+[2026-05-22T10:55:13.540Z] [API] END   GET /api/service-types - 304 (6ms)
+[2026-05-22T10:55:13.543Z] [API] END   GET /api/staff - 304 (12ms)
+[2026-05-22T10:55:13.546Z] [API] END   GET /api/profile - 200 (8ms)
+[2026-05-22T10:55:13.555Z] [API] END   GET /api/clients/9 - 304 (27ms)
+[2026-05-22T10:55:49.665Z] [API] START GET /api/clients?view=team
+[2026-05-22T10:55:49.669Z] [API] END   GET /api/clients?view=team - 304 (4ms)
+[2026-05-22T10:55:49.676Z] [API] START GET /api/staff
+[2026-05-22T10:55:49.679Z] [API] START GET /api/profile
+[2026-05-22T10:55:49.683Z] [API] START GET /api/service-types
+[2026-05-22T10:55:49.686Z] [API] END   GET /api/staff - 304 (10ms)
+[2026-05-22T10:55:49.688Z] [API] END   GET /api/profile - 200 (9ms)
+[2026-05-22T10:55:49.690Z] [API] END   GET /api/service-types - 304 (7ms)
+[2026-05-22T10:55:50.611Z] [API] START GET /api/clients/14
+[2026-05-22T10:55:50.615Z] [API] END   GET /api/clients/14 - 304 (4ms)
+[2026-05-22T10:55:50.629Z] [API] START GET /api/staff
+[2026-05-22T10:55:50.631Z] [API] START GET /api/service-types
+[2026-05-22T10:55:50.633Z] [API] START GET /api/profile
+[2026-05-22T10:55:50.637Z] [API] END   GET /api/staff - 304 (8ms)
+[2026-05-22T10:55:50.639Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T10:55:50.643Z] [API] END   GET /api/service-types - 304 (12ms)
+[2026-05-22T10:55:53.463Z] [API] START GET /api/clients?view=team
+[2026-05-22T10:55:53.466Z] [API] START GET /api/service-types
+[2026-05-22T10:55:53.467Z] [API] START GET /api/staff
+[2026-05-22T10:55:53.469Z] [API] START GET /api/profile
+[2026-05-22T10:55:53.473Z] [API] END   GET /api/service-types - 304 (7ms)
+[2026-05-22T10:55:53.477Z] [API] END   GET /api/staff - 304 (10ms)
+[2026-05-22T10:55:53.479Z] [API] END   GET /api/profile - 200 (10ms)
+[2026-05-22T10:55:53.482Z] [API] END   GET /api/clients?view=team - 304 (19ms)
+[2026-05-22T10:55:54.171Z] [API] START GET /api/clients/2
+[2026-05-22T10:55:54.175Z] [API] END   GET /api/clients/2 - 304 (4ms)
+[2026-05-22T10:55:54.189Z] [API] START GET /api/service-types
+[2026-05-22T10:55:54.190Z] [API] START GET /api/staff
+[2026-05-22T10:55:54.192Z] [API] START GET /api/profile
+[2026-05-22T10:55:54.195Z] [API] END   GET /api/service-types - 304 (6ms)
+[2026-05-22T10:55:54.198Z] [API] END   GET /api/staff - 304 (8ms)
+[2026-05-22T10:55:54.200Z] [API] END   GET /api/profile - 200 (8ms)
+[2026-05-22T11:04:27.470Z] [API] START GET /api/profile
+[2026-05-22T11:04:27.479Z] [API] END   GET /api/profile - 200 (9ms)
+[2026-05-22T11:04:27.619Z] [API] START GET /api/notifications
+[2026-05-22T11:04:27.624Z] [API] END   GET /api/notifications - 304 (5ms)
+[2026-05-22T11:04:27.627Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T11:04:27.634Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (7ms)
+[2026-05-22T11:59:52.577Z] [API] START GET /api/profile
+[2026-05-22T11:59:52.584Z] [API] END   GET /api/profile - 200 (7ms)
+[2026-05-22T11:59:52.800Z] [API] START GET /api/notifications
+[2026-05-22T11:59:52.803Z] [API] END   GET /api/notifications - 200 (3ms)
+[2026-05-22T11:59:52.832Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T11:59:52.840Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (8ms)
+[2026-05-22T12:02:49.912Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:02:49.913Z] [API] START GET /api/profile
+[2026-05-22T12:02:49.917Z] [API] END   GET /api/profile - 200 (4ms)
+[2026-05-22T12:02:49.931Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (19ms)
+[2026-05-22T12:08:15.107Z] [DB] FIRST OPEN: Initializing database promise...
+[2026-05-22T12:08:15.548Z] [DB] CONFIGURE: Setting performance PRAGMAs...
+[2026-05-22T12:08:15.574Z] [DB] MIGRATE: Checking for pending migrations...
+[2026-05-22T12:08:15.596Z] [DB] MIGRATE: Database schema is up to date.
+[2026-05-22T12:08:15.597Z] [DB] CONFIGURE: Database initialized and ready.
+[2026-05-22T12:08:23.933Z] [API] START POST /api/login
+[2026-05-22T12:08:24.060Z] [API] END   POST /api/login - 200 (127ms)
+[2026-05-22T12:08:24.102Z] [API] START GET /api/notifications
+[2026-05-22T12:08:24.108Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:08:24.112Z] [API] START GET /api/profile
+[2026-05-22T12:08:24.118Z] [API] END   GET /api/notifications - 200 (16ms)
+[2026-05-22T12:08:24.128Z] [API] END   GET /api/profile - 200 (16ms)
+[2026-05-22T12:08:24.140Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (32ms)
+[2026-05-22T12:08:58.474Z] [API] START POST /api/login
+[2026-05-22T12:08:58.586Z] [API] END   POST /api/login - 200 (112ms)
+[2026-05-22T12:08:58.622Z] [API] START GET /api/notifications
+[2026-05-22T12:08:58.629Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:08:58.634Z] [API] START GET /api/profile
+[2026-05-22T12:08:58.638Z] [API] END   GET /api/notifications - 200 (16ms)
+[2026-05-22T12:08:58.645Z] [API] END   GET /api/profile - 200 (11ms)
+[2026-05-22T12:08:58.658Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (29ms)
+[2026-05-22T12:09:12.249Z] [API] START POST /api/login
+[2026-05-22T12:09:12.354Z] [API] END   POST /api/login - 200 (105ms)
+[2026-05-22T12:09:12.388Z] [API] START GET /api/notifications
+[2026-05-22T12:09:12.393Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:09:12.395Z] [API] START GET /api/profile
+[2026-05-22T12:09:12.399Z] [API] END   GET /api/notifications - 200 (11ms)
+[2026-05-22T12:09:12.404Z] [API] END   GET /api/profile - 200 (9ms)
+[2026-05-22T12:09:12.415Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (22ms)
+[2026-05-22T12:09:50.635Z] [API] START POST /api/login
+[2026-05-22T12:09:50.739Z] [API] END   POST /api/login - 200 (104ms)
+[2026-05-22T12:09:50.776Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:09:50.779Z] [API] START GET /api/notifications
+[2026-05-22T12:09:50.780Z] [API] START GET /api/profile
+[2026-05-22T12:09:50.787Z] [API] END   GET /api/notifications - 200 (8ms)
+[2026-05-22T12:09:50.789Z] [API] END   GET /api/profile - 200 (9ms)
+[2026-05-22T12:09:50.797Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (21ms)
+[2026-05-22T12:10:12.292Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T12:10:12.298Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 200 (6ms)
+[2026-05-22T12:10:56.674Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:10:56.679Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (5ms)
+[2026-05-22T12:10:58.315Z] [API] START GET /api/clients?view=team
+[2026-05-22T12:10:58.321Z] [API] START GET /api/staff
+[2026-05-22T12:10:58.324Z] [API] START GET /api/service-types
+[2026-05-22T12:10:58.328Z] [API] START GET /api/profile
+[2026-05-22T12:10:58.332Z] [API] END   GET /api/staff - 304 (11ms)
+[2026-05-22T12:10:58.334Z] [API] END   GET /api/service-types - 304 (10ms)
+[2026-05-22T12:10:58.338Z] [API] END   GET /api/profile - 200 (10ms)
+[2026-05-22T12:10:58.344Z] [API] END   GET /api/clients?view=team - 200 (29ms)
+[2026-05-22T12:11:03.677Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:11:03.679Z] [API] START GET /api/profile
+[2026-05-22T12:11:03.682Z] [API] END   GET /api/profile - 200 (3ms)
+[2026-05-22T12:11:03.692Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (15ms)
+[2026-05-22T12:11:05.018Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T12:11:05.025Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 304 (7ms)
+[2026-05-22T12:11:06.982Z] [API] START GET /api/clients?view=team
+[2026-05-22T12:11:06.987Z] [API] START GET /api/staff
+[2026-05-22T12:11:06.990Z] [API] START GET /api/service-types
+[2026-05-22T12:11:06.992Z] [API] START GET /api/profile
+[2026-05-22T12:11:06.995Z] [API] END   GET /api/staff - 304 (8ms)
+[2026-05-22T12:11:06.998Z] [API] END   GET /api/service-types - 304 (8ms)
+[2026-05-22T12:11:07.000Z] [API] END   GET /api/profile - 200 (8ms)
+[2026-05-22T12:11:07.003Z] [API] END   GET /api/clients?view=team - 304 (21ms)
+[2026-05-22T12:11:29.863Z] [DB] FIRST OPEN: Initializing database promise...
+[2026-05-22T12:11:29.893Z] [DB] CONFIGURE: Setting performance PRAGMAs...
+[2026-05-22T12:11:29.902Z] [DB] MIGRATE: Checking for pending migrations...
+[2026-05-22T12:11:29.907Z] [DB] MIGRATE: Database schema is up to date.
+[2026-05-22T12:11:29.908Z] [DB] CONFIGURE: Database initialized and ready.
+[2026-05-22T12:11:44.601Z] [API] START POST /api/login
+[2026-05-22T12:11:44.730Z] [API] END   POST /api/login - 200 (129ms)
+[2026-05-22T12:11:44.774Z] [API] START GET /api/notifications
+[2026-05-22T12:11:44.780Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:11:44.783Z] [API] START GET /api/profile
+[2026-05-22T12:11:44.791Z] [API] END   GET /api/notifications - 200 (17ms)
+[2026-05-22T12:11:44.805Z] [API] END   GET /api/profile - 200 (22ms)
+[2026-05-22T12:11:44.817Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (37ms)
+[2026-05-22T12:12:19.299Z] [API] START POST /api/login
+[2026-05-22T12:12:19.406Z] [API] END   POST /api/login - 200 (107ms)
+[2026-05-22T12:12:19.446Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:12:19.449Z] [API] START GET /api/notifications
+[2026-05-22T12:12:19.451Z] [API] START GET /api/profile
+[2026-05-22T12:12:19.456Z] [API] END   GET /api/notifications - 200 (7ms)
+[2026-05-22T12:12:19.464Z] [API] END   GET /api/profile - 200 (13ms)
+[2026-05-22T12:12:19.473Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (27ms)
+[2026-05-22T12:12:33.193Z] [API] START POST /api/login
+[2026-05-22T12:12:33.298Z] [API] END   POST /api/login - 200 (105ms)
+[2026-05-22T12:12:33.334Z] [API] START GET /api/notifications
+[2026-05-22T12:12:33.336Z] [API] START GET /api/profile
+[2026-05-22T12:12:33.340Z] [API] END   GET /api/notifications - 200 (6ms)
+[2026-05-22T12:12:33.343Z] [API] END   GET /api/profile - 200 (7ms)
+[2026-05-22T12:12:33.346Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:12:33.358Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (12ms)
+[2026-05-22T12:12:39.388Z] [API] START GET /api/service-types
+[2026-05-22T12:12:39.390Z] [API] START GET /api/projects?view=team
+[2026-05-22T12:12:39.393Z] [API] START GET /api/profile
+[2026-05-22T12:12:39.401Z] [API] END   GET /api/service-types - 304 (13ms)
+[2026-05-22T12:12:39.405Z] [API] END   GET /api/projects?view=team - 200 (15ms)
+[2026-05-22T12:12:39.407Z] [API] END   GET /api/profile - 200 (14ms)
+[2026-05-22T12:12:51.880Z] [API] START POST /api/login
+[2026-05-22T12:12:51.983Z] [API] END   POST /api/login - 200 (103ms)
+[2026-05-22T12:12:52.042Z] [API] START GET /api/notifications
+[2026-05-22T12:12:52.044Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:12:52.046Z] [API] START GET /api/profile
+[2026-05-22T12:12:52.049Z] [API] END   GET /api/notifications - 200 (7ms)
+[2026-05-22T12:12:52.055Z] [API] END   GET /api/profile - 200 (9ms)
+[2026-05-22T12:12:52.065Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (21ms)
+[2026-05-22T12:13:00.339Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T12:13:00.346Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 200 (7ms)
+[2026-05-22T12:16:16.158Z] [DB] FIRST OPEN: Initializing database promise...
+[2026-05-22T12:16:16.186Z] [DB] CONFIGURE: Setting performance PRAGMAs...
+[2026-05-22T12:16:16.195Z] [DB] MIGRATE: Checking for pending migrations...
+[2026-05-22T12:16:16.201Z] [DB] MIGRATE: Database schema is up to date.
+[2026-05-22T12:16:16.201Z] [DB] CONFIGURE: Database initialized and ready.
+[2026-05-22T12:16:54.025Z] [API] START POST /api/login
+[2026-05-22T12:16:54.153Z] [API] END   POST /api/login - 200 (128ms)
+[2026-05-22T12:16:54.199Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:16:54.203Z] [API] START GET /api/notifications
+[2026-05-22T12:16:54.206Z] [API] START GET /api/profile
+[2026-05-22T12:16:54.215Z] [API] END   GET /api/notifications - 200 (12ms)
+[2026-05-22T12:16:54.221Z] [API] END   GET /api/profile - 200 (15ms)
+[2026-05-22T12:16:54.233Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 500 (34ms)
+[2026-05-22T12:18:04.933Z] [DB] FIRST OPEN: Initializing database promise...
+[2026-05-22T12:18:04.964Z] [DB] CONFIGURE: Setting performance PRAGMAs...
+[2026-05-22T12:18:04.973Z] [DB] MIGRATE: Checking for pending migrations...
+[2026-05-22T12:18:04.979Z] [DB] MIGRATE: Database schema is up to date.
+[2026-05-22T12:18:04.979Z] [DB] CONFIGURE: Database initialized and ready.
+[2026-05-22T12:18:12.692Z] [API] START GET /api/profile
+[2026-05-22T12:18:12.735Z] [API] END   GET /api/profile - 200 (43ms)
+[2026-05-22T12:18:12.813Z] [API] START GET /api/notifications
+[2026-05-22T12:18:12.818Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:18:12.824Z] [API] END   GET /api/notifications - 304 (11ms)
+[2026-05-22T12:18:12.841Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (23ms)
+[2026-05-22T12:18:20.383Z] [API] START GET /api/profile
+[2026-05-22T12:18:20.395Z] [API] END   GET /api/profile - 200 (12ms)
+[2026-05-22T12:18:20.452Z] [API] START GET /api/notifications
+[2026-05-22T12:18:20.455Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:18:20.461Z] [API] END   GET /api/notifications - 304 (9ms)
+[2026-05-22T12:18:20.471Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (16ms)
+[2026-05-22T12:18:40.306Z] [API] START POST /api/login
+[2026-05-22T12:18:40.424Z] [API] END   POST /api/login - 200 (118ms)
+[2026-05-22T12:18:40.464Z] [API] START GET /api/notifications
+[2026-05-22T12:18:40.467Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:18:40.470Z] [API] START GET /api/profile
+[2026-05-22T12:18:40.472Z] [API] END   GET /api/notifications - 200 (8ms)
+[2026-05-22T12:18:40.482Z] [API] END   GET /api/profile - 200 (12ms)
+[2026-05-22T12:18:40.495Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (28ms)
+[2026-05-22T12:18:49.874Z] [API] START POST /api/login
+[2026-05-22T12:18:49.985Z] [API] END   POST /api/login - 200 (111ms)
+[2026-05-22T12:18:50.026Z] [API] START GET /api/notifications
+[2026-05-22T12:18:50.030Z] [API] START GET /api/profile
+[2026-05-22T12:18:50.033Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:18:50.038Z] [API] END   GET /api/notifications - 200 (12ms)
+[2026-05-22T12:18:50.042Z] [API] END   GET /api/profile - 200 (12ms)
+[2026-05-22T12:18:50.053Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (20ms)
+[2026-05-22T12:19:05.154Z] [API] START POST /api/login
+[2026-05-22T12:19:05.261Z] [API] END   POST /api/login - 200 (107ms)
+[2026-05-22T12:19:05.299Z] [API] START GET /api/notifications
+[2026-05-22T12:19:05.302Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:19:05.303Z] [API] START GET /api/profile
+[2026-05-22T12:19:05.309Z] [API] END   GET /api/notifications - 200 (10ms)
+[2026-05-22T12:19:05.312Z] [API] END   GET /api/profile - 200 (9ms)
+[2026-05-22T12:19:05.318Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (16ms)
+[2026-05-22T12:19:22.479Z] [API] START GET /api/profile
+[2026-05-22T12:19:22.487Z] [API] END   GET /api/profile - 200 (8ms)
+[2026-05-22T12:19:22.642Z] [API] START GET /api/notifications
+[2026-05-22T12:19:22.647Z] [API] END   GET /api/notifications - 304 (5ms)
+[2026-05-22T12:19:22.651Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:19:22.662Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (11ms)
+[2026-05-22T12:19:31.193Z] [API] START POST /api/login
+[2026-05-22T12:19:31.298Z] [API] END   POST /api/login - 200 (105ms)
+[2026-05-22T12:19:31.334Z] [API] START GET /api/notifications
+[2026-05-22T12:19:31.336Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:19:31.338Z] [API] START GET /api/profile
+[2026-05-22T12:19:31.344Z] [API] END   GET /api/notifications - 304 (10ms)
+[2026-05-22T12:19:31.348Z] [API] END   GET /api/profile - 200 (10ms)
+[2026-05-22T12:19:31.356Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (20ms)
+[2026-05-22T12:19:33.059Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T12:19:33.066Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 304 (7ms)
+[2026-05-22T12:19:34.566Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:19:34.571Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (5ms)
+[2026-05-22T12:19:52.202Z] [API] START POST /api/login
+[2026-05-22T12:19:52.309Z] [API] END   POST /api/login - 200 (107ms)
+[2026-05-22T12:19:52.344Z] [API] START GET /api/notifications
+[2026-05-22T12:19:52.346Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:19:52.347Z] [API] START GET /api/profile
+[2026-05-22T12:19:52.350Z] [API] END   GET /api/notifications - 200 (6ms)
+[2026-05-22T12:19:52.353Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T12:19:52.373Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (27ms)
+[2026-05-22T12:20:07.098Z] [API] START POST /api/login
+[2026-05-22T12:20:07.203Z] [API] END   POST /api/login - 200 (105ms)
+[2026-05-22T12:20:07.238Z] [API] START GET /api/notifications
+[2026-05-22T12:20:07.241Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:20:07.245Z] [API] START GET /api/profile
+[2026-05-22T12:20:07.248Z] [API] END   GET /api/notifications - 200 (10ms)
+[2026-05-22T12:20:07.251Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T12:20:07.256Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (15ms)
+[2026-05-22T12:20:33.347Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T12:20:33.354Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 304 (7ms)
+[2026-05-22T12:20:34.995Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:20:34.999Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (4ms)
+[2026-05-22T12:20:36.736Z] [API] START GET /api/profile
+[2026-05-22T12:20:36.739Z] [API] END   GET /api/profile - 200 (3ms)
+[2026-05-22T12:20:36.880Z] [API] START GET /api/notifications
+[2026-05-22T12:20:36.882Z] [API] END   GET /api/notifications - 304 (2ms)
+[2026-05-22T12:20:36.912Z] [API] START GET /api/clients?view=team
+[2026-05-22T12:20:36.917Z] [API] END   GET /api/clients?view=team - 304 (5ms)
+[2026-05-22T12:20:36.928Z] [API] START GET /api/staff
+[2026-05-22T12:20:36.931Z] [API] END   GET /api/staff - 304 (3ms)
+[2026-05-22T12:20:36.945Z] [API] START GET /api/service-types
+[2026-05-22T12:20:36.948Z] [API] END   GET /api/service-types - 304 (3ms)
+[2026-05-22T12:20:39.933Z] [API] START GET /api/clients?view=mine
+[2026-05-22T12:20:39.936Z] [API] START GET /api/staff
+[2026-05-22T12:20:39.940Z] [API] END   GET /api/staff - 304 (4ms)
+[2026-05-22T12:20:39.943Z] [API] END   GET /api/clients?view=mine - 200 (10ms)
+[2026-05-22T12:20:56.834Z] [API] START POST /api/login
+[2026-05-22T12:20:56.948Z] [API] END   POST /api/login - 200 (114ms)
+[2026-05-22T12:20:57.012Z] [API] START GET /api/notifications
+[2026-05-22T12:20:57.015Z] [API] START GET /api/profile
+[2026-05-22T12:20:57.017Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:20:57.020Z] [API] END   GET /api/notifications - 200 (8ms)
+[2026-05-22T12:20:57.023Z] [API] END   GET /api/profile - 200 (8ms)
+[2026-05-22T12:20:57.032Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (15ms)
+[2026-05-22T12:20:58.743Z] [API] START GET /api/clients?view=team
+[2026-05-22T12:20:58.744Z] [API] START GET /api/staff
+[2026-05-22T12:20:58.746Z] [API] START GET /api/service-types
+[2026-05-22T12:20:58.754Z] [API] START GET /api/profile
+[2026-05-22T12:20:58.763Z] [API] END   GET /api/staff - 304 (19ms)
+[2026-05-22T12:20:58.768Z] [API] END   GET /api/service-types - 304 (22ms)
+[2026-05-22T12:20:58.771Z] [API] END   GET /api/profile - 200 (17ms)
+[2026-05-22T12:20:58.775Z] [API] END   GET /api/clients?view=team - 200 (32ms)
+[2026-05-22T12:21:11.954Z] [API] START POST /api/login
+[2026-05-22T12:21:12.059Z] [API] END   POST /api/login - 200 (105ms)
+[2026-05-22T12:21:12.095Z] [API] START GET /api/notifications
+[2026-05-22T12:21:12.097Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:21:12.100Z] [API] START GET /api/profile
+[2026-05-22T12:21:12.102Z] [API] END   GET /api/notifications - 200 (7ms)
+[2026-05-22T12:21:12.108Z] [API] END   GET /api/profile - 200 (8ms)
+[2026-05-22T12:21:12.120Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (23ms)
+[2026-05-22T12:21:22.559Z] [API] START GET /api/clients?view=team
+[2026-05-22T12:21:22.562Z] [API] START GET /api/staff
+[2026-05-22T12:21:22.564Z] [API] START GET /api/service-types
+[2026-05-22T12:21:22.568Z] [API] START GET /api/profile
+[2026-05-22T12:21:22.571Z] [API] END   GET /api/clients?view=team - 200 (12ms)
+[2026-05-22T12:21:22.574Z] [API] END   GET /api/staff - 304 (12ms)
+[2026-05-22T12:21:22.575Z] [API] END   GET /api/service-types - 304 (11ms)
+[2026-05-22T12:21:22.579Z] [API] END   GET /api/profile - 200 (11ms)
+[2026-05-22T12:21:27.291Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:21:27.298Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (7ms)
+[2026-05-22T12:21:27.305Z] [API] START GET /api/profile
+[2026-05-22T12:21:27.310Z] [API] END   GET /api/profile - 200 (5ms)
+[2026-05-22T12:21:33.591Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T12:21:33.596Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 200 (5ms)
+[2026-05-22T12:21:40.898Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:21:40.902Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (4ms)
+[2026-05-22T12:21:41.882Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T12:21:41.886Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 304 (4ms)
+[2026-05-22T12:21:42.556Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:21:42.560Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (4ms)
+[2026-05-22T12:21:44.427Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T12:21:44.431Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 304 (4ms)
+[2026-05-22T12:21:47.216Z] [API] START GET /api/clients?view=team
+[2026-05-22T12:21:47.218Z] [API] START GET /api/staff
+[2026-05-22T12:21:47.220Z] [API] START GET /api/service-types
+[2026-05-22T12:21:47.222Z] [API] START GET /api/profile
+[2026-05-22T12:21:47.226Z] [API] END   GET /api/service-types - 304 (6ms)
+[2026-05-22T12:21:47.229Z] [API] END   GET /api/staff - 304 (11ms)
+[2026-05-22T12:21:47.232Z] [API] END   GET /api/profile - 200 (10ms)
+[2026-05-22T12:21:47.234Z] [API] END   GET /api/clients?view=team - 304 (18ms)
+[2026-05-22T12:21:50.780Z] [API] START GET /api/clients?view=mine
+[2026-05-22T12:21:50.782Z] [API] START GET /api/staff
+[2026-05-22T12:21:50.784Z] [API] END   GET /api/staff - 304 (2ms)
+[2026-05-22T12:21:50.786Z] [API] END   GET /api/clients?view=mine - 200 (6ms)
+[2026-05-22T12:30:56.798Z] [DB] FIRST OPEN: Initializing database promise...
+[2026-05-22T12:30:56.828Z] [DB] CONFIGURE: Setting performance PRAGMAs...
+[2026-05-22T12:30:56.831Z] [DB] MIGRATE: Checking for pending migrations...
+[2026-05-22T12:30:56.841Z] [DB] MIGRATE: Database schema is up to date.
+[2026-05-22T12:30:56.842Z] [DB] CONFIGURE: Database initialized and ready.
+[2026-05-22T12:31:08.198Z] [API] START GET /api/profile
+[2026-05-22T12:31:08.233Z] [API] END   GET /api/profile - 200 (35ms)
+[2026-05-22T12:31:08.314Z] [API] START GET /api/notifications
+[2026-05-22T12:31:08.323Z] [API] START GET /api/clients?view=team
+[2026-05-22T12:31:08.326Z] [API] START GET /api/staff
+[2026-05-22T12:31:08.329Z] [API] START GET /api/service-types
+[2026-05-22T12:31:08.335Z] [API] END   GET /api/notifications - 200 (21ms)
+[2026-05-22T12:31:08.339Z] [API] END   GET /api/staff - 200 (13ms)
+[2026-05-22T12:31:08.340Z] [API] END   GET /api/service-types - 200 (11ms)
+[2026-05-22T12:31:08.356Z] [API] END   GET /api/clients?view=team - 200 (33ms)
+[2026-05-22T12:31:17.704Z] [API] START GET /api/clients?view=mine
+[2026-05-22T12:31:17.706Z] [API] START GET /api/staff
+[2026-05-22T12:31:17.712Z] [API] END   GET /api/staff - 304 (6ms)
+[2026-05-22T12:31:17.717Z] [API] END   GET /api/clients?view=mine - 200 (13ms)
+[2026-05-22T12:31:29.399Z] [API] START GET /api/clients/2
+[2026-05-22T12:31:29.403Z] [API] START GET /api/profile
+[2026-05-22T12:31:29.408Z] [API] START GET /api/staff
+[2026-05-22T12:31:29.410Z] [API] START GET /api/service-types
+[2026-05-22T12:31:29.414Z] [API] END   GET /api/profile - 200 (11ms)
+[2026-05-22T12:31:29.416Z] [API] END   GET /api/staff - 304 (8ms)
+[2026-05-22T12:31:29.418Z] [API] END   GET /api/service-types - 304 (8ms)
+[2026-05-22T12:31:29.428Z] [API] END   GET /api/clients/2 - 200 (29ms)
+[2026-05-22T12:31:34.583Z] [API] START GET /api/clients?view=team
+[2026-05-22T12:31:34.587Z] [API] END   GET /api/clients?view=team - 304 (4ms)
+[2026-05-22T12:31:34.589Z] [API] START GET /api/staff
+[2026-05-22T12:31:34.591Z] [API] START GET /api/service-types
+[2026-05-22T12:31:34.593Z] [API] START GET /api/profile
+[2026-05-22T12:31:34.596Z] [API] END   GET /api/staff - 304 (7ms)
+[2026-05-22T12:31:34.602Z] [API] END   GET /api/service-types - 304 (11ms)
+[2026-05-22T12:31:34.608Z] [API] END   GET /api/profile - 200 (15ms)
+[2026-05-22T12:31:35.479Z] [API] START GET /api/clients/8
+[2026-05-22T12:31:35.482Z] [API] END   GET /api/clients/8 - 200 (3ms)
+[2026-05-22T12:31:35.496Z] [API] START GET /api/staff
+[2026-05-22T12:31:35.500Z] [API] START GET /api/service-types
+[2026-05-22T12:31:35.502Z] [API] START GET /api/profile
+[2026-05-22T12:31:35.504Z] [API] END   GET /api/staff - 304 (8ms)
+[2026-05-22T12:31:35.508Z] [API] END   GET /api/service-types - 304 (8ms)
+[2026-05-22T12:31:35.510Z] [API] END   GET /api/profile - 200 (8ms)
+[2026-05-22T12:31:47.919Z] [API] START GET /api/clients?view=team
+[2026-05-22T12:31:47.921Z] [API] START GET /api/staff
+[2026-05-22T12:31:47.924Z] [API] END   GET /api/staff - 304 (3ms)
+[2026-05-22T12:31:47.931Z] [API] END   GET /api/clients?view=team - 304 (12ms)
+[2026-05-22T12:31:47.938Z] [API] START GET /api/service-types
+[2026-05-22T12:31:47.940Z] [API] START GET /api/profile
+[2026-05-22T12:31:47.945Z] [API] END   GET /api/service-types - 304 (7ms)
+[2026-05-22T12:31:47.947Z] [API] END   GET /api/profile - 200 (7ms)
+[2026-05-22T12:32:04.005Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:32:04.007Z] [API] START GET /api/profile
+[2026-05-22T12:32:04.011Z] [API] END   GET /api/profile - 200 (4ms)
+[2026-05-22T12:32:04.019Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (14ms)
+[2026-05-22T12:32:30.428Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T12:32:30.434Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 200 (6ms)
+[2026-05-22T12:32:37.595Z] [API] START GET /api/profile
+[2026-05-22T12:32:37.598Z] [API] END   GET /api/profile - 200 (3ms)
+[2026-05-22T12:32:37.692Z] [API] START GET /api/notifications
+[2026-05-22T12:32:37.695Z] [API] END   GET /api/notifications - 304 (3ms)
+[2026-05-22T12:32:37.701Z] [API] START GET /api/clients?view=team
+[2026-05-22T12:32:37.703Z] [API] START GET /api/staff
+[2026-05-22T12:32:37.706Z] [API] END   GET /api/staff - 304 (3ms)
+[2026-05-22T12:32:37.710Z] [API] END   GET /api/clients?view=team - 304 (9ms)
+[2026-05-22T12:32:37.719Z] [API] START GET /api/service-types
+[2026-05-22T12:32:37.722Z] [API] END   GET /api/service-types - 304 (3ms)
+[2026-05-22T12:32:40.614Z] [API] START GET /api/clients?view=mine
+[2026-05-22T12:32:40.616Z] [API] START GET /api/staff
+[2026-05-22T12:32:40.619Z] [API] END   GET /api/staff - 304 (3ms)
+[2026-05-22T12:32:40.622Z] [API] END   GET /api/clients?view=mine - 304 (8ms)
+[2026-05-22T12:33:14.826Z] [API] START POST /api/login
+[2026-05-22T12:33:14.948Z] [API] END   POST /api/login - 200 (122ms)
+[2026-05-22T12:33:14.993Z] [API] START GET /api/profile
+[2026-05-22T12:33:14.994Z] [API] START GET /api/notifications
+[2026-05-22T12:33:14.997Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:33:15.005Z] [API] END   GET /api/profile - 200 (12ms)
+[2026-05-22T12:33:15.015Z] [API] END   GET /api/notifications - 200 (21ms)
+[2026-05-22T12:33:15.024Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (27ms)
+[2026-05-22T12:33:17.338Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T12:33:17.345Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 200 (7ms)
+[2026-05-22T12:33:18.210Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:33:18.214Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (4ms)
+[2026-05-22T12:33:39.724Z] [API] START POST /api/login
+[2026-05-22T12:33:39.845Z] [API] END   POST /api/login - 200 (121ms)
+[2026-05-22T12:33:39.881Z] [API] START GET /api/notifications
+[2026-05-22T12:33:39.884Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:33:39.886Z] [API] START GET /api/profile
+[2026-05-22T12:33:39.888Z] [API] END   GET /api/notifications - 200 (7ms)
+[2026-05-22T12:33:39.890Z] [API] END   GET /api/profile - 200 (4ms)
+[2026-05-22T12:33:39.897Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (13ms)
+[2026-05-22T12:33:43.922Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T12:33:43.926Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 200 (4ms)
+[2026-05-22T12:33:52.907Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:33:52.912Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (5ms)
+[2026-05-22T12:34:05.394Z] [API] START POST /api/login
+[2026-05-22T12:34:05.499Z] [API] END   POST /api/login - 200 (105ms)
+[2026-05-22T12:34:05.537Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:34:05.539Z] [API] START GET /api/notifications
+[2026-05-22T12:34:05.541Z] [API] START GET /api/profile
+[2026-05-22T12:34:05.544Z] [API] END   GET /api/notifications - 200 (5ms)
+[2026-05-22T12:34:05.547Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T12:34:05.557Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (20ms)
+[2026-05-22T12:34:08.042Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T12:34:08.046Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 304 (4ms)
+[2026-05-22T12:34:24.474Z] [API] START POST /api/login
+[2026-05-22T12:34:24.585Z] [API] END   POST /api/login - 200 (111ms)
+[2026-05-22T12:34:24.628Z] [API] START GET /api/notifications
+[2026-05-22T12:34:24.630Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:34:24.631Z] [API] START GET /api/profile
+[2026-05-22T12:34:24.635Z] [API] END   GET /api/notifications - 200 (7ms)
+[2026-05-22T12:34:24.643Z] [API] END   GET /api/profile - 200 (12ms)
+[2026-05-22T12:34:24.655Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (25ms)
+[2026-05-22T12:35:02.144Z] [API] START GET /api/profile
+[2026-05-22T12:35:02.152Z] [API] END   GET /api/profile - 200 (8ms)
+[2026-05-22T12:35:02.256Z] [API] START GET /api/notifications
+[2026-05-22T12:35:02.260Z] [API] END   GET /api/notifications - 304 (4ms)
+[2026-05-22T12:35:02.262Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:35:02.294Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (32ms)
+[2026-05-22T12:42:13.782Z] [API] START POST /api/login
+[2026-05-22T12:42:13.905Z] [API] END   POST /api/login - 200 (123ms)
+[2026-05-22T12:42:13.963Z] [API] START GET /api/notifications
+[2026-05-22T12:42:13.969Z] [API] END   GET /api/notifications - 200 (6ms)
+[2026-05-22T12:42:13.978Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:42:13.983Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (5ms)
+[2026-05-22T12:42:13.985Z] [API] START GET /api/profile
+[2026-05-22T12:42:13.988Z] [API] END   GET /api/profile - 200 (3ms)
+[2026-05-22T12:45:04.180Z] [API] START POST /api/login
+[2026-05-22T12:45:04.295Z] [API] END   POST /api/login - 200 (115ms)
+[2026-05-22T12:45:04.340Z] [API] START GET /api/notifications
+[2026-05-22T12:45:04.343Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:45:04.346Z] [API] START GET /api/profile
+[2026-05-22T12:45:04.350Z] [API] END   GET /api/notifications - 200 (10ms)
+[2026-05-22T12:45:04.356Z] [API] END   GET /api/profile - 200 (10ms)
+[2026-05-22T12:45:04.368Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (25ms)
+[2026-05-22T12:45:49.247Z] [API] START POST /api/login
+[2026-05-22T12:45:49.360Z] [API] END   POST /api/login - 200 (113ms)
+[2026-05-22T12:45:49.399Z] [API] START GET /api/notifications
+[2026-05-22T12:45:49.404Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:45:49.407Z] [API] START GET /api/profile
+[2026-05-22T12:45:49.411Z] [API] END   GET /api/notifications - 200 (12ms)
+[2026-05-22T12:45:49.413Z] [API] END   GET /api/profile - 200 (6ms)
+[2026-05-22T12:45:49.426Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (22ms)
+[2026-05-22T12:45:58.835Z] [API] START POST /api/login
+[2026-05-22T12:45:58.951Z] [API] END   POST /api/login - 200 (116ms)
+[2026-05-22T12:45:59.001Z] [API] START GET /api/profile
+[2026-05-22T12:45:59.003Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:45:59.005Z] [API] START GET /api/notifications
+[2026-05-22T12:45:59.009Z] [API] END   GET /api/notifications - 200 (4ms)
+[2026-05-22T12:45:59.014Z] [API] END   GET /api/profile - 200 (13ms)
+[2026-05-22T12:45:59.024Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (21ms)
+[2026-05-22T12:46:41.804Z] [API] START POST /api/login
+[2026-05-22T12:46:41.921Z] [API] END   POST /api/login - 200 (117ms)
+[2026-05-22T12:46:41.966Z] [API] START GET /api/notifications
+[2026-05-22T12:46:41.970Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:46:41.972Z] [API] END   GET /api/notifications - 200 (6ms)
+[2026-05-22T12:46:41.975Z] [API] START GET /api/profile
+[2026-05-22T12:46:41.982Z] [API] END   GET /api/profile - 200 (7ms)
+[2026-05-22T12:46:41.996Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (26ms)
+[2026-05-22T12:46:52.551Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T12:46:52.556Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 200 (5ms)
+[2026-05-22T12:50:41.527Z] [DB] FIRST OPEN: Initializing database promise...
+[2026-05-22T12:50:41.557Z] [DB] CONFIGURE: Setting performance PRAGMAs...
+[2026-05-22T12:50:41.565Z] [DB] MIGRATE: Checking for pending migrations...
+[2026-05-22T12:50:41.571Z] [DB] MIGRATE: Database schema is up to date.
+[2026-05-22T12:50:41.572Z] [DB] CONFIGURE: Database initialized and ready.
+[2026-05-22T12:50:48.887Z] [API] START GET /api/profile
+[2026-05-22T12:50:48.920Z] [API] END   GET /api/profile - 200 (33ms)
+[2026-05-22T12:50:49.055Z] [API] START GET /api/notifications
+[2026-05-22T12:50:49.064Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:50:49.072Z] [API] END   GET /api/notifications - 304 (17ms)
+[2026-05-22T12:50:49.135Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (71ms)
+[2026-05-22T12:50:52.769Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T12:50:52.781Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 304 (12ms)
+[2026-05-22T12:51:19.258Z] [API] START POST /api/login
+[2026-05-22T12:51:19.397Z] [API] END   POST /api/login - 200 (139ms)
+[2026-05-22T12:51:19.436Z] [API] START GET /api/notifications
+[2026-05-22T12:51:19.444Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:51:19.447Z] [API] START GET /api/profile
+[2026-05-22T12:51:19.450Z] [API] END   GET /api/notifications - 200 (14ms)
+[2026-05-22T12:51:19.454Z] [API] END   GET /api/profile - 200 (7ms)
+[2026-05-22T12:51:19.464Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (20ms)
+[2026-05-22T12:51:48.967Z] [API] START GET /api/profile
+[2026-05-22T12:51:48.975Z] [API] END   GET /api/profile - 200 (8ms)
+[2026-05-22T12:51:49.107Z] [API] START GET /api/notifications
+[2026-05-22T12:51:49.109Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:51:49.135Z] [API] END   GET /api/notifications - 200 (28ms)
+[2026-05-22T12:51:49.222Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (113ms)
+[2026-05-22T12:51:56.231Z] [API] START GET /api/profile
+[2026-05-22T12:51:56.235Z] [API] END   GET /api/profile - 200 (4ms)
+[2026-05-22T12:51:56.332Z] [API] START GET /api/notifications
+[2026-05-22T12:51:56.334Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:51:56.338Z] [API] END   GET /api/notifications - 200 (6ms)
+[2026-05-22T12:51:56.346Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (12ms)
+[2026-05-22T12:51:59.502Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T12:51:59.511Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 200 (9ms)
+[2026-05-22T12:52:01.279Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:52:01.285Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (6ms)
+[2026-05-22T12:52:08.906Z] [API] START GET /api/profile
+[2026-05-22T12:52:08.914Z] [API] END   GET /api/profile - 200 (8ms)
+[2026-05-22T12:52:09.017Z] [API] START GET /api/notifications
+[2026-05-22T12:52:09.028Z] [API] END   GET /api/notifications - 200 (11ms)
+[2026-05-22T12:52:09.030Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:52:09.050Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (20ms)
+[2026-05-22T12:53:42.450Z] [API] START GET /api/profile
+[2026-05-22T12:53:42.457Z] [API] END   GET /api/profile - 200 (7ms)
+[2026-05-22T12:53:42.545Z] [API] START GET /api/notifications
+[2026-05-22T12:53:42.557Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:53:42.560Z] [API] END   GET /api/notifications - 200 (15ms)
+[2026-05-22T12:53:42.570Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (13ms)
+[2026-05-22T12:53:50.729Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T12:53:50.737Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 200 (8ms)
+[2026-05-22T12:53:54.577Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:53:54.592Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (15ms)
+[2026-05-22T12:54:07.740Z] [API] START POST /api/login
+[2026-05-22T12:54:07.855Z] [API] END   POST /api/login - 200 (115ms)
+[2026-05-22T12:54:07.914Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:54:07.916Z] [API] START GET /api/notifications
+[2026-05-22T12:54:07.919Z] [API] START GET /api/profile
+[2026-05-22T12:54:07.922Z] [API] END   GET /api/notifications - 200 (6ms)
+[2026-05-22T12:54:07.929Z] [API] END   GET /api/profile - 200 (10ms)
+[2026-05-22T12:54:07.942Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (28ms)
+[2026-05-22T12:54:11.015Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T12:54:11.024Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 200 (9ms)
+[2026-05-22T12:54:19.261Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T12:54:19.271Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (10ms)
+[2026-05-22T12:54:23.654Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T12:54:23.660Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 304 (6ms)
+[2026-05-22T13:06:34.736Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T13:06:34.742Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (6ms)
+[2026-05-22T13:07:29.207Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T13:07:29.223Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 304 (16ms)
+[2026-05-22T13:09:18.542Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T13:09:18.550Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (8ms)
+[2026-05-22T13:09:20.702Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T13:09:20.708Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 304 (6ms)
+[2026-05-22T13:10:24.788Z] [API] START POST /api/login
+[2026-05-22T13:10:24.893Z] [API] END   POST /api/login - 200 (105ms)
+[2026-05-22T13:10:24.928Z] [API] START GET /api/notifications
+[2026-05-22T13:10:24.931Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T13:10:24.933Z] [API] START GET /api/profile
+[2026-05-22T13:10:24.937Z] [API] END   GET /api/notifications - 200 (9ms)
+[2026-05-22T13:10:24.941Z] [API] END   GET /api/profile - 200 (8ms)
+[2026-05-22T13:10:24.947Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (16ms)
+[2026-05-22T13:10:27.083Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T13:10:27.091Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 200 (8ms)
+[2026-05-22T13:10:28.931Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T13:10:28.936Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (5ms)
+[2026-05-22T13:10:43.808Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T13:10:43.817Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 304 (9ms)
+[2026-05-22T13:10:53.485Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T13:10:53.492Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (7ms)
+[2026-05-22T13:12:12.764Z] [API] START POST /api/login
+[2026-05-22T13:12:12.877Z] [API] END   POST /api/login - 200 (113ms)
+[2026-05-22T13:12:12.927Z] [API] START GET /api/notifications
+[2026-05-22T13:12:12.930Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T13:12:12.932Z] [API] START GET /api/profile
+[2026-05-22T13:12:12.938Z] [API] END   GET /api/notifications - 200 (11ms)
+[2026-05-22T13:12:12.944Z] [API] END   GET /api/profile - 200 (12ms)
+[2026-05-22T13:12:12.988Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (58ms)
+[2026-05-22T13:12:20.863Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T13:12:20.869Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 200 (6ms)
+[2026-05-22T13:13:36.223Z] [DB] FIRST OPEN: Initializing database promise...
+[2026-05-22T13:13:36.251Z] [DB] CONFIGURE: Setting performance PRAGMAs...
+[2026-05-22T13:13:36.259Z] [DB] MIGRATE: Checking for pending migrations...
+[2026-05-22T13:13:36.265Z] [DB] MIGRATE: Database schema is up to date.
+[2026-05-22T13:13:36.266Z] [DB] CONFIGURE: Database initialized and ready.
+[2026-05-22T13:13:43.310Z] [API] START GET /api/profile
+[2026-05-22T13:13:43.355Z] [API] END   GET /api/profile - 200 (45ms)
+[2026-05-22T13:13:43.478Z] [API] START GET /api/notifications
+[2026-05-22T13:13:43.489Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T13:13:43.495Z] [API] END   GET /api/notifications - 200 (17ms)
+[2026-05-22T13:13:43.507Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 200 (18ms)
+[2026-05-22T13:13:56.073Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T13:13:56.083Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 200 (10ms)
+[2026-05-22T13:14:46.242Z] [DB] FIRST OPEN: Initializing database promise...
+[2026-05-22T13:14:46.270Z] [DB] CONFIGURE: Setting performance PRAGMAs...
+[2026-05-22T13:14:46.279Z] [DB] MIGRATE: Checking for pending migrations...
+[2026-05-22T13:14:46.285Z] [DB] MIGRATE: Database schema is up to date.
+[2026-05-22T13:14:46.286Z] [DB] CONFIGURE: Database initialized and ready.
+[2026-05-22T13:14:53.799Z] [API] START GET /api/profile
+[2026-05-22T13:14:53.830Z] [API] END   GET /api/profile - 200 (31ms)
+[2026-05-22T13:14:53.958Z] [API] START GET /api/notifications
+[2026-05-22T13:14:53.966Z] [API] START GET /api/dashboard?month=2026-05&view=team
+[2026-05-22T13:14:53.993Z] [API] END   GET /api/notifications - 304 (35ms)
+[2026-05-22T13:14:54.020Z] [API] END   GET /api/dashboard?month=2026-05&view=team - 304 (54ms)
+[2026-05-22T13:15:07.200Z] [API] START GET /api/dashboard?month=2026-05&view=mine
+[2026-05-22T13:15:07.216Z] [API] END   GET /api/dashboard?month=2026-05&view=mine - 304 (16ms)

@@ -47,8 +47,8 @@ CREATE TABLE IF NOT EXISTS users (
       monthly_fee REAL DEFAULT 0,
       ad_spend REAL DEFAULT 0,
       tl_id INTEGER,
-      status TEXT DEFAULT 'Pending',
-      status_color TEXT DEFAULT 'Green',
+      status TEXT DEFAULT 'Hold',
+      status_color TEXT DEFAULT 'Red',
       revenue_type TEXT DEFAULT 'Recurring',
       revenue_month TEXT,
       FOREIGN KEY(client_id) REFERENCES clients(id)
