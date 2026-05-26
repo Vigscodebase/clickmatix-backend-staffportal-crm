@@ -176,6 +176,7 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
                 params = [id];
             } else if (role === 'dev_manager') {
                 // DM: Only see clients where they are the assigned Dev  Manager
+
                 clientFilter = `WHERE EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND s2.tl_id = ?)`;
                 params = [id];
             } else if (role === 'am_head') {
@@ -249,8 +250,7 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
         const groupCol = (role === 'marketing_manager') ? 'c.marketing_manager_id' :
             (role === 'dev_manager') ? 'c.dev_manager_id' : 'c.account_manager_id';
         const amTable = await db.all(`SELECT COALESCE(u.name, 'Unassigned') as name, COUNT(DISTINCT c.id) as num_accounts, COALESCE(SUM(s.monthly_fee), 0) as revenue FROM clients c LEFT JOIN users u ON ${groupCol} = u.id LEFT JOIN services s ON s.client_id = c.id AND s.status = 'Active' ${clientFilter} ${joiner} c.status = 'Active' GROUP BY ${groupCol} ${view === 'mine' ? "HAVING COALESCE(u.name, 'Unassigned') != 'Unassigned'" : ""} ORDER BY revenue DESC`, params);
-        console.log(groupCol)
-        console.log(clientFilter)
+
         const pendingReviewClients = await db.all(`SELECT id, name, agreement_status, invoice_status, onboarding_date FROM clients c ${clientFilter} ${clientFilter ? 'AND' : 'WHERE'} (agreement_status != 'Signed' OR invoice_status != 'Paid') ORDER BY onboarding_date DESC LIMIT 10`, params);
         const pendingAssignmentClients = await db.all(`SELECT id, name, marketing_manager_id, dev_manager_id, am_head_id, account_manager_id FROM clients c ${clientFilter} ${clientFilter ? 'AND' : 'WHERE'} c.status = 'Active' AND (account_manager_id IS NULL OR marketing_manager_id IS NULL OR dev_manager_id IS NULL OR EXISTS (SELECT 1 FROM services s WHERE s.client_id = c.id AND s.tl_id IS NULL AND s.status = 'Active')) LIMIT 10`, params);
         const pendingOnboardingClients = await db.all(`SELECT id, name, onboarding_date, onboarding_pdf_url FROM clients c ${clientFilter} ${clientFilter ? 'AND' : 'WHERE'} c.account_manager_id = ? AND (onboarding_pdf_url IS NULL OR onboarding_pdf_url = '') LIMIT 10`, [...params, id]);
@@ -526,32 +526,43 @@ app.get('/api/clients', authenticate, async (req, res) => {
         LEFT JOIN users u ON c.account_manager_id = u.id
     `;
     let params = [];
-
     const view = req.query.view || 'team';
 
-    if (hasFullAccess && view !== 'mine') {
+    // --- FILTERING LOGIC ---
+    if (view === 'mine') {
+        if (role === 'marketing_manager') {
+            // New Logic: Filter by marketing_manager_id AND check for Active services where user is TL
+            query += ` WHERE c.marketing_manager_id = ? 
+                       AND EXISTS (SELECT 1 FROM services s WHERE s.client_id = c.id AND s.tl_id = ? AND s.status = 'Active')`;
+            params = [id, id];
+        } else if (role === 'sales') {
+            query += ` WHERE c.onboarding_by = ?`;
+            params = [id];
+        } else if (role === 'account_manager') {
+            query += ` WHERE c.account_manager_id = ? AND (c.agreement_status = 'Signed' AND c.invoice_status = 'Paid')`;
+            params = [id];
+        } else {
+            // Default logic for other roles
+            query += ` WHERE (c.account_manager_id = ? OR c.marketing_manager_id = ? OR c.dev_manager_id = ? OR c.onboarding_by = ?
+                      OR EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND s2.tl_id = ?))`;
+            params = [id, id, id, id, id];
+        }
+    } else if (hasFullAccess) {
         // No WHERE clause, load everything.
-    } else if (role === 'sales') {
-        query += ` WHERE c.onboarding_by = ?`;
-        params = [id];
-    } else if (role === 'account_manager') {
-        query += ` WHERE c.account_manager_id = ? AND (c.agreement_status = 'Signed' AND c.invoice_status = 'Paid')`;
-        params = [id];
     } else {
+        // Fallback for non-mine view
         query += ` WHERE (c.account_manager_id = ? OR c.marketing_manager_id = ? OR c.dev_manager_id = ? OR c.onboarding_by = ?
-                   OR EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND s2.tl_id = ?))`;
+                      OR EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND s2.tl_id = ?))`;
         params = [id, id, id, id, id];
 
         if (!hasFullAccess) {
             query += ` AND (c.agreement_status = 'Signed' AND c.invoice_status = 'Paid')`;
         }
-        if (view === 'mine') {
-            query += ` AND c.account_manager_id IS NOT NULL AND c.account_manager_id != '' AND c.account_manager_id != 'null'`;
-        }
     }
 
     const clients = await db.all(query, params);
 
+    // Fetch services for these clients
     if (clients.length > 0) {
         const clientIds = clients.map(c => c.id).filter(id => id != null);
         if (clientIds.length > 0) {
@@ -565,9 +576,9 @@ app.get('/api/clients', authenticate, async (req, res) => {
             clients.forEach(client => {
                 client.services = allServices.filter(s => Number(s.client_id) === Number(client.id));
             });
-        } else {
-            clients.forEach(c => c.services = []);
         }
+    } else {
+        clients.forEach(c => c.services = []);
     }
 
     res.json({ clients });
