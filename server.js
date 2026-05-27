@@ -176,7 +176,6 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
                 params = [id];
             } else if (role === 'dev_manager') {
                 // DM: Only see clients where they are the assigned Dev  Manager
-
                 clientFilter = `WHERE EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND s2.tl_id = ?)`;
                 params = [id];
             } else if (role === 'am_head') {
@@ -246,10 +245,33 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
         // --- Lists (View-Aware) ---
         const serviceDistribution = await db.all(`SELECT s.type, SUM(s.monthly_fee) as revenue, COUNT(DISTINCT s.client_id) as active_accounts FROM services s JOIN clients c ON s.client_id = c.id ${clientFilter} ${joiner} s.status = 'Active' GROUP BY s.type ORDER BY revenue DESC`, params);
         //const amTable = await db.all(`SELECT COALESCE(u.name, 'Unassigned') as name, COUNT(DISTINCT c.id) as num_accounts, COALESCE(SUM(s.monthly_fee), 0) as revenue FROM clients c LEFT JOIN users u ON c.account_manager_id = u.id LEFT JOIN services s ON s.client_id = c.id AND s.status = 'Active' ${clientFilter} ${joiner} c.status = 'Active' GROUP BY c.account_manager_id ${view === 'mine' ? "HAVING COALESCE(u.name, 'Unassigned') != 'Unassigned'" : ""} ORDER BY revenue DESC`, params);
-        // Dynamically choose column to group by based on user role
+        // 1. Define the specific Join Condition
+        let serviceJoinCondition = "ON s.client_id = c.id AND s.status = 'Active'";
+        // 2. Apply logic only for marketing_manager in 'Mine' view
+        if (view === 'mine' && (role === 'marketing_manager' || role === 'dev_manager')) {
+            serviceJoinCondition = `ON s.client_id = c.id AND s.status = 'Active' AND s.tl_id = ${id}`;
+        }
+        // 3. Use the dynamic serviceJoinCondition in the query
         const groupCol = (role === 'marketing_manager') ? 'c.marketing_manager_id' :
-            (role === 'dev_manager') ? 'c.dev_manager_id' : 'c.account_manager_id';
-        const amTable = await db.all(`SELECT COALESCE(u.name, 'Unassigned') as name, COUNT(DISTINCT c.id) as num_accounts, COALESCE(SUM(s.monthly_fee), 0) as revenue FROM clients c LEFT JOIN users u ON ${groupCol} = u.id LEFT JOIN services s ON s.client_id = c.id AND s.status = 'Active' ${clientFilter} ${joiner} c.status = 'Active' GROUP BY ${groupCol} ${view === 'mine' ? "HAVING COALESCE(u.name, 'Unassigned') != 'Unassigned'" : ""} ORDER BY revenue DESC`, params);
+            (role === 'dev_manager' && view === 'mine') ? 's.tl_id' :
+                (role === 'dev_manager') ? 'c.dev_manager_id' : 'c.account_manager_id';
+
+        const joinClause = (role === 'dev_manager' && view === 'mine')
+            ? `LEFT JOIN services s ${serviceJoinCondition} LEFT JOIN users u ON s.tl_id = u.id`
+            : `LEFT JOIN users u ON ${groupCol} = u.id LEFT JOIN services s ${serviceJoinCondition}`;
+
+        const amTable = await db.all(`
+    SELECT COALESCE(u.name, 'Unassigned') as name, 
+           COUNT(DISTINCT c.id) as num_accounts, 
+           COALESCE(SUM(s.monthly_fee), 0) as revenue 
+    FROM clients c 
+    LEFT JOIN services s ${serviceJoinCondition}
+    LEFT JOIN users u ON ${groupCol} = u.id 
+    ${clientFilter} ${joiner} c.status = 'Active' 
+    GROUP BY ${groupCol} 
+    ${view === 'mine' ? "HAVING COALESCE(u.name, 'Unassigned') != 'Unassigned'" : ""} 
+    ORDER BY revenue DESC
+`, params);
 
         const pendingReviewClients = await db.all(`SELECT id, name, agreement_status, invoice_status, onboarding_date FROM clients c ${clientFilter} ${clientFilter ? 'AND' : 'WHERE'} (agreement_status != 'Signed' OR invoice_status != 'Paid') ORDER BY onboarding_date DESC LIMIT 10`, params);
         const pendingAssignmentClients = await db.all(`SELECT id, name, marketing_manager_id, dev_manager_id, am_head_id, account_manager_id FROM clients c ${clientFilter} ${clientFilter ? 'AND' : 'WHERE'} c.status = 'Active' AND (account_manager_id IS NULL OR marketing_manager_id IS NULL OR dev_manager_id IS NULL OR EXISTS (SELECT 1 FROM services s WHERE s.client_id = c.id AND s.tl_id IS NULL AND s.status = 'Active')) LIMIT 10`, params);
@@ -482,15 +504,38 @@ app.get('/api/projects', authenticate, async (req, res) => {
     const view = req.query.view || 'team';
     const isPrivileged = ['super_admin', 'admin', 'finance', 'am_head'].includes(role);
 
+    // --- FILTERING LOGIC ---
     if (view === 'mine' && isPrivileged) {
         filters.push('(c.account_manager_id = ? OR c.marketing_manager_id = ? OR c.dev_manager_id = ? OR s.tl_id = ?)');
         params.push(id, id, id, id);
     } else if (role === 'finance' || role === 'am_head' || role === 'sales') {
-        // Full View
+        // Full View - No filters
     } else if (role !== 'super_admin' && role !== 'admin') {
         filters.push("c.agreement_status = 'Signed' AND c.invoice_status = 'Paid'");
 
-        if (department === 'SEO') {
+        // --- SPECIFIC LOGIC FOR MANAGERS ---
+        if (role === 'marketing_manager') {
+            if (view === 'mine') {
+                filters.push('s.tl_id = ?');
+                params.push(id);
+            } else {
+                filters.push('c.marketing_manager_id = ?');
+                params.push(id);
+            }
+        }
+        else if (role === 'dev_manager') {
+            if (view === 'mine') {
+                // In Mine view, show projects where the Dev Manager is the TL
+                filters.push('s.tl_id = ?');
+                params.push(id);
+            } else {
+                // In Team view, show projects where the Dev Manager is the dev_manager_id
+                filters.push('c.dev_manager_id = ?');
+                params.push(id);
+            }
+        }
+        // --- EXISTING DEPARTMENT LOGIC ---
+        else if (department === 'SEO') {
             filters.push('s.type = "SEO"');
         } else if (department === 'Paid Ads') {
             filters.push('s.type IN ("G-ADS", "META")');
@@ -531,10 +576,14 @@ app.get('/api/clients', authenticate, async (req, res) => {
     // --- FILTERING LOGIC ---
     if (view === 'mine') {
         if (role === 'marketing_manager') {
-            // New Logic: Filter by marketing_manager_id AND check for Active services where user is TL
+            // MM: Filter by marketing_manager_id AND check for Active services where user is TL
             query += ` WHERE c.marketing_manager_id = ? 
                        AND EXISTS (SELECT 1 FROM services s WHERE s.client_id = c.id AND s.tl_id = ? AND s.status = 'Active')`;
             params = [id, id];
+        } else if (role === 'dev_manager') {
+            // DM: Only see clients where the user is the TL in an Active service
+            query += ` WHERE EXISTS (SELECT 1 FROM services s WHERE s.client_id = c.id AND s.tl_id = ? AND s.status = 'Active')`;
+            params = [id];
         } else if (role === 'sales') {
             query += ` WHERE c.onboarding_by = ?`;
             params = [id];
@@ -550,7 +599,8 @@ app.get('/api/clients', authenticate, async (req, res) => {
     } else if (hasFullAccess) {
         // No WHERE clause, load everything.
     } else {
-        // Fallback for non-mine view
+        // Fallback for non-mine view (Team View)
+        // Note: The dev_manager_id assignment is already included here in the OR condition
         query += ` WHERE (c.account_manager_id = ? OR c.marketing_manager_id = ? OR c.dev_manager_id = ? OR c.onboarding_by = ?
                       OR EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND s2.tl_id = ?))`;
         params = [id, id, id, id, id];
