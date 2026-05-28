@@ -582,7 +582,11 @@ app.get('/api/clients', authenticate, async (req, res) => {
             params = [id, id];
         } else if (role === 'dev_manager') {
             // DM: Only see clients where the user is the TL in an Active service
-            query += ` WHERE EXISTS (SELECT 1 FROM services s WHERE s.client_id = c.id AND s.tl_id = ? AND s.status = 'Active')`;
+            query += ` WHERE c.status = 'Active'              -- add this if you want to exclude Pending clients
+               AND EXISTS (
+                   SELECT 1 FROM services s 
+                   WHERE s.client_id = c.id AND s.tl_id = ? AND s.status = 'Active'
+               )`;
             params = [id];
         } else if (role === 'sales') {
             query += ` WHERE c.onboarding_by = ?`;
@@ -601,12 +605,17 @@ app.get('/api/clients', authenticate, async (req, res) => {
     } else {
         // Fallback for non-mine view (Team View)
         // Note: The dev_manager_id assignment is already included here in the OR condition
-        query += ` WHERE (c.account_manager_id = ? OR c.marketing_manager_id = ? OR c.dev_manager_id = ? OR c.onboarding_by = ?
+        if (role === 'dev_manager') {
+            // DM Team View: only clients assigned to this dev_manager
+            query += ` WHERE c.dev_manager_id = ?`;
+            params = [id];
+        } else {
+            query += ` WHERE (c.account_manager_id = ? OR c.marketing_manager_id = ? OR c.dev_manager_id = ? OR c.onboarding_by = ?
                       OR EXISTS (SELECT 1 FROM services s2 WHERE s2.client_id = c.id AND s2.tl_id = ?))`;
-        params = [id, id, id, id, id];
-
-        if (!hasFullAccess) {
-            query += ` AND (c.agreement_status = 'Signed' AND c.invoice_status = 'Paid')`;
+            params = [id, id, id, id, id];
+            if (!hasFullAccess) {
+                query += ` AND (c.agreement_status = 'Signed' AND c.invoice_status = 'Paid')`;
+            }
         }
     }
 
