@@ -218,6 +218,7 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
         const stats = { totalMRR: 0, oneOffRevenue: 0, activeAccounts: 0, activeServices: 0, pendingInvoices: 0, paidInvoices: 0, lostAccounts: 0 };
         const mrrRes = await db.get(`SELECT COALESCE(SUM(s.monthly_fee), 0) as total FROM services s JOIN clients c ON s.client_id = c.id ${clientFilter} ${joiner} s.revenue_type = 'Recurring' AND s.status = 'Active'`, params);
         stats.totalMRR = mrrRes?.total || 0;
+        console.log(`SELECT COALESCE(SUM(s.monthly_fee), 0) as total FROM services s JOIN clients c ON s.client_id = c.id ${clientFilter} ${joiner} s.revenue_type = 'Recurring' AND s.status = 'Active'`)
 
         const isGlobalViewer = ['super_admin', 'admin', 'sales', 'finance', 'am_head'].includes(role) || permissions?.includes('view_all_clients');
         const lostQuery = isGlobalViewer
@@ -230,7 +231,22 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
         const accCount = await db.get(`SELECT COUNT(DISTINCT c.id) as count FROM clients c ${clientFilter} ${joiner} c.status = 'Active'`, params);
         stats.activeAccounts = accCount?.count || 0;
 
-        const svcCount = await db.get(`SELECT COUNT(*) as count FROM services s JOIN clients c ON s.client_id = c.id ${clientFilter} ${joiner} s.status = 'Active'`, params);
+        // const svcCount = await db.get(`SELECT COUNT(*) as count FROM services s JOIN clients c ON s.client_id = c.id ${clientFilter} ${joiner} s.status = 'Active'`, params);
+        // stats.activeServices = svcCount?.count || 0;
+
+        // AFTER — seo_specialist / ads_specialist: count only their own assigned services
+        let svcCount;
+        if (role === 'seo_specialist' || role === 'ads_specialist') {
+            svcCount = await db.get(
+                `SELECT COUNT(*) as count FROM services s WHERE s.tl_id = ? AND s.status = 'Active'`,
+                [id]
+            );
+        } else {
+            svcCount = await db.get(
+                `SELECT COUNT(*) as count FROM services s JOIN clients c ON s.client_id = c.id ${clientFilter} ${joiner} s.status = 'Active'`,
+                params
+            );
+        }
         stats.activeServices = svcCount?.count || 0;
 
         const oneOffRes = await db.get(`SELECT COALESCE(SUM(s.monthly_fee), 0) as total FROM services s JOIN clients c ON s.client_id = c.id ${clientFilter} ${joiner} s.revenue_type = 'One-off' AND s.revenue_month LIKE ?`, [...params, month + '%']);
@@ -1387,6 +1403,74 @@ app.delete('/api/clients/:id', authenticate, async (req, res) => {
         await db.run('ROLLBACK');
         console.error("Delete client error:", err);
         res.status(500).json({ message: 'Failed to delete client', error: err.message });
+    }
+});
+
+app.put('/api/service-types/:id', authenticate, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name } = req.body;
+
+        // Validation Check
+        if (!name || name.trim() === '') {
+            return res.status(400).json({ error: "Service name is required" });
+        }
+
+        const newName = name.trim();
+        const db = await openDb();
+
+        // 1. Fetch the old value before making updates
+        const oldServiceType = await db.get("SELECT name FROM service_types WHERE id = ?", id);
+        if (!oldServiceType) {
+            return res.status(404).json({ error: "Service type not found" });
+        }
+
+        const oldName = oldServiceType.name;
+
+        // 2. Begin a Transaction to ensure both tables update successfully together
+        await db.run("BEGIN TRANSACTION");
+
+        try {
+            // Update the master service_types table record
+            await db.run("UPDATE service_types SET name = ? WHERE id = ?", newName, id);
+
+            // Update all matching entries in the active services table using the old name reference
+            await db.run("UPDATE services SET type = ? WHERE type = ?", newName, oldName);
+
+            await db.run("COMMIT");
+        } catch (transactionError) {
+            await db.run("ROLLBACK");
+            throw transactionError;
+        }
+
+        // --- NOTIFICATION LOGIC ---
+        // Notify privileged stakeholders about the service modification
+        const notifyUsers = await db.all(`
+            SELECT id FROM users 
+            WHERE role IN ("super_admin", "admin", "sales", "finance", "am_head")
+        `);
+        const notifyIds = notifyUsers.map(u => u.id).filter(userId => userId != req.user.id);
+
+        if (notifyIds.length > 0) {
+            await createNotification(
+                notifyIds,
+                `Service type '${oldName}' has been renamed to '${newName}' by ${req.user.name}.`,
+                'info'
+            );
+        }
+
+        res.json({
+            id: Number(id),
+            name: newName,
+            message: "Service type and all matching client projects updated successfully."
+        });
+
+    } catch (err) {
+        if (err.message.includes("UNIQUE")) {
+            return res.status(400).json({ error: "A service type with this name already exists" });
+        }
+        console.error("Service type edit error:", err);
+        res.status(500).json({ error: err.message });
     }
 });
 
