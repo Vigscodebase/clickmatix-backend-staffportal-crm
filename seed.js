@@ -13,11 +13,11 @@ async function seed() {
 
   // Initialize Schema
   await db.exec(`
+    DROP TABLE IF EXISTS notifications;
     DROP TABLE IF EXISTS invoices;
     DROP TABLE IF EXISTS services;
     DROP TABLE IF EXISTS clients;
     DROP TABLE IF EXISTS users;
-    DROP TABLE IF EXISTS notifications;
 
     CREATE TABLE users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -90,8 +90,17 @@ async function seed() {
       type TEXT,
       is_read INTEGER DEFAULT 0,
       created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now')),
       FOREIGN KEY(user_id) REFERENCES users(id)
     );
+
+    CREATE TRIGGER update_notifications_updated_at
+    AFTER UPDATE ON notifications
+    BEGIN
+        UPDATE notifications 
+        SET updated_at = datetime('now') 
+        WHERE id = NEW.id;
+    END;
   `);
 
   const hashedPassword = bcrypt.hashSync('password123', 10);
@@ -193,8 +202,7 @@ async function seed() {
 
               // More realistic One-off vs Recurring distribution
               const revenueType = Math.random() > 0.85 ? 'One-off' : 'Recurring';
-              //const revenueMonth = '2026-01'; 
-              const revenueMonth = new Date().toISOString().split('T')[0];// Default month for demo data
+              const revenueMonth = new Date().toISOString().split('T')[0];
 
               await db.run(`
                 INSERT INTO services (client_id, type, monthly_fee, ad_spend, tl_id, status, revenue_type, revenue_month)
@@ -203,7 +211,6 @@ async function seed() {
             }
           }
 
-          // Add some dummy invoices
           // Add some dummy invoices
           if (clientCount % 2 === 0) {
             await db.run('INSERT INTO invoices (client_id, amount, status, month) VALUES (?, ?, ?, ?)',

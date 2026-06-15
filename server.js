@@ -139,29 +139,65 @@ app.get('/api/dashboard', authenticate, async (req, res) => {
 
         await db.run(`UPDATE clients SET onboarding_date = date('now') WHERE onboarding_date = '' OR onboarding_date IS NULL`);
 
-        // --- Notifications Trigger ---
         const triggerNotifications = async () => {
             try {
                 const today = new Date();
-                const currentDay = today.getDate();
                 const currentMonthStr = today.toISOString().slice(0, 7);
                 const ldb = await openDb();
+                const currentMonth = String(today.getMonth() + 1).padStart(2, '0'); // 01-12
+                const currentYear = today.getFullYear();
 
-                const clientsToNotify = await ldb.all(`SELECT * FROM clients WHERE CAST(recurring_day AS INTEGER) = ?`, [currentDay]);
+                // Target day calculation (Exactly 7 days out)
+                const futureDate = new Date();
+                futureDate.setDate(today.getDate() + 7);
+                const targetDay = futureDate.getDate();
+
+                // Fetch clients whose invoice due day lands exactly on the target day
+                const clientsToNotify = await ldb.all(
+                    `SELECT * FROM clients WHERE CAST(recurring_day AS INTEGER) = ?`,
+                    [targetDay]
+                );
 
                 for (const c of clientsToNotify) {
+                    // OPTIMIZED: Calculates the sum total of all active services for this client
+                    const serviceFeeResult = await ldb.get(
+                        `SELECT COALESCE(SUM(monthly_fee), 0) as totalFee FROM services WHERE client_id = ? AND status = 'Active'`,
+                        [c.id]
+                    );
+                    const monthlyfee = serviceFeeResult ? serviceFeeResult.totalFee : 0;
+
+                    // Notification message layout template (without extra dollar prefix signs)
+                    const notificationMessage = `The client ${c.name} payment of $${monthlyfee} is due on ${c.recurring_day}-${currentMonth}-${currentYear}`;
+
+                    // Deduplication verification check
                     const alreadyNotified = await ldb.get(`
-                        SELECT 1 FROM notifications 
-                        WHERE message LIKE ? AND created_at LIKE ? LIMIT 1
-                    `, [`%Recurring payment review needed for ${c.name}%`, `${currentMonthStr}%`]);
+                SELECT 1 FROM notifications 
+                WHERE message = ? AND created_at LIKE ? LIMIT 1
+            `, [notificationMessage, `${currentMonthStr}%`]);
 
                     if (!alreadyNotified) {
-                        const managers = await ldb.all('SELECT id FROM users WHERE role IN ("super_admin", "admin", "finance", "am_head")');
-                        const managerIds = [...new Set([...managers.map(m => m.id), c.account_manager_id, c.marketing_manager_id, c.dev_manager_id].filter(Boolean))];
-                        await createNotification(managerIds, `Recurring payment review needed for ${c.name} (Day ${c.recurring_day})`, 'payment');
+                        const managerIds = [];
+
+                        // Super Admin, Admin, and Head of Account Managers receive all notifications
+                        const globalManagers = await ldb.all(
+                            'SELECT id FROM users WHERE role IN ("super_admin", "admin", "am_head")'
+                        );
+                        globalManagers.forEach(m => managerIds.push(m.id));
+
+                        // Account Manager user role receives only their assigned clients
+                        if (c.account_manager_id) {
+                            managerIds.push(c.account_manager_id);
+                        }
+
+                        const finalRecipientIds = [...new Set(managerIds.filter(Boolean))];
+
+                        // Dispatch notification
+                        await createNotification(finalRecipientIds, notificationMessage, 'payment');
                     }
                 }
-            } catch (notifyErr) { console.error("Notification trigger failed:", notifyErr); }
+            } catch (notifyErr) {
+                console.error("Notification trigger failed:", notifyErr);
+            }
         };
         triggerNotifications();
 
@@ -875,14 +911,23 @@ app.patch('/api/clients/:id/finance', authenticate, async (req, res) => {
         const client = await db.get('SELECT * FROM clients WHERE id = ?', id);
         if (!client) return res.status(404).json({ message: 'Client not found' });
 
-        const agreementChangedToPending = (updates.agreement_status === 'Pending' || updates.agreement_status === 'Review Required');
-        const invoiceChangedToPending = (updates.invoice_status === 'Pending' || updates.invoice_status === 'Review Required');
+        // Normalize string IDs to integers or nulls using the pre-existing utility function
+        if (updates.hasOwnProperty('marketing_manager_id')) updates.marketing_manager_id = parseId(updates.marketing_manager_id);
+        if (updates.hasOwnProperty('dev_manager_id')) updates.dev_manager_id = parseId(updates.dev_manager_id);
+        if (updates.hasOwnProperty('am_head_id')) updates.am_head_id = parseId(updates.am_head_id);
+        if (updates.hasOwnProperty('account_manager_id')) updates.account_manager_id = parseId(updates.account_manager_id);
+
+        const agreementChangedToPending = updates.hasOwnProperty('agreement_status') && (updates.agreement_status === 'Pending' || updates.agreement_status === 'Review Required');
+        const invoiceChangedToPending = updates.hasOwnProperty('invoice_status') && (updates.invoice_status === 'Pending' || updates.invoice_status === 'Review Required');
 
         // Helper to notify assignments/removals
         const notifyRoleChange = async (roleName, newId, oldId) => {
-            if (newId !== oldId) {
-                if (newId) await createNotification(newId, `You have been assigned as the ${roleName} for ${client.name}.`, 'info');
-                if (oldId) await createNotification(oldId, `You have been removed as the ${roleName} for ${client.name}.`, 'warning');
+            const normalizedNew = newId !== null ? parseInt(newId, 10) : null;
+            const normalizedOld = oldId !== null ? parseInt(oldId, 10) : null;
+
+            if (normalizedNew !== normalizedOld) {
+                if (normalizedNew) await createNotification(normalizedNew, `You have been assigned as the ${roleName} for ${client.name}.`, 'info');
+                if (normalizedOld) await createNotification(normalizedOld, `You have been removed as the ${roleName} for ${client.name}.`, 'warning');
             }
         };
 
@@ -898,15 +943,19 @@ app.patch('/api/clients/:id/finance', authenticate, async (req, res) => {
             updates.am_head_id = null;
             updates.account_manager_id = null;
         } else {
-            // Notify assignments/removals for explicit changes
-            await notifyRoleChange('Marketing Manager', updates.marketing_manager_id, client.marketing_manager_id);
-            await notifyRoleChange('Dev Manager', updates.dev_manager_id, client.dev_manager_id);
-            await notifyRoleChange('AM Head', updates.am_head_id, client.am_head_id);
-            await notifyRoleChange('Account Manager', updates.account_manager_id, client.account_manager_id);
-
-            if (updates.marketing_manager_id === "") updates.marketing_manager_id = null;
-            if (updates.dev_manager_id === "") updates.dev_manager_id = null;
-            if (updates.am_head_id === "") updates.am_head_id = null;
+            // Only evaluate and track explicit updates if the payload actually contains the specific keys
+            if (updates.hasOwnProperty('marketing_manager_id')) {
+                await notifyRoleChange('Marketing Manager', updates.marketing_manager_id, client.marketing_manager_id);
+            }
+            if (updates.hasOwnProperty('dev_manager_id')) {
+                await notifyRoleChange('Dev Manager', updates.dev_manager_id, client.dev_manager_id);
+            }
+            if (updates.hasOwnProperty('am_head_id')) {
+                await notifyRoleChange('AM Head', updates.am_head_id, client.am_head_id);
+            }
+            if (updates.hasOwnProperty('account_manager_id')) {
+                await notifyRoleChange('Account Manager', updates.account_manager_id, client.account_manager_id);
+            }
         }
 
         const allowedFields = [
@@ -928,6 +977,57 @@ app.patch('/api/clients/:id/finance', authenticate, async (req, res) => {
             params.push(id);
             await db.run(`UPDATE clients SET ${setClauses.join(', ')} WHERE id = ?`, params);
         }
+
+        // =========================================================================
+        // --- ACTIVE TRIGGER FOR RECURRING DAY CHANGES (2025/2026 ARCHITECTURE) ---
+        // =========================================================================
+        if (updates.hasOwnProperty('recurring_day')) {
+            try {
+                const today = new Date();
+                const futureDate = new Date();
+                futureDate.setDate(today.getDate() + 7);
+                const targetDay = futureDate.getDate();
+                const currentMonth = String(today.getMonth() + 1).padStart(2, '0');
+                const currentYear = today.getFullYear();
+
+                const newRecurringDay = parseInt(updates.recurring_day, 10);
+
+                // Check if the modified day lands exactly 7 days from today
+                if (newRecurringDay === targetDay) {
+                    // 1. Calculate the dynamic sum total of all active services
+                    const serviceFeeResult = await db.get(
+                        `SELECT COALESCE(SUM(monthly_fee), 0) as totalFee FROM services WHERE client_id = ? AND status = 'Active'`,
+                        [id]
+                    );
+                    const monthlyfee = serviceFeeResult ? serviceFeeResult.totalFee : 0;
+
+                    // 2. Map notification template matching layout string requirements
+                    const notificationMessage = `The client ${client.name} payment of $${monthlyfee} is due on ${newRecurringDay}-${currentMonth}-${currentYear}`;
+
+                    const managerIds = [];
+
+                    // 3. Super Admin, Admin, and Head of Account Managers get all notifications
+                    const globalManagers = await db.all(
+                        'SELECT id FROM users WHERE role IN ("super_admin", "admin", "am_head")'
+                    );
+                    globalManagers.forEach(m => managerIds.push(m.id));
+
+                    // 4. Account Manager role gets notified only if assigned to this specific client
+                    const currentAmId = updates.hasOwnProperty('account_manager_id') ? updates.account_manager_id : client.account_manager_id;
+                    if (currentAmId) {
+                        managerIds.push(parseInt(currentAmId, 10));
+                    }
+
+                    const finalRecipientIds = [...new Set(managerIds.filter(Boolean))];
+
+                    // 5. Instantly dispatch without any deduplication blocks
+                    await createNotification(finalRecipientIds, notificationMessage, 'payment');
+                }
+            } catch (notifyErr) {
+                console.error("Active trigger notification failed:", notifyErr);
+            }
+        }
+        // =========================================================================
 
         // --- GENERAL FINANCE NOTIFICATIONS ---
         const agreementChanged = updates.agreement_status !== undefined && updates.agreement_status !== client.agreement_status;
@@ -1052,9 +1152,9 @@ app.put('/api/services/:id', authenticate, async (req, res) => {
             }
         }
 
-        // --- NEW: Notify Privileged Roles + Client Managers ---
+        // --- NOTIFY PRIVILEGED ROLES + CLIENT MANAGERS ---
         // 1. Get all IDs for the requested roles
-        const privilegedUsers = await db.all('SELECT id FROM users WHERE role IN ("super_admin", "admin", "sales", "finance", "am_head")');
+        const privilegedUsers = await db.all('SELECT id FROM users WHERE role IN ("super_admin", "admin", "finance", "am_head")');
         const privilegedIds = privilegedUsers.map(u => u.id);
 
         // 2. Combine with client-specific stakeholders
@@ -1064,7 +1164,7 @@ app.put('/api/services/:id', authenticate, async (req, res) => {
         const finalNotifyIds = [...new Set(allCandidates)].filter(i =>
             i && i != req.user.id && i !== final_tl && i !== existing.tl_id
         );
-
+        console.log(finalNotifyIds)
         if (finalNotifyIds.length > 0) {
             await createNotification(finalNotifyIds, `Service details for ${type || existing.type} (${clientForUpd?.name || 'Client'}) have been updated.`, 'info');
         }
@@ -1302,7 +1402,7 @@ app.post('/api/service-types', authenticate, async (req, res) => {
         const serviceName = name.trim();
 
         // --- NEW NOTIFICATION LOGIC ---
-        // Fetch all users with the requested roles
+        // Fetch all users with the required roles
         const notifyUsers = await db.all(`
             SELECT id FROM users 
             WHERE role IN ("super_admin", "admin", "sales", "finance", "am_head")
@@ -1359,50 +1459,6 @@ app.put('/api/profile', authenticate, async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ message: 'Failed to update profile' });
-    }
-});
-
-app.delete('/api/clients/:id', authenticate, async (req, res) => {
-    const { id } = req.params;
-    const db = await openDb();
-
-    try {
-        await db.run('BEGIN TRANSACTION');
-
-        // 1. Fetch client data to copy
-        const client = await db.get('SELECT * FROM clients WHERE id = ?', id);
-
-        if (!client) {
-            await db.run('ROLLBACK');
-            return res.status(404).json({ message: 'Client not found' });
-        }
-
-        // 2. Copy client to lost_clients
-        await db.run(`
-            INSERT INTO lost_clients (
-                id, name, email, phone, domain, account_manager_id, marketing_manager_id, 
-                dev_manager_id, am_head_id, team_leader_id, status, agreement_status, 
-                invoice_status, onboarding_by, onboarding_date, onboarding_pdf_url, 
-                recurring_day, contract_end_date
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `, [
-            client.id, client.name, client.email, client.phone, client.domain,
-            client.account_manager_id, client.marketing_manager_id, client.dev_manager_id,
-            client.am_head_id, client.team_leader_id, client.status, client.agreement_status,
-            client.invoice_status, client.onboarding_by, client.onboarding_date,
-            client.onboarding_pdf_url, client.recurring_day, client.contract_end_date
-        ]);
-
-        // 3. Delete from original clients table
-        await db.run('DELETE FROM clients WHERE id = ?', id);
-
-        await db.run('COMMIT');
-
-        res.json({ success: true, message: 'Client archived and deleted successfully' });
-    } catch (err) {
-        await db.run('ROLLBACK');
-        console.error("Delete client error:", err);
-        res.status(500).json({ message: 'Failed to delete client', error: err.message });
     }
 });
 
